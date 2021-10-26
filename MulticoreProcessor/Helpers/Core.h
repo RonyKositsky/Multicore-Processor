@@ -1,9 +1,9 @@
 /*!
 ******************************************************************************
 \file file_name.h
-\date 17 October 2021
+\date 26 October 2021
 \author Rony Kosistky & Ofir Guthman & Yonatan Gartenberg
-\brief 
+\brief
 
 \details
 
@@ -13,8 +13,8 @@
 ALL RIGHTS RESERVED
 *****************************************************************************/
 
-#ifndef __FILE_NAME_H__
-#define __FILE_NAME_H__
+#ifndef CORE
+#define CORE
 
 /************************************
 *      include                      *
@@ -36,17 +36,17 @@ ALL RIGHTS RESERVED
 /*!
 ******************************************************************************
 \brief
-Initialize func 
+Initialize func
 
 \details
 Must be called only once
 
 \param
  [in] counter_val - reset counter value
- [out] out_val    - 
+ [out] out_val    -
 
 \return none
 *****************************************************************************/
 
 
-#endif //__FILE_NAME_H__
+#endif //CORE

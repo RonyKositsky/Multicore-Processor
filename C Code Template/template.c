@@ -8,7 +8,7 @@
 \details
 
 \par Copyright
-(c) Copyright 2021 Ofir & Rony
+(c) Copyright 2021 Ofir & Rony & Yonatan Gartenberg
 \par
 ALL RIGHTS RESERVED
 *****************************************************************************/
