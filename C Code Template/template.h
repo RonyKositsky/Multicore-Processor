@@ -2,7 +2,7 @@
 ******************************************************************************
 \file file_name.h
 \date 17 October 2021
-\author Rony Kosistky & Ofir Guthman
+\author Rony Kosistky & Ofir Guthman & Yonatan Gartenberg
 \brief 
 
 \details
