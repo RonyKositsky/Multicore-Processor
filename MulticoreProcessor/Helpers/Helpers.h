@@ -3,7 +3,6 @@
 
 typedef unsigned int uint;
 
-uint ProgramCounter; //The program counter.
 uint ClockCycles; //Total clock cycles.
 uint TotalInstructionsCommand; //Total instructions counter.
 

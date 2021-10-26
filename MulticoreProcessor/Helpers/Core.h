@@ -19,34 +19,88 @@ ALL RIGHTS RESERVED
 /************************************
 *      include                      *
 ************************************/
+#include "Helpers.h"
+#include "Opcodes.h"
 
 /************************************
 *      definitions                 *
 ************************************/
+#define NUMBER_OF_REGISTERS 16
+#define MEMORY_SIZE 4096
 
 /************************************
 *       types                       *
 ************************************/
-
+typedef struct
+{
+	uint ProgramCounter;
+	uint InstructionCounter;
+	uint RegisterArray[NUMBER_OF_REGISTERS];
+	uint Memory[MEMORY_SIZE]; //Memoery image array.
+}Core;
 
 /************************************
-*       API                         *
+*       API                       *
 ************************************/
 
 /*!
 ******************************************************************************
 \brief
-Initialize func
+Init the core.
 
 \details
-Must be called only once
+Called at the start of the run.
 
 \param
- [in] counter_val - reset counter value
- [out] out_val    -
+none
 
 \return none
 *****************************************************************************/
+void InitCore();
 
+/*!
+******************************************************************************
+\brief
+Asks whether the core is halted or not.
+
+\param
+none
+
+\return True if halted, false otherwise.
+*****************************************************************************/
+int CoreHalted();
+
+/*!
+******************************************************************************
+\brief
+Init the instrucions command list.
+
+\details
+Called at the start of the run.
+
+\param
+none
+
+\return none
+*****************************************************************************/
+InstructionCommand* GetInstructionCommand(uint pc);
+
+/*!
+******************************************************************************
+\brief
+Init the instrucions command list.
+
+\details
+Called at the start of the run.
+
+\param
+none
+
+\return none
+*****************************************************************************/
+void InstructionInit(void);
+
+//??
+void FreeInstructionsCommandArray(void);
 
 #endif //CORE
