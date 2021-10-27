@@ -16,7 +16,7 @@ ALL RIGHTS RESERVED
 /************************************
 *      include                      *
 ************************************/
-#include "Core.h"
+#include "../include/Core.h"
 #include <cstddef>
 
 /************************************

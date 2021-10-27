@@ -35,4 +35,5 @@ typedef struct
 }InstructionCommand;
 
 Opcode OpcodeMapping[NUMBER_OF_OPCODES];
+
 #endif

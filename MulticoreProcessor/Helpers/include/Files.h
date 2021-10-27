@@ -1,6 +1,8 @@
-#ifndef FILES
-#define FILES
+#ifndef FILES_H_
+#define FILES_H_
+
 #include <stdio.h>
+#include "Core.h"
 
 FILE* Imem0File;
 FILE* Imem1File;
@@ -36,5 +38,6 @@ void CloseFiles(void);
 void WriteTrace();
 void WriteRegistersToFile(void);
 void WriteCyclesToFile(void);
+void AssignFiles(Core* cores)
 
 #endif

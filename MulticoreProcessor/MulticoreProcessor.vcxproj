@@ -117,6 +117,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsC</CompileAs>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,6 +133,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsC</CompileAs>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,19 +143,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Helpers\Core.c" />
-    <ClCompile Include="Helpers\Files.c" />
-    <ClCompile Include="Helpers\Helpers.c" />
-    <ClCompile Include="Helpers\Memory.c" />
-    <ClCompile Include="Helpers\Registers.c" />
+    <ClCompile Include="Helpers\src\Core.c" />
+    <ClCompile Include="Helpers\src\Files.c" />
+    <ClCompile Include="Helpers\src\Helpers.c" />
+    <ClCompile Include="Helpers\src\Opcodes.c" />
     <ClCompile Include="MulticoreProcessor.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Helpers\Core.h" />
-    <ClInclude Include="Helpers\Files.h" />
-    <ClInclude Include="Helpers\Helpers.h" />
-    <ClInclude Include="Helpers\Memory.h" />
-    <ClInclude Include="Helpers\Registers.h" />
+    <ClInclude Include="Helpers\include\Core.h" />
+    <ClInclude Include="Helpers\include\Files.h" />
+    <ClInclude Include="Helpers\include\Helpers.h" />
+    <ClInclude Include="Helpers\include\Opcodes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

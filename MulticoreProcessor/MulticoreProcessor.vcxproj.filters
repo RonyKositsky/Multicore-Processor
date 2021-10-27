@@ -18,36 +18,30 @@
     <ClCompile Include="MulticoreProcessor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\Files.c">
+    <ClCompile Include="Helpers\src\Files.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\Helpers.c">
+    <ClCompile Include="Helpers\src\Helpers.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\Memory.c">
+    <ClCompile Include="Helpers\src\Opcodes.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\Registers.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Helpers\Core.c">
+    <ClCompile Include="Helpers\src\Core.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Helpers\Files.h">
+    <ClInclude Include="Helpers\include\Files.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\Helpers.h">
+    <ClInclude Include="Helpers\include\Helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\Memory.h">
+    <ClInclude Include="Helpers\include\Opcodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\Registers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Helpers\Core.h">
+    <ClInclude Include="Helpers\include\Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

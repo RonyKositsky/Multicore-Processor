@@ -16,18 +16,16 @@ ALL RIGHTS RESERVED
 /************************************
 *      include                      *
 ************************************/
-#include "Helpers/Core.h"
-#include "Helpers/Files.h"
+#include "Helpers/include/Files.h"
 
 /************************************
 *      definitions                  *
 ************************************/
-#define NUMBER_OF_CORES 4
 
 /************************************
 *      variables                  *
 ************************************/
-static Core cores[NUMBER_OF_CORES] = { 0 };
+static Core cores[NUMBER_OF_CORES];
 
 /************************************
 *      functions					*
@@ -38,11 +36,14 @@ void CoresInit()
 	{
 		InitCore(&cores[i]);
 	}
+
+	AssignFiles(cores);
 }
+
 /************************************
 *      Main							*
 ************************************/
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
 	OpenFiles(argv);
 
