@@ -60,8 +60,8 @@ void Cache_Init(void);
  if address is not match the cache will take it from the main memory.
 
 \param
- [in] counter_val - reset counter value
- [out] out_val    -
+ [in] address - the memory address.
+ [out] data   - the memory at the recieved address.
 
 \return true if address exist on cache.
 *****************************************************************************/
