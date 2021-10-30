@@ -19,6 +19,8 @@ ALL RIGHTS RESERVED
 /************************************
 *      include                      *
 ************************************/
+#include <stdint.h>
+#include <stdbool.h>
 
 /************************************
 *      definitions                 *
@@ -47,6 +49,22 @@ Must be called only once
 
 \return none
 *****************************************************************************/
+void Cache_Init(void);
 
+/*!
+******************************************************************************
+\brief
+ Get data from cache
+
+\details
+ if address is not match the cache will take it from the main memory.
+
+\param
+ [in] counter_val - reset counter value
+ [out] out_val    -
+
+\return true if address exist on cache.
+*****************************************************************************/
+bool Cache_GetData(uint32_t address, uint32_t* data);
 
 #endif // __CACHE_H__
