@@ -20,6 +20,10 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include <stdint.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include "../../Interface/include/Helpers.h"
+#include "Opcodes.h"
 
 /************************************
 *      definitions                 *
@@ -29,9 +33,9 @@ ALL RIGHTS RESERVED
 /************************************
 *       types                       *
 ************************************/
-typedef enum Pipeline_Enum
+typedef enum 
 {
-	FETCH,
+	FETCH = 0,
 	DECODE,
 	EXECUTE,
 	MEM,
@@ -40,10 +44,25 @@ typedef enum Pipeline_Enum
 
 typedef struct
 {
-	enum Pipeline_Enum state;
-	uint16_t pc;
-
+	PipelineSM_s state;
 } PipelineStage_s;
+
+typedef struct
+{
+	bool stall;
+	uint32_t* insturcionts;
+	PipelineStage_s pipe_stages[PIPELINE_SIZE];
+	Opcode_fucntion_params_s opcode_params;
+	uint32_t fetched_operation;
+	void (*operation)(Opcode_fucntion_params_s params);
+}Pipeline_s;
+
+typedef struct
+{
+	FILE* instruction_file;
+	uint16_t pc;
+	uint32_t* memory;
+}Pipeline_params;
 
 /************************************
 *       API                         *
@@ -52,33 +71,28 @@ typedef struct
 /*!
 ******************************************************************************
 \brief
-Initialize func
-
-\details
-Must be called only once
+Init the pipeline.
 
 \param
- [in] counter_val - reset counter value
- [out] out_val    -
+ [in]  none
+ [out] none
 
 \return none
 *****************************************************************************/
-void Pipeline_Init(void);
+void Pipeline_Init(Pipeline_s *pipeline);
 
 /*!
 ******************************************************************************
 \brief
-Initialize func
-
-\details
-Must be called only once
+One iteration of the pipeline. We will bubble the values inside the pipeline
+based on it's condition.
 
 \param
- [in] counter_val - reset counter value
- [out] out_val    -
+ [in]  none
+ [out] none
 
 \return none
 *****************************************************************************/
-void Pipeline_Execute(void);
+void Pipeline_Execute(Pipeline_s* pipeline);
 
 #endif //__PIPELINE_H__

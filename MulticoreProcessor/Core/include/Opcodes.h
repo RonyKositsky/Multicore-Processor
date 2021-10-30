@@ -5,7 +5,6 @@
 *      include                      *
 ************************************/
 #include <stdint.h>
-#include "Core.h"
 
 /************************************
 *      definitions                 *
@@ -15,11 +14,22 @@
 /************************************
 *       types                       *
 ************************************/
+
+typedef struct
+{
+	uint32_t rd;
+	uint32_t rs;
+	uint32_t rt;
+	uint32_t *registers_p;
+	uint32_t *memory_p;
+	uint16_t pc;
+}Opcode_fucntion_params_s;
+
 typedef struct
 {
 	char* OpcodeName;
 	char* OpcodeNumber;
-	void (*OperationFunc)(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core);
+	void (*OperationFunc)(Opcode_fucntion_params_s params);
 }Opcode;
 
 typedef struct

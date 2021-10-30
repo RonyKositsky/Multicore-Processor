@@ -2,7 +2,7 @@
 ******************************************************************************
 \file
 \date 26 October 2021
-\author Rony Kositsky & Ofir Guthman & Yonatan Gartenberg
+\author Rony Kositsky & Ofir Guthman & Yonatan Gaparams.rtenberg
 \brief
 
 \details
@@ -21,7 +21,7 @@ ALL RIGHTS RESERVED
 /************************************
 *      definitions                 *
 ************************************/
-#define _CRT_SECURE_NO_WARNINGS
+#define _CSECURE_NO_WARNINGS
 #define PROGRAM_COUNTER_REGISTER_NUM 15
 
 /************************************
@@ -31,331 +31,331 @@ ALL RIGHTS RESERVED
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] + R[rt]
+R[params.rd] = R[params.rs] + R[params.rt]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void Add(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core)
+void Add(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = core->RegisterArray[rs] + core->RegisterArray[rt];
+	params.registers_p[params.rd] = params.registers_p[params.rs] + params.registers_p[params .rt];
 }
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] - R[rt]
+R[params.rd] = R[params.rs] - R[params.rt]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void Sub(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
+void Sub(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = core->RegisterArray[rs] - core->RegisterArray[rt];
+	params.registers_p[params.rd] = params.registers_p[params.rs] - params.registers_p[params.rt];
 }
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] & R[rt]
+R[params.rd] = R[params.rs] & R[params.rt]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void And(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
+void And(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = core->RegisterArray[rs] & core->RegisterArray[rt];
+	params.registers_p[params.rd] = params.registers_p[params.rs] & params.registers_p[params.rt];
 }
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] | R[rt]
+R[params.rd] = R[params.rs] | R[params.rt]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void Or(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
+void Or(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = core->RegisterArray[rs] | core->RegisterArray[rt];
+	params.registers_p[params.rd] = params.registers_p[params.rs] | params.registers_p[params.rt];
 }
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] ^ R[rt]
+R[params.rd] = R[params.rs] ^ R[params.rt]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void Xor(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
+void Xor(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = core->RegisterArray[rs] ^ core->RegisterArray[rt];
+	params.registers_p[params.rd] = params.registers_p[params.rs] ^ params.registers_p[params.rt];
 }
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] * R[rt]
+R[params.rd] = R[params.rs] * R[params.rt]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void Multiply(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
+void Multiply(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = core->RegisterArray[rs] * core->RegisterArray[rt];
+	params.registers_p[params.rd] = params.registers_p[params.rs] * params.registers_p[params.rt];
 }
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] << R[rt]
+R[params.rd] = R[params.rs] << R[params.rt]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void LogicShiftLeft(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
+void LogicShiftLeft(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = core->RegisterArray[rs] << core->RegisterArray[rt];
+	params.registers_p[params.rd] = params.registers_p[params.rs] << params.registers_p[params.rt];
 }
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] >> R[rt] (arithmetic shift with sign extension)
+R[params.rd] = R[params.rs] >> R[params.rt] (arithmetic shift with sign extension)
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void ArithmeticShiftRight(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
+void ArithmeticShiftRight(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = (int)core->RegisterArray[rs] >> (int)core->RegisterArray[rt];
+	params.registers_p[params.rd] = (int)params.registers_p[params.rs] >> (int)params.registers_p[params.rt];
 } 
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = R[rs] >> R[rt]
+R[params.rd] = R[params.rs] >> R[params.rt]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void LogicShiftRight(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
+void LogicShiftRight(Opcode_fucntion_params_s params)
 {
-	core->RegisterArray[rd] = core->RegisterArray[rs] >> core->RegisterArray[rt];
+	params.registers_p[params.rd] = params.registers_p[params.rs] >> params.registers_p[params.rt];
 }
 
 /*!
 ******************************************************************************
 \brief
-if (R[rs] == R[rt]) pc = R[rd][low bits 9:0]
+if (R[params.rs] == R[params.rt]) pc = R[params.rd][low bits 9:0]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void BranchEqual(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
+void BranchEqual(Opcode_fucntion_params_s params)
 {
-	if (core->RegisterArray[rs] == core->RegisterArray[rt])
-		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
+	if (params.registers_p[params.rs] == params.registers_p[params.rt])
+		params.pc = params.registers_p[params.rd] & 0x1FF; // Taking the low 10 bits
 }
 
 /*!
 ******************************************************************************
 \brief
-if (R[rs] != R[rt]) pc = R[rd][low bits 9:0]
+if (R[params.rs] != R[params.rt]) pc = R[params.rd][low bits 9:0]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void BranchNotEqual(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
+void BranchNotEqual(Opcode_fucntion_params_s params)
 {
-	if (core->RegisterArray[rs] != core->RegisterArray[rt])
-		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
+	if (params.registers_p[params.rs] != params.registers_p[params.rt])
+		params.pc = params.registers_p[params.rd] & 0x1FF; // Taking the low 10 bits
 }
 
 /*!
 ******************************************************************************
 \brief
-if (R[rs] < R[rt]) pc = R[rd][low bits 9:0]
+if (R[params.rs] < R[params.rt]) pc = R[params.rd][low bits 9:0]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void BranchLessThen(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
+void BranchLessThen(Opcode_fucntion_params_s params)
 {
-	if (core->RegisterArray[rs] < core->RegisterArray[rt])
-		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
+	if (params.registers_p[params.rs] < params.registers_p[params.rt])
+		params.pc = params.registers_p[params.rd] & 0x1FF; // Taking the low 10 bits
 }
 
 /*!
 ******************************************************************************
 \brief
-if (R[rs] > R[rt]) pc = R[rd][low bits 9:0]
+if (R[params.rs] > R[params.rt]) pc = R[params.rd][low bits 9:0]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void BranchGraterThen(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
+void BranchGraterthen(Opcode_fucntion_params_s params)
 {
-	if (core->RegisterArray[rs] > core->RegisterArray[rt])
-		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
+	if (params.registers_p[params.rs] > params.registers_p[params.rt])
+		params.pc = params.registers_p[params.rd] & 0x1FF; // Taking the low 10 bits
 }
 
 /*!
 ******************************************************************************
 \brief
-if (R[rs] <= R[rt]) pc = R[rd][low bits 9:0]
+if (R[params.rs] <= R[params.rt]) pc = R[params.rd][low bits 9:0]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void BranchLessEqual(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
+void BranchLessEqual(Opcode_fucntion_params_s params)
 {
-	if (core->RegisterArray[rs] <= core->RegisterArray[rt])
-		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
+	if (params.registers_p[params.rs] <= params.registers_p[params.rt])
+		params.pc = params.registers_p[params.rd] & 0x1FF; // Taking the low 10 bits
 }
 
 /*!
 ******************************************************************************
 \brief
-if (R[rs] >= R[rt]) pc = R[rd][low bits 9:0]
+if (R[params.rs] >= R[params.rt]) pc = R[params.rd][low bits 9:0]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void BranchGraterEqual(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
+void BranchGraterEqual(Opcode_fucntion_params_s params)
 {
-	if (core->RegisterArray[rs] >= core->RegisterArray[rt])
-		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
+	if (params.registers_p[params.rs] >= params.registers_p[params.rt])
+		params.pc = params.registers_p[params.rd] & 0x1FF; // Taking the low 10 bits
 }
 
 /*!
 ******************************************************************************
 \brief
-R[15] = next instruction address, pc = R[rd][9:0]
+R[15] = next instruction address, pc = R[params.rd][9:0]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void JumpAndLink(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) {
-	core->RegisterArray[PROGRAM_COUNTER_REGISTER_NUM] = core->ProgramCounter;
-	core->ProgramCounter = core->RegisterArray[rd] & 0x1FF;
+void JumpAndLink(Opcode_fucntion_params_s params) {
+	params.registers_p[PROGRAM_COUNTER_REGISTER_NUM] = params.pc;
+	params.pc = params.registers_p[params.rd] & 0x1FF;
 }
 
 /*!
 ******************************************************************************
 \brief
-R[rd] = MEM[R[rs]+R[rt]]
+R[params.rd] = MEM[R[params.rs]+R[params.rt]]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void LoadWord(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core) {
-	uint32_t address = core->RegisterArray[rs] + core->RegisterArray[rt];
-	core -> RegisterArray[rd] = core -> Memory[address];
+void LoadWord(Opcode_fucntion_params_s params) {
+	uint32_t address = params.registers_p[params.rs] + params.registers_p[params.rt];
+	params.registers_p[params.rd] = params.memory_p[address];
 }
 
 /*!
 ******************************************************************************
 \brief
-MEM[R[rs]+R[rt]] = R[rd]
+MEM[R[params.rs]+R[params.rt]] = R[params.rd]
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void StoreWord(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) {
-	uint32_t address = core->RegisterArray[rs] + core->RegisterArray[rt];
-	core -> Memory[address] = core->RegisterArray[rd];
+void StoreWord(Opcode_fucntion_params_s params) {
+	uint32_t address = params.registers_p[params.rs] + params.registers_p[params.rt];
+	params.memory_p[address] = params.registers_p[params.rd];
 }
 
 /*!
@@ -364,14 +364,14 @@ void StoreWord(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) {
 Halt this core
 
 \param
-[in] rd - rd register value.
-[in] rs - rs register value.
-[in] rt - rt register value.
+[in] params.rd - params.rd register value.
+[in] params.rs - params.rs register value.
+[in] params.rt - params.rt register value.
 [in] core - The core on which we will run the operation.
 
 \return none
 *****************************************************************************/
-void Halt(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core)
+void Halt(Opcode_fucntion_params_s params)
 {
 	//core->ProgramCounter = INSTRUCTION_COUNT + 1;
 }
@@ -392,7 +392,7 @@ Opcode OpcodeMapping[NUMBER_OF_OPCODES] = {
 	{"beq", "09", BranchEqual},
 	{"bne", "0A", BranchNotEqual},
 	{"blt", "0B", BranchLessThen},
-	{"bgt", "0C", BranchGraterThen},
+	{"bgt", "0C", BranchGraterthen},
 	{"ble", "0D", BranchLessEqual},
 	{"bge", "0E", BranchGraterEqual},
 	{"jal", "0F", JumpAndLink},

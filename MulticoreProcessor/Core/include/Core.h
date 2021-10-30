@@ -21,20 +21,19 @@ ALL RIGHTS RESERVED
 ************************************/
 #include <stdio.h>
 #include <stdint.h>
-
+#include "Pipeline.h"
+#include "../../Interface/include/Helpers.h"
 /************************************
 *      definitions                 *
 ************************************/
-#define NUMBER_OF_REGISTERS 16
 #define MEMORY_SIZE 1024
-#define NUMBER_OF_CORES 4
 
 /************************************
 *       types                       *
 ************************************/
 typedef struct 
 {
-	FILE* MemFile;
+	FILE* InstructionMemFile;
 	FILE* RegFile;
 	FILE* TraceFile;
 	FILE* DsRamFile;
@@ -64,6 +63,7 @@ typedef struct
 	uint32_t Memory[MEMORY_SIZE];					//Memoery image array.
 	InstructionFormat_s InstructionCommand;
 	Core_Files Files;
+	Pipeline_s pipeline;
 }Core_s;
 
 /************************************

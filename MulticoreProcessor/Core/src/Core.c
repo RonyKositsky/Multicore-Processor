@@ -1,6 +1,6 @@
 /*!
 ******************************************************************************
-\file
+\file Core.c
 \date 26 October 2021
 \author Rony Kositsky & Ofir Guthman & Yonatan Gartenberg
 \brief
@@ -17,7 +17,6 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #define _CRT_SECURE_NO_WARNINGS
-
 
 #include "../include/Core.h"
 #include <stdio.h>
@@ -45,11 +44,11 @@ static void init_memory(Core_s* core);
 void InitCore(Core_s *core)
 {
 	memset((uint8_t *)core, 0, sizeof(core));
-
 	core->ProgramCounter = 0;
 	core->InstructionCounter = 0;
 	init_regiters(core);
 	init_memory(core);
+	Pipeline_Init(&core->pipeline);
 }
 
 int CoreHalted(Core_s *core)
@@ -80,7 +79,6 @@ void CoreIter(Core_s* core)
 static void init_regiters(Core_s* core)
 {
 	// todo: memset();
-
 	for (int i = 0; i < NUMBER_OF_REGISTERS; i++)
 	{
 		core->RegisterArray[i] = 0;
@@ -90,6 +88,6 @@ static void init_regiters(Core_s* core)
 static void init_memory(Core_s* core)
 {
 	uint16_t lineInProgram = 0;
-	while (lineInProgram < MEMORY_SIZE && fscanf(core->Files.MemFile, "%08x", (uint32_t *)&(core->Memory[lineInProgram])) != EOF)
+	while (lineInProgram < MEMORY_SIZE && fscanf(core->Files.InstructionMemFile, "%08x", (uint32_t *)&(core->Memory[lineInProgram])) != EOF)
 		lineInProgram++;
 }

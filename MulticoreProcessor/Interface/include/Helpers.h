@@ -2,6 +2,8 @@
 #define HELPER
 
 #include <stdint.h>
+#define NUMBER_OF_CORES 4
+#define NUMBER_OF_REGISTERS 16
 
 uint32_t ClockCycles; //Total clock cycles.
 uint32_t TotalInstructionsCommand; //Total instructions counter.
