@@ -1,11 +1,11 @@
 /*!
 ******************************************************************************
-\file
+\file MulticoreProcessor.c
 \date 26 October 2021
 \author Rony Kositsky & Ofir Guthman & Yonatan Gartenberg
 \brief
 
-\details
+The main file for our program.
 
 \par Copyright
 (c) Copyright 2021 Ofir & Rony & Yonatan

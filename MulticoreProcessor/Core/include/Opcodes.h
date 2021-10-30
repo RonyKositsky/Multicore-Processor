@@ -5,7 +5,6 @@
 *      include                      *
 ************************************/
 #include <stdint.h>
-
 #include "Core.h"
 
 /************************************
@@ -20,7 +19,7 @@ typedef struct
 {
 	char* OpcodeName;
 	char* OpcodeNumber;
-	void (*OperationFunc)(uint32_t rd, uint32_t rs, uint32_t rt, Core_s core);
+	void (*OperationFunc)(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core);
 }Opcode;
 
 typedef struct

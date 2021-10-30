@@ -143,8 +143,10 @@
     <ClCompile Include="Core\src\Core.c" />
     <ClCompile Include="Core\src\Opcodes.c" />
     <ClCompile Include="Core\src\Pipeline.c" />
+    <ClCompile Include="Interface\src\Bus.c" />
     <ClCompile Include="Interface\src\Files.c" />
     <ClCompile Include="Interface\src\Helpers.c" />
+    <ClCompile Include="Interface\src\Memory.c" />
     <ClCompile Include="MulticoreProcessor.c" />
   </ItemGroup>
   <ItemGroup>
@@ -152,8 +154,10 @@
     <ClInclude Include="Core\include\Core.h" />
     <ClInclude Include="Core\include\Opcodes.h" />
     <ClInclude Include="Core\include\Pipeline.h" />
+    <ClInclude Include="Interface\include\Bus.h" />
     <ClInclude Include="Interface\include\Files.h" />
     <ClInclude Include="Interface\include\Helpers.h" />
+    <ClInclude Include="Interface\include\Memory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

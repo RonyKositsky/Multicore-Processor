@@ -337,7 +337,7 @@ R[rd] = MEM[R[rs]+R[rt]]
 *****************************************************************************/
 void LoadWord(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core) {
 	uint32_t address = core->RegisterArray[rs] + core->RegisterArray[rt];
-	core->RegisterArray[rd] = core->Memory[address];
+	core -> RegisterArray[rd] = core -> Memory[address];
 }
 
 /*!
@@ -355,7 +355,7 @@ MEM[R[rs]+R[rt]] = R[rd]
 *****************************************************************************/
 void StoreWord(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) {
 	uint32_t address = core->RegisterArray[rs] + core->RegisterArray[rt];
-	core->Memory[address] = core->RegisterArray[rd];
+	core -> Memory[address] = core->RegisterArray[rd];
 }
 
 /*!

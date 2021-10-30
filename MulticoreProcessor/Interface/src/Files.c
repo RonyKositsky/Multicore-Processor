@@ -1,10 +1,43 @@
-#define _CRT_SECURE_NO_WARNINGS
+/*!
+******************************************************************************
+\file Files.c
+\date 17 October 2021
+\author Rony Kositsky & Ofir Guthman & Yonatan Gartenberg
+\brief
 
+\details
+
+\par Copyright
+(c) Copyright 2021 Ofir & Rony & Yonatan
+\par
+ALL RIGHTS RESERVED
+*****************************************************************************/
+
+/************************************
+*      include                      *
+************************************/
 #include "../include/Files.h"
 
-/*
-* Opening all of the required filed from the arguments.
-*/
+/************************************
+*      definitions                 *
+************************************/
+#define _CRT_SECURE_NO_WARNINGS
+
+/************************************
+*       types                       *
+************************************/
+
+/************************************
+*      variables                    *
+************************************/
+
+/************************************
+*      static functions             *
+************************************/
+
+/************************************
+*       API implementation          *
+************************************/
 int OpenFiles(char* argv[])
 {
 	Imem0File = fopen(argv[1], "r");
@@ -36,17 +69,14 @@ int OpenFiles(char* argv[])
 	Stats3TraceFile = fopen(argv[27], "w");
 
 	return Imem0File == NULL || Imem1File == NULL || Imem2File == NULL || Imem3File == NULL ||
-		   MeminFile == NULL || MemoutFile == NULL || Regout0File == NULL || Regout1File == NULL ||
-		   Regout2File == NULL || Regout3File == NULL || Core0TraceFile == NULL || Core1TraceFile == NULL ||
-		   Core2TraceFile == NULL || Core3TraceFile == NULL || BusTraceFile == NULL || DsRam0TraceFile == NULL ||
-		   DsRam1TraceFile == NULL || DsRam2TraceFile == NULL || DsRam3TraceFile == NULL || TsRam0TraceFile == NULL ||
-		   TsRam1TraceFile == NULL || TsRam2TraceFile == NULL || TsRam3TraceFile == NULL || Stats0TraceFile == NULL ||
-		   Stats1TraceFile == NULL || Stats2TraceFile == NULL || Stats3TraceFile == NULL;
+		MeminFile == NULL || MemoutFile == NULL || Regout0File == NULL || Regout1File == NULL ||
+		Regout2File == NULL || Regout3File == NULL || Core0TraceFile == NULL || Core1TraceFile == NULL ||
+		Core2TraceFile == NULL || Core3TraceFile == NULL || BusTraceFile == NULL || DsRam0TraceFile == NULL ||
+		DsRam1TraceFile == NULL || DsRam2TraceFile == NULL || DsRam3TraceFile == NULL || TsRam0TraceFile == NULL ||
+		TsRam1TraceFile == NULL || TsRam2TraceFile == NULL || TsRam3TraceFile == NULL || Stats0TraceFile == NULL ||
+		Stats1TraceFile == NULL || Stats2TraceFile == NULL || Stats3TraceFile == NULL;
 }
 
-/*
-* Closing all files at the end of the program.
-*/
 void CloseFiles()
 {
 	fclose(Imem0File);
@@ -77,3 +107,10 @@ void CloseFiles()
 	fclose(Stats2TraceFile);
 	fclose(Stats3TraceFile);
 }
+/************************************
+* static implementation             *
+************************************/
+
+
+
+
