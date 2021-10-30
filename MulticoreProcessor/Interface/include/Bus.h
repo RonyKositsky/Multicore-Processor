@@ -32,7 +32,6 @@ typedef struct
 	uint32_t bus_addr;
 	uint32_t bus_addr;
 	uint32_t bus_data;
-
 }Bus_wires_s;
 /************************************
 *       types                       *

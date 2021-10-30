@@ -4,8 +4,5 @@
 
 /MulticoreProcessor/x64/Debug
 /MulticoreProcessor/Debug
-/MulticoreProcessor/Assembler/Debug
 /MulticoreProcessor/.vs
-.user
-*.user
 .vs
