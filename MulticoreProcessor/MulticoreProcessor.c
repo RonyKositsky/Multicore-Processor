@@ -17,6 +17,7 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include "Helpers/include/Files.h"
+#include "Helpers/include/Core.h"
 
 /************************************
 *      definitions                  *
@@ -25,7 +26,7 @@ ALL RIGHTS RESERVED
 /************************************
 *      variables                  *
 ************************************/
-static Core cores[NUMBER_OF_CORES];
+static Core_s cores[NUMBER_OF_CORES];
 
 /************************************
 *      functions					*

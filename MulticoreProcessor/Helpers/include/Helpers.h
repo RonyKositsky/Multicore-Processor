@@ -1,14 +1,14 @@
 #ifndef HELPER
 #define HELPER
 
-typedef unsigned int uint;
+#include <stdint.h>
 
-uint ClockCycles; //Total clock cycles.
-uint TotalInstructionsCommand; //Total instructions counter.
+uint32_t ClockCycles; //Total clock cycles.
+uint32_t TotalInstructionsCommand; //Total instructions counter.
 
 int GetDecimalFromHex(char* hexValue);
 int GetDecimalFromHex2Comp(char* hexValue);
 void RemoveLastChar(char* str);
 
 
-#endif
+#endif __HELPER

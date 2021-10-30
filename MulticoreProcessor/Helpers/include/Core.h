@@ -19,15 +19,14 @@ ALL RIGHTS RESERVED
 /************************************
 *      include                      *
 ************************************/
-#include "Helpers.h"
-#include "Opcodes.h"
 #include <stdio.h>
+#include <stdint.h>
 
 /************************************
 *      definitions                 *
 ************************************/
 #define NUMBER_OF_REGISTERS 16
-#define MEMORY_SIZE 4096
+#define MEMORY_SIZE 1024
 #define NUMBER_OF_CORES 4
 
 /************************************
@@ -45,12 +44,12 @@ typedef struct
 
 typedef struct
 {
-	uint ProgramCounter;
-	uint InstructionCounter;
-	uint RegisterArray[NUMBER_OF_REGISTERS];
-	uint Memory[MEMORY_SIZE]; //Memoery image array.
+	uint16_t ProgramCounter;	// pc is 10bit
+	uint32_t InstructionCounter;
+	uint32_t RegisterArray[NUMBER_OF_REGISTERS];
+	uint32_t Memory[MEMORY_SIZE]; //Memoery image array.
 	Core_Files Files;
-}Core;
+}Core_s;
 
 /************************************
 *       API                       *
@@ -69,7 +68,7 @@ none
 
 \return none
 *****************************************************************************/
-void InitCore(Core *core);
+void InitCore(Core_s *core);
 
 /*!
 ******************************************************************************
@@ -81,7 +80,7 @@ none
 
 \return True if halted, false otherwise.
 *****************************************************************************/
-int CoreHalted(Core* core);
+int CoreHalted(Core_s* core);
 
 /*!
 ******************************************************************************
@@ -96,7 +95,7 @@ none
 
 \return none
 *****************************************************************************/
-//InstructionCommand* GetInstructionCommand(uint pc);
+//InstructionCommand* GetInstructionCommand(uint32_t pc);
 
 /*!
 ******************************************************************************
@@ -116,4 +115,4 @@ none
 //??
 //void FreeInstructionsCommandArray(void);
 
-#endif //CORE
+#endif //CORE_H_

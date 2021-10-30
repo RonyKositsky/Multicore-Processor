@@ -17,8 +17,6 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include "../include/Opcodes.h"
-#include <stdlib.h>
-#include <string.h>
 
 /************************************
 *      definitions                 *
@@ -43,7 +41,7 @@ R[rd] = R[rs] + R[rt]
 
 \return none
 *****************************************************************************/
-void Add(uint rd, uint rs, uint rt, Core *core)
+void Add(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core)
 {
 	core->RegisterArray[rd] = core->RegisterArray[rs] + core->RegisterArray[rt];
 }
@@ -61,7 +59,7 @@ R[rd] = R[rs] - R[rt]
 
 \return none
 *****************************************************************************/
-void Sub(uint rd, uint rs, uint rt, Core* core)
+void Sub(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
 {
 	core->RegisterArray[rd] = core->RegisterArray[rs] - core->RegisterArray[rt];
 }
@@ -79,7 +77,7 @@ R[rd] = R[rs] & R[rt]
 
 \return none
 *****************************************************************************/
-void And(uint rd, uint rs, uint rt, Core* core)
+void And(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
 {
 	core->RegisterArray[rd] = core->RegisterArray[rs] & core->RegisterArray[rt];
 }
@@ -97,7 +95,7 @@ R[rd] = R[rs] | R[rt]
 
 \return none
 *****************************************************************************/
-void Or(uint rd, uint rs, uint rt, Core* core)
+void Or(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
 {
 	core->RegisterArray[rd] = core->RegisterArray[rs] | core->RegisterArray[rt];
 }
@@ -115,7 +113,7 @@ R[rd] = R[rs] ^ R[rt]
 
 \return none
 *****************************************************************************/
-void Xor(uint rd, uint rs, uint rt, Core* core)
+void Xor(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
 {
 	core->RegisterArray[rd] = core->RegisterArray[rs] ^ core->RegisterArray[rt];
 }
@@ -133,7 +131,7 @@ R[rd] = R[rs] * R[rt]
 
 \return none
 *****************************************************************************/
-void Multiply(uint rd, uint rs, uint rt, Core* core)
+void Multiply(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
 {
 	core->RegisterArray[rd] = core->RegisterArray[rs] * core->RegisterArray[rt];
 }
@@ -151,7 +149,7 @@ R[rd] = R[rs] << R[rt]
 
 \return none
 *****************************************************************************/
-void LogicShiftLeft(uint rd, uint rs, uint rt, Core* core)
+void LogicShiftLeft(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
 {
 	core->RegisterArray[rd] = core->RegisterArray[rs] << core->RegisterArray[rt];
 }
@@ -169,7 +167,7 @@ R[rd] = R[rs] >> R[rt] (arithmetic shift with sign extension)
 
 \return none
 *****************************************************************************/
-void ArithmeticShiftRight(uint rd, uint rs, uint rt, Core* core)
+void ArithmeticShiftRight(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
 {
 	core->RegisterArray[rd] = (int)core->RegisterArray[rs] >> (int)core->RegisterArray[rt];
 } 
@@ -187,7 +185,7 @@ R[rd] = R[rs] >> R[rt]
 
 \return none
 *****************************************************************************/
-void LogicShiftRight(uint rd, uint rs, uint rt, Core* core)
+void LogicShiftRight(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core)
 {
 	core->RegisterArray[rd] = core->RegisterArray[rs] >> core->RegisterArray[rt];
 }
@@ -205,7 +203,7 @@ if (R[rs] == R[rt]) pc = R[rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchEqual(uint rd, uint rs, uint rt, Core* core) 
+void BranchEqual(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
 {
 	if (core->RegisterArray[rs] == core->RegisterArray[rt])
 		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
@@ -224,7 +222,7 @@ if (R[rs] != R[rt]) pc = R[rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchNotEqual(uint rd, uint rs, uint rt, Core* core) 
+void BranchNotEqual(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
 {
 	if (core->RegisterArray[rs] != core->RegisterArray[rt])
 		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
@@ -243,7 +241,7 @@ if (R[rs] < R[rt]) pc = R[rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchLessThen(uint rd, uint rs, uint rt, Core* core) 
+void BranchLessThen(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
 {
 	if (core->RegisterArray[rs] < core->RegisterArray[rt])
 		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
@@ -262,7 +260,7 @@ if (R[rs] > R[rt]) pc = R[rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchGraterThen(uint rd, uint rs, uint rt, Core* core) 
+void BranchGraterThen(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
 {
 	if (core->RegisterArray[rs] > core->RegisterArray[rt])
 		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
@@ -281,7 +279,7 @@ if (R[rs] <= R[rt]) pc = R[rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchLessEqual(uint rd, uint rs, uint rt, Core* core) 
+void BranchLessEqual(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
 {
 	if (core->RegisterArray[rs] <= core->RegisterArray[rt])
 		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
@@ -300,7 +298,7 @@ if (R[rs] >= R[rt]) pc = R[rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchGraterEqual(uint rd, uint rs, uint rt, Core* core) 
+void BranchGraterEqual(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) 
 {
 	if (core->RegisterArray[rs] >= core->RegisterArray[rt])
 		core->ProgramCounter = core->RegisterArray[rd] & 0x1FF; // Taking the low 10 bits
@@ -319,7 +317,7 @@ R[15] = next instruction address, pc = R[rd][9:0]
 
 \return none
 *****************************************************************************/
-void JumpAndLink(uint rd, uint rs, uint rt, Core* core) {
+void JumpAndLink(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) {
 	core->RegisterArray[PROGRAM_COUNTER_REGISTER_NUM] = core->ProgramCounter;
 	core->ProgramCounter = core->RegisterArray[rd] & 0x1FF;
 }
@@ -337,8 +335,8 @@ R[rd] = MEM[R[rs]+R[rt]]
 
 \return none
 *****************************************************************************/
-void LoadWord(uint rd, uint rs, uint rt, Core *core) {
-	uint address = core->RegisterArray[rs] + core->RegisterArray[rt];
+void LoadWord(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core) {
+	uint32_t address = core->RegisterArray[rs] + core->RegisterArray[rt];
 	core->RegisterArray[rd] = core->Memory[address];
 }
 
@@ -355,8 +353,8 @@ MEM[R[rs]+R[rt]] = R[rd]
 
 \return none
 *****************************************************************************/
-void StoreWord(uint rd, uint rs, uint rt, Core* core) {
-	uint address = core->RegisterArray[rs] + core->RegisterArray[rt];
+void StoreWord(uint32_t rd, uint32_t rs, uint32_t rt, Core_s* core) {
+	uint32_t address = core->RegisterArray[rs] + core->RegisterArray[rt];
 	core->Memory[address] = core->RegisterArray[rd];
 }
 
@@ -373,7 +371,7 @@ Halt this core
 
 \return none
 *****************************************************************************/
-void Halt(uint rd, uint rs, uint rt, Core *core)
+void Halt(uint32_t rd, uint32_t rs, uint32_t rt, Core_s *core)
 {
 	//core->ProgramCounter = INSTRUCTION_COUNT + 1;
 }

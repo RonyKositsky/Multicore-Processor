@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
+
 #include "../include/Files.h"
-#include <string.h>
 
 /*
 * Opening all of the required filed from the arguments.
@@ -24,7 +24,7 @@ int OpenFiles(char* argv[])
 	BusTraceFile = fopen(argv[15], "w");
 	DsRam0TraceFile = fopen(argv[16], "w");
 	DsRam1TraceFile = fopen(argv[17], "w");
-	DsRam2TraceFile = fopen(argv[18], "wb");
+	DsRam2TraceFile = fopen(argv[18], "w");
 	DsRam3TraceFile = fopen(argv[19], "w");
 	TsRam0TraceFile = fopen(argv[20], "w");
 	TsRam1TraceFile = fopen(argv[21], "w");
@@ -78,9 +78,9 @@ void CloseFiles()
 	fclose(Stats3TraceFile);
 }
 
-void AssignFiles(Core *cores)
+void AssignFiles(Core_s *cores)
 {
-	//Core 1
+	//Core_s 1
 	cores[0].Files.MemFile = Imem0File;
 	cores[0].Files.RegFile = Regout0File;
 	cores[0].Files.TraceFile = Core0TraceFile;
@@ -88,7 +88,7 @@ void AssignFiles(Core *cores)
 	cores[0].Files.TsRamFile = TsRam0TraceFile;
 	cores[0].Files.StatsFile = Stats0TraceFile;
 
-	//Core 2
+	//Core_s 2
 	cores[1].Files.MemFile = Imem1File;
 	cores[1].Files.RegFile = Regout1File;
 	cores[1].Files.TraceFile = Core1TraceFile;
@@ -96,7 +96,7 @@ void AssignFiles(Core *cores)
 	cores[1].Files.TsRamFile = TsRam1TraceFile;
 	cores[1].Files.StatsFile = Stats1TraceFile;
 
-	//Core 3
+	//Core_s 3
 	cores[2].Files.MemFile = Imem2File;
 	cores[2].Files.RegFile = Regout2File;
 	cores[2].Files.TraceFile = Core2TraceFile;
@@ -104,7 +104,7 @@ void AssignFiles(Core *cores)
 	cores[2].Files.TsRamFile = TsRam2TraceFile;
 	cores[2].Files.StatsFile = Stats2TraceFile;
 
-	//Core 4
+	//Core_s 4
 	cores[3].Files.MemFile = Imem3File;
 	cores[3].Files.RegFile = Regout3File;
 	cores[3].Files.TraceFile = Core3TraceFile;
@@ -119,9 +119,9 @@ void AssignFiles(Core *cores)
 void WriteHwTrace()
 {
 	/*char* mode = strcmp(command.opcode.OpcodeName, "in") ? "WRITE" : "READ";
-	uint registerIndex = RegisterMapping[command.rs].RegisterValue + RegisterMapping[command.rt].RegisterValue;
+	uint32_t registerIndex = RegisterMapping[command.rs].RegisterValue + RegisterMapping[command.rt].RegisterValue;
 
-	uint value = !strcmp(command.opcode.OpcodeName, "in") ? 
+	uint32_t value = !strcmp(command.opcode.OpcodeName, "in") ? 
 		IORegisterMapping[registerIndex].RegisterValue :
 		RegisterMapping[command.rd].RegisterValue;
 		

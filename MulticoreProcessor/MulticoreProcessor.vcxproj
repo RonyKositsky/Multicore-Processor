@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f5d45b80-7758-4857-a8da-9137c733480d}</ProjectGuid>
+    <ProjectGuid>{bdc436f1-f8cc-4467-8f9e-12e6b941ba96}</ProjectGuid>
     <RootNamespace>MulticoreProcessor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -116,8 +116,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <CompileAs>CompileAsC</CompileAs>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,8 +130,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <CompileAs>CompileAsC</CompileAs>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

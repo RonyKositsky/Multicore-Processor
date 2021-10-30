@@ -1,48 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="MulticoreProcessor.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Helpers\src\Files.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Helpers\src\Helpers.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Helpers\src\Core.c">
+      <Filter>helpers\src</Filter>
     </ClCompile>
     <ClCompile Include="Helpers\src\Opcodes.c">
-      <Filter>Source Files</Filter>
+      <Filter>helpers\src</Filter>
     </ClCompile>
-    <ClCompile Include="Helpers\src\Core.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Helpers\src\Files.c">
+      <Filter>helpers\src</Filter>
+    </ClCompile>
+    <ClCompile Include="MulticoreProcessor.c" />
+    <ClCompile Include="Helpers\src\Helpers.c">
+      <Filter>helpers\src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Helpers\include\Files.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Helpers\include\Helpers.h">
-      <Filter>Header Files</Filter>
+    <Filter Include="helpers">
+      <UniqueIdentifier>{8969cf36-90df-4946-88ac-057916856816}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="helpers\include">
+      <UniqueIdentifier>{a7ca7862-37b1-4ee0-ac26-d879762a4c21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="helpers\src">
+      <UniqueIdentifier>{69f5dd89-575a-466a-83a7-eab8e06358ce}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Helpers\include\Core.h">
+      <Filter>helpers\include</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\include\Opcodes.h">
-      <Filter>Header Files</Filter>
+      <Filter>helpers\include</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\include\Core.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Helpers\include\Files.h">
+      <Filter>helpers\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\include\Helpers.h">
+      <Filter>helpers\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

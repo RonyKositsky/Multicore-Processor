@@ -4,7 +4,8 @@
 /************************************
 *      include                      *
 ************************************/
-#include "Helpers.h"
+#include <stdint.h>
+
 #include "Core.h"
 
 /************************************
@@ -19,16 +20,16 @@ typedef struct
 {
 	char* OpcodeName;
 	char* OpcodeNumber;
-	void (*OperationFunc)(uint rd, uint rs, uint rt, Core *core);
+	void (*OperationFunc)(uint32_t rd, uint32_t rs, uint32_t rt, Core_s core);
 }Opcode;
 
 typedef struct
 {
-	uint PCLocation;
+	uint32_t PCLocation;
 	Opcode opcode;
-	uint rd;
-	uint rs;
-	uint rt;
+	uint32_t rd;
+	uint32_t rs;
+	uint32_t rt;
 	int ImmValue;
 	int HasImmediate;
 	char* Name;
@@ -36,4 +37,4 @@ typedef struct
 
 Opcode OpcodeMapping[NUMBER_OF_OPCODES];
 
-#endif
+#endif __OPCODES

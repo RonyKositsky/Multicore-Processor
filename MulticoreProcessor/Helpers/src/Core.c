@@ -17,7 +17,6 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include "../include/Core.h"
-#include <cstddef>
 
 /************************************
 *      definitions                 *
@@ -27,11 +26,17 @@ ALL RIGHTS RESERVED
 /************************************
 *      variables                    *
 ************************************/
-Core data_s;
-InstructionCommand* InstructionCommands;
+Core_s data_s;
+//InstructionCommand* InstructionCommands;
 
-void InitRegiters(Core* core)
+/************************************
+*      static functions             *
+************************************/
+
+void InitRegiters(Core_s* core)
 {
+	// todo: memset();
+
 	for (int i = 0; i < NUMBER_OF_REGISTERS; i++)
 	{
 		core->RegisterArray[i] = 0;
@@ -41,14 +46,14 @@ void InitRegiters(Core* core)
 /************************************
 *       API implementation          *
 ************************************/
-void InitCore(Core *core)
+void InitCore(Core_s *core)
 {
 	core->ProgramCounter = 0;
 	core->InstructionCounter = 0;
 	InitRegiters(core);
 }
 
-int CoreHalted(Core *core)
+int CoreHalted(Core_s *core)
 {
 	return core->ProgramCounter == 0;
 }
@@ -78,7 +83,7 @@ void MemoryInit()
 */
 void WriteMemoryToFile()
 {
-	for (uint i = 0; i < MEMORY_SIZE; i++)
+	for (uint32_t i = 0; i < MEMORY_SIZE; i++)
 	{
 		//fprintf(DmemOutFile, "%08X\n", data_s.Memory[i]);
 	}
@@ -92,14 +97,14 @@ void InstructionInit()
 	int lineCounter = 0;
 	while (fgets(line, 7, ImemInFile) != NULL) {
 		char opcodeBytes[3] = { line[0], line[1], '\0' };
-		uint opcodeIndex = GetDecimalFromHex(opcodeBytes);
+		uint32_t opcodeIndex = GetDecimalFromHex(opcodeBytes);
 		char rdBytes[2] = { line[2], '\0' };
-		uint rdIndex = GetDecimalFromHex(rdBytes);
+		uint32_t rdIndex = GetDecimalFromHex(rdBytes);
 		char rsBytes[2] = { line[3], '\0' };
-		uint rsIndex = GetDecimalFromHex(rsBytes);
+		uint32_t rsIndex = GetDecimalFromHex(rsBytes);
 		char rtBytes[2] = { line[4], '\0' };
-		uint rtIndex = GetDecimalFromHex(rtBytes);
-		uint pcLocation = lineCounter;
+		uint32_t rtIndex = GetDecimalFromHex(rtBytes);
+		uint32_t pcLocation = lineCounter;
 		lineCounter++;
 
 		char* name = (char*)calloc(6, sizeof(char));
@@ -109,7 +114,7 @@ void InstructionInit()
 		RemoveLastChar(line);
 		strcpy(name, line);
 
-		uint immValue = 0, hasImm = 0;
+		uint32_t immValue = 0, hasImm = 0;
 		if (rdIndex == 1 || rtIndex == 1 || rsIndex == 1)
 		{
 			if (fgets(line, 7, ImemInFile) != NULL)
@@ -158,9 +163,9 @@ void InstructionInit()
 }
 
 
-InstructionCommand* GetInstructionCommand(uint pc)
+InstructionCommand* GetInstructionCommand(uint32_t pc)
 {
-	for (uint i = 0; i < InstructionCounter; i++)
+	for (uint32_t i = 0; i < InstructionCounter; i++)
 	{
 		if (InstructionCommands[i].PCLocation == pc)
 			return &InstructionCommands[i];
@@ -171,7 +176,7 @@ InstructionCommand* GetInstructionCommand(uint pc)
 
 void FreeInstructionsCommandArray()
 {
-	for (uint i = 0; i < InstructionCounter; i++)
+	for (uint32_t i = 0; i < InstructionCounter; i++)
 	{
 		free((InstructionCommands + i)->Name);
 	}

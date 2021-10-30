@@ -38,6 +38,6 @@ void CloseFiles(void);
 void WriteTrace();
 void WriteRegistersToFile(void);
 void WriteCyclesToFile(void);
-void AssignFiles(Core* cores)
+void AssignFiles(Core_s* cores);
 
-#endif
+#endif __FILES_H_
