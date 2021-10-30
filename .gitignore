@@ -2,7 +2,5 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/MulticoreProcessor/x64/Debug
-/MulticoreProcessor/Debug
-/MulticoreProcessor/.vs
-.vs
+Debug/
+.vs/
