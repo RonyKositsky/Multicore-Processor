@@ -42,12 +42,27 @@ typedef struct
 	FILE* StatsFile;
 }Core_Files;
 
+typedef union
+{
+	struct
+	{
+		uint16_t immediate : 12;	// [0:11]  Immediate value
+		uint16_t source_1 : 4;		// [12:15] src1 value
+		uint16_t source_0 : 4;		// [16:19] src0 value
+		uint16_t destination : 4;	// [20:23] src0 value
+		uint16_t opcode : 8;		// [24:31] opcode value
+	} bits;
+
+	uint32_t command;
+} InstructionFormat_s;
+
 typedef struct
 {
-	uint16_t ProgramCounter;	// pc is 10bit
+	uint16_t ProgramCounter;						// pc is 10bit
 	uint32_t InstructionCounter;
 	uint32_t RegisterArray[NUMBER_OF_REGISTERS];
-	uint32_t Memory[MEMORY_SIZE]; //Memoery image array.
+	uint32_t Memory[MEMORY_SIZE];					//Memoery image array.
+	InstructionFormat_s InstructionCommand;
 	Core_Files Files;
 }Core_s;
 
@@ -64,11 +79,11 @@ Init the core.
 Called at the start of the run.
 
 \param
-none
+ [in] core - the operating core
 
 \return none
 *****************************************************************************/
-void InitCore(Core_s *core);
+void InitCore(Core_s* core);
 
 /*!
 ******************************************************************************
@@ -76,7 +91,7 @@ void InitCore(Core_s *core);
 Asks whether the core is halted or not.
 
 \param
-none
+ [in] core - the operating core
 
 \return True if halted, false otherwise.
 *****************************************************************************/
@@ -85,34 +100,16 @@ int CoreHalted(Core_s* core);
 /*!
 ******************************************************************************
 \brief
-Init the instrucions command list.
+Run core iteration
 
 \details
-Called at the start of the run.
+core is running with pipeline.
 
 \param
-none
+ [in] core - the operating core
 
 \return none
 *****************************************************************************/
-//InstructionCommand* GetInstructionCommand(uint32_t pc);
-
-/*!
-******************************************************************************
-\brief
-Init the instrucions command list.
-
-\details
-Called at the start of the run.
-
-\param
-none
-
-\return none
-*****************************************************************************/
-//void InstructionInit(void);
-
-//??
-//void FreeInstructionsCommandArray(void);
+void CoreIter(Core_s* core);
 
 #endif //CORE_H_

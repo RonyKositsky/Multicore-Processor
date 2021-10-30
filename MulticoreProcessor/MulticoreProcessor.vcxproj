@@ -139,17 +139,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Helpers\src\Core.c" />
-    <ClCompile Include="Helpers\src\Files.c" />
-    <ClCompile Include="Helpers\src\Helpers.c" />
-    <ClCompile Include="Helpers\src\Opcodes.c" />
+    <ClCompile Include="Core\src\Cache.c" />
+    <ClCompile Include="Core\src\Core.c" />
+    <ClCompile Include="Core\src\Opcodes.c" />
+    <ClCompile Include="Core\src\Pipeline.c" />
+    <ClCompile Include="Interface\src\Files.c" />
+    <ClCompile Include="Interface\src\Helpers.c" />
     <ClCompile Include="MulticoreProcessor.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Helpers\include\Core.h" />
-    <ClInclude Include="Helpers\include\Files.h" />
-    <ClInclude Include="Helpers\include\Helpers.h" />
-    <ClInclude Include="Helpers\include\Opcodes.h" />
+    <ClInclude Include="Core\include\Cache.h" />
+    <ClInclude Include="Core\include\Core.h" />
+    <ClInclude Include="Core\include\Opcodes.h" />
+    <ClInclude Include="Core\include\Pipeline.h" />
+    <ClInclude Include="Interface\include\Files.h" />
+    <ClInclude Include="Interface\include\Helpers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
