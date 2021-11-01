@@ -23,6 +23,7 @@ ALL RIGHTS RESERVED
 #include <stdint.h>
 #include "Pipeline.h"
 #include "../../Interface/include/Helpers.h"
+
 /************************************
 *      definitions                 *
 ************************************/
@@ -41,26 +42,13 @@ typedef struct
 	FILE* StatsFile;
 }Core_Files;
 
-typedef union
-{
-	struct
-	{
-		uint16_t immediate : 12;	// [0:11]  Immediate value
-		uint16_t source_1 : 4;		// [12:15] src1 value
-		uint16_t source_0 : 4;		// [16:19] src0 value
-		uint16_t destination : 4;	// [20:23] src0 value
-		uint16_t opcode : 8;		// [24:31] opcode value
-	} bits;
-
-	uint32_t command;
-} InstructionFormat_s;
 
 typedef struct
 {
 	uint16_t ProgramCounter;						// pc is 10bit
 	uint32_t InstructionCounter;
 	uint32_t RegisterArray[NUMBER_OF_REGISTERS];
-	uint32_t Memory[MEMORY_SIZE];					//Memoery image array.
+	uint32_t InstructionsMemory[MEMORY_SIZE];		//Instructions memory.
 	InstructionFormat_s InstructionCommand;
 	Core_Files Files;
 	Pipeline_s pipeline;

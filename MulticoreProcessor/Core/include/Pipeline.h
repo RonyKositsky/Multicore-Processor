@@ -45,24 +45,17 @@ typedef enum
 typedef struct
 {
 	PipelineSM_s state;
+	InstructionFormat_s InstructionCommand;
 } PipelineStage_s;
 
 typedef struct
 {
-	bool stall;
-	uint32_t* insturcionts;
+	bool in_stall;
 	PipelineStage_s pipe_stages[PIPELINE_SIZE];
 	Opcode_fucntion_params_s opcode_params;
 	uint32_t fetched_operation;
 	void (*operation)(Opcode_fucntion_params_s params);
 }Pipeline_s;
-
-typedef struct
-{
-	FILE* instruction_file;
-	uint16_t pc;
-	uint32_t* memory;
-}Pipeline_params;
 
 /************************************
 *       API                         *
@@ -94,5 +87,6 @@ based on it's condition.
 \return none
 *****************************************************************************/
 void Pipeline_Execute(Pipeline_s* pipeline);
+
 
 #endif //__PIPELINE_H__
