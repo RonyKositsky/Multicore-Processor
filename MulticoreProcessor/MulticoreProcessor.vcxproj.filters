@@ -15,7 +15,7 @@
     <ClCompile Include="Core\src\Opcodes.c" />
     <ClCompile Include="Core\src\Pipeline.c" />
     <ClCompile Include="Interface\src\Bus.c" />
-    <ClCompile Include="Interface\src\Memory.c" />
+    <ClCompile Include="Interface\src\MainMemory.c" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -51,6 +51,6 @@
     <ClInclude Include="Core\include\Opcodes.h" />
     <ClInclude Include="Core\include\Pipeline.h" />
     <ClInclude Include="Interface\include\Bus.h" />
-    <ClInclude Include="Interface\include\Memory.h" />
+    <ClInclude Include="Interface\include\MainMemory.h" />
   </ItemGroup>
 </Project>
