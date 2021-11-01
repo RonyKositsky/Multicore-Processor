@@ -50,7 +50,7 @@ static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 ************************************/
 void Pipeline_Init(Pipeline_s *pipeline)
 {
-	pipeline -> stall = 0;
+	pipeline -> in_stall = false;
 	for (int i = 0; i < PIPELINE_SIZE; i++)
 	{
 		//do something
@@ -73,7 +73,7 @@ void Pipeline_Execute(Pipeline_s* pipeline, uint16_t pc)
 ************************************/
 static void fetch(Pipeline_s* pipeline)
 {
-	pipeline -> fetched_operation = pipeline->insturcionts[pipeline->opcode_params.pc];
+	//pipeline -> fetched_operation = pipeline->insturcionts[pipeline->opcode_params.pc];
 }
 
 static void decode(Pipeline_s* pipeline)
@@ -98,5 +98,5 @@ static void writeback(Pipeline_s* pipeline)
 
 static void stall_resulotion(Pipeline_s* pipeline)
 {
-	pipeline->stall = false;
+	pipeline->in_stall = false;
 }
