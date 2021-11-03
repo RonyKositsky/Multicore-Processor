@@ -32,18 +32,6 @@ typedef struct
 	void (*OperationFunc)(Opcode_fucntion_params_s params);
 }Opcode;
 
-typedef struct
-{
-	uint32_t PCLocation;
-	Opcode opcode;
-	uint32_t rd;
-	uint32_t rs;
-	uint32_t rt;
-	int ImmValue;
-	int HasImmediate;
-	char* Name;
-}InstructionCommand;
-
 Opcode OpcodeMapping[NUMBER_OF_OPCODES];
 
 #endif __OPCODES

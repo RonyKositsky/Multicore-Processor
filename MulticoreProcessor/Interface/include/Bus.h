@@ -24,14 +24,29 @@ ALL RIGHTS RESERVED
 /************************************
 *      definitions                 *
 ************************************/
+typedef enum
+{
+	bus_core0,
+	bus_core1,
+	bus_core2,
+	bus_core3,
+} Bus_originator_e;
+
+typedef enum
+{
+	bus_no_command,
+	bus_busRd,
+	bus_busRdX,
+	bus_flush
+} Bus_command_s;
+
 typedef struct
 {	
-	uint8_t bus_shared;
-	uint8_t bus_origid;
-	uint8_t bus_cmd;
-	uint32_t bus_addr;
+	Bus_originator_e bus_origid;
+	Bus_command_s bus_cmd;
 	uint32_t bus_addr;
 	uint32_t bus_data;
+	uint8_t bus_shared;
 }Bus_wires_s;
 /************************************
 *       types                       *
@@ -45,7 +60,7 @@ typedef struct
 /*!
 ******************************************************************************
 \brief
-Initialize func
+Initialize bus
 
 \details
 Must be called only once
@@ -56,6 +71,23 @@ Must be called only once
 
 \return none
 *****************************************************************************/
+void Bus_Init(void);
+
+/*!
+******************************************************************************
+\brief
+Initialize bus
+
+\details
+Must be called only once
+
+\param
+ [in] counter_val - reset counter value
+ [out] out_val    -
+
+\return none
+*****************************************************************************/
+void Bus_MakeTransaction(Bus_wires_s wire);
 
 
-#endif //__FILE_NAME_H__
+#endif //__BUS_H__

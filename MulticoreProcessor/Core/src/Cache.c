@@ -17,7 +17,8 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include "..\include\Cache.h"
-
+#include <string.h>
+#include "..\..\Interface\include\Bus.h"
 
 /************************************
 *      definitions                 *
@@ -26,6 +27,17 @@ ALL RIGHTS RESERVED
 /************************************
 *       types                       *
 ************************************/
+typedef union
+{
+	uint32_t address;
+
+	struct
+	{
+		uint16_t offset : 2;	// [0:1]
+		uint16_t index : 6;	// [2:7]
+		uint16_t tag : 12;	// [8:19]
+	} fields;
+} CacheAddess_s;
 
 /************************************
 *      variables                    *
@@ -34,13 +46,66 @@ ALL RIGHTS RESERVED
 /************************************
 *      static functions             *
 ************************************/
+static uint16_t get_block_number(CacheAddess_s addr);
 
 /************************************
 *       API implementation          *
 ************************************/
+void Cache_Init(CacheData_s* data)
+{
+	// set all cache memory to 0;
+	memset((uint8_t*)data, 0, sizeof(data));
+}
+
+bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
+{
+	CacheAddess_s addr;
+	addr.address = address;
+
+	// check if addresss tag is locate on block_number
+	if (cache_data->tsram[addr.fields.index].fields.tag == addr.fields.tag) 
+	{
+		// hit on cache, getting the value 
+		uint16_t index = addr.fields.index * 4 + addr.fields.offset;
+		*data = cache_data->dsram[index];
+
+		return true;
+	}
+	// we had a miss.
+	// we need to take the data from the main memory.
+	Bus_wires_s wire;
+
+
+	return false;
+}
+
+bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data) 
+{
+	CacheAddess_s addr;
+	addr.address = address;
+
+	// check if addresss tag is locate on block_number
+	if (cache_data->tsram[addr.fields.index].fields.tag == addr.fields.tag)
+	{
+		// hit on cache, write data
+		uint16_t index = addr.fields.index * 4 + addr.fields.offset;
+		cache_data->dsram[index] = data;
+
+		return true;
+	}
+	// we had a miss.
+	// we need to take the data from the main memory.
+
+
+	return false;
+}
 
 
 /************************************
 * static implementation             *
 ************************************/
+static uint16_t get_block_number(CacheAddess_s addr)
+{
+	return addr.address / BLOCK_SIZE;
+}
 
