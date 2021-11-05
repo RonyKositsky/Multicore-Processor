@@ -55,19 +55,14 @@ typedef struct
 typedef struct
 {
 	bool halted;
-	uint32_t* insturcionts;
+	uint32_t *insturcionts;
+	//cache
 	PipelineStage_s pipe_stages[PIPELINE_SIZE];
 	Opcode_fucntion_params_s opcode_params;
-	uint32_t fetched_operation;
-	void (*operation)(Opcode_fucntion_params_s params);
+	InstructionFormat_s fetched_operation;
+	void (*operation)(Opcode_fucntion_params_s *params);
 }Pipeline_s;
 
-typedef struct
-{
-	FILE* instruction_file;
-	uint16_t pc;
-	uint32_t* memory;
-}Pipeline_params;
 
 /************************************
 *       API                         *

@@ -32,22 +32,21 @@ static Core_s cores[NUMBER_OF_CORES];
 *      static functions             *
 ************************************/
 static void AssignFiles(Core_s* cores);
-
+static bool IsHalted();
 
 /************************************
 *      functions					*
 ************************************/
 void CoresInit()
 {
+	memset(cores, 0, NUMBER_OF_CORES * sizeof(Core_s));
+	AssignFiles(cores);
+
 	// init all cores regs and memory.
 	for (int i = 0; i < NUMBER_OF_CORES; i++)
 	{
-		InitCore(&cores[i]);
+		Core_Init(&cores[i]);
 	}
-
-	// first assign all files into the cores.
-	AssignFiles(cores);
-
 }
 
 /************************************
@@ -56,7 +55,14 @@ void CoresInit()
 int main(int argc, char *argv[])
 {
 	OpenFiles(argv);
-
+	CoresInit();
+	while (!IsHalted())
+	{
+		for (int i = 0; NUMBER_OF_CORES; i++)
+		{
+			Core_Iter(&cores[i]);
+		}
+	}
 	CloseFiles();
 	return 0;
 } 
@@ -98,4 +104,15 @@ static void AssignFiles(Core_s* cores)
 	cores[3].core_files.DsRamFile = DsRam3TraceFile;
 	cores[3].core_files.TsRamFile = TsRam3TraceFile;
 	cores[3].core_files.StatsFile = Stats3TraceFile;
+}
+
+static bool IsHalted()
+{
+	bool is_halted = true;
+	for (int i = 0; i < NUMBER_OF_CORES; i++)
+	{
+		is_halted &= cores[i].pipeline.halted;
+	}
+
+	return is_halted;
 }

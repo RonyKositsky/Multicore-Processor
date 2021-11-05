@@ -80,19 +80,7 @@ Called at the start of the run.
 
 \return none
 *****************************************************************************/
-void InitCore(Core_s* core);
-
-/*!
-******************************************************************************
-\brief
-Asks whether the core is halted or not.
-
-\param
- [in] core - the operating core
-
-\return True if halted, false otherwise.
-*****************************************************************************/
-int CoreHalted(Core_s* core);
+void Core_Init(Core_s* core);
 
 /*!
 ******************************************************************************
@@ -107,7 +95,7 @@ core is running with pipeline.
 
 \return none
 *****************************************************************************/
-void CoreIter(Core_s* core);
+void Core_Iter(Core_s* core);
 
 
 #endif //CORE_H_

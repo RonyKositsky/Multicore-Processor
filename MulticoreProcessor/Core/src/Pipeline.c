@@ -39,6 +39,7 @@ static void decode(Pipeline_s* pipeline);
 static void execute(Pipeline_s* pipeline);
 static void mem(Pipeline_s* pipeline);
 static void writeback(Pipeline_s* pipeline);
+static void prepare_registers_params(Opcode_fucntion_params_s* params, InstructionFormat_s command);
 static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 {
 	fetch, decode, execute, mem, writeback
@@ -52,8 +53,8 @@ void Pipeline_Init(Pipeline_s *pipeline)
 {
 	memset(&pipeline->opcode_params, 0, sizeof(Opcode_fucntion_params_s));
 	memset(pipeline->pipe_stages, 0, sizeof(PIPELINE_SIZE));
-	pipeline -> fetched_operation = 0;
 	pipeline->halted = false;
+
 	for (int i = 0; i < PIPELINE_SIZE; i++)
 	{
 		pipeline->pipe_stages[i].is_init = false;
@@ -89,17 +90,17 @@ void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
 ************************************/
 static void fetch(Pipeline_s* pipeline)
 {
-	pipeline -> fetched_operation = pipeline->insturcionts[pipeline->opcode_params.pc];
+	pipeline -> fetched_operation.command = pipeline->insturcionts[*pipeline->opcode_params.pc];
 }
 
 static void decode(Pipeline_s* pipeline)
 {
-	pipeline->operation = OpcodeMapping[pipeline->fetched_operation].OperationFunc;
+	pipeline->operation = OpcodeMapping[pipeline->fetched_operation.bits.opcode].OperationFunc;
 }
 
 static void execute(Pipeline_s* pipeline)
 {
-	pipeline->operation(pipeline->opcode_params);
+	pipeline->operation(&pipeline->opcode_params);
 }
 
 static void mem(Pipeline_s* pipeline)
@@ -115,4 +116,12 @@ static void writeback(Pipeline_s* pipeline)
 static void stall_resulotion(Pipeline_s* pipeline)
 {
 	//pipeline->is_stalled = false;
+}
+
+static void prepare_registers_params(Opcode_fucntion_params_s* params, InstructionFormat_s command)
+{
+	params->rd		  = command.bits.rd;
+	params->rs		  = command.bits.rd;
+	params->rt		  = command.bits.rd;
+	params->immediate = command.bits.immediate;
 }
