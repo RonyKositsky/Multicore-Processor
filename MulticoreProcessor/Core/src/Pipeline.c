@@ -67,7 +67,6 @@ void Pipeline_Init(Pipeline_s *pipeline)
 
 }
 
-
 void Pipeline_Execute(Pipeline_s* pipeline)
 {
 	stall_resulotion(pipeline);

@@ -5,6 +5,11 @@
 #define NUMBER_OF_CORES 4
 #define NUMBER_OF_REGISTERS 16
 #define IMMEDIATE_REGISTER_INDEX 1
+#define ITERATE_OVER_CORES(func, cores)	for(int i = 0; i < NUMBER_OF_CORES; i++) \
+										{										 \
+												func((&cores[i]));	             \
+										}			
+
 uint32_t ClockCycles; //Total clock cycles.
 uint32_t TotalInstructionsCommand; //Total instructions counter.
 

@@ -26,11 +26,11 @@ ALL RIGHTS RESERVED
 *      definitions                 *
 ************************************/
 #define INSTRUCTION_COUNT 0
+#define STRART_PRINT_REGISTER_INDEX 2
 
 /************************************
 *      variables                    *
 ************************************/
-//InstructionCommand* InstructionCommands;
 
 /************************************
 *      static functions             *
@@ -39,6 +39,7 @@ static void init_memory(Core_s* core);
 static void write_trace(Core_s* core);
 static void write_regs_to_file(Core_s* core);
 static void update_statistics(Core_s* core);
+static void print_register_file(Core_s* core);
 
 /************************************
 *       API implementation          *
@@ -70,6 +71,11 @@ void Core_Iter(Core_s* core)
 	core->program_counter++;
 }
 
+void Core_Teaddown(Core_s* core)
+{
+	print_register_file(core);
+}
+
 
 /************************************
 * static implementation             *
@@ -94,9 +100,9 @@ static void write_trace(Core_s* core)
 
 static void write_regs_to_file(Core_s* core)
 {
-	for (int i = 2; i < NUMBER_OF_REGISTERS; i++) // We are not writing register 0 and 1.
+	for (int i = STRART_PRINT_REGISTER_INDEX; i < NUMBER_OF_REGISTERS; i++) // We are not writing register 0 and 1.
 	{
-		fprintf(core->core_files.TraceFile, "%08X  ", core->register_array[i]);
+		fprintf(core->core_files.TraceFile, "%08X ", core->register_array[i]);
 	}
 }
 
@@ -104,5 +110,13 @@ static void update_statistics(Core_s* core)
 {
 	core->statistics.cycles++;
 	core->statistics.instructions++;
+}
+
+static void print_register_file(Core_s* core)
+{
+	for (int i = 0; i < NUMBER_OF_REGISTERS; i++)
+	{
+		fprintf(core->core_files.RegFile, "%08X\n", core->register_array[i]);
+	}
 }
 

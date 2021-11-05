@@ -19,10 +19,11 @@ ALL RIGHTS RESERVED
 /************************************
 *      include                      *
 ************************************/
-#include <stdio.h>
 #include <stdint.h>
 #include "Pipeline.h"
 #include "../../Interface/include/Helpers.h"
+#include "../../Interface/include/Files.h"
+
 /************************************
 *      definitions                 *
 ************************************/
@@ -31,15 +32,13 @@ ALL RIGHTS RESERVED
 /************************************
 *       types                       *
 ************************************/
-typedef struct 
+typedef enum
 {
-	FILE* InstructionMemFile;
-	FILE* RegFile;
-	FILE* TraceFile;
-	FILE* DsRamFile;
-	FILE* TsRamFile;
-	FILE* StatsFile;
-}Core_Files;
+	CORE0 = 0,
+	CORE1,
+	CORE2,
+	CORE3
+};
 
 typedef struct 
 { 
@@ -55,6 +54,7 @@ typedef struct
 
 typedef struct
 {
+	uint8_t index;
 	uint16_t program_counter;	// pc is 10bit
 	uint32_t register_array[NUMBER_OF_REGISTERS];
 	uint32_t instructions_memory_image[INSTRUCTIONS_MEMORY_SIZE];				
@@ -97,5 +97,17 @@ core is running with pipeline.
 *****************************************************************************/
 void Core_Iter(Core_s* core);
 
+/*!
+******************************************************************************
+\brief
+Teardown of the code.
 
+\param
+ [in] core - the operating core
+
+\return none
+*****************************************************************************/
+void Core_Teaddown(Core_s* core);
+
+void Core_AssignFiles(Core_s* core);
 #endif //CORE_H_
