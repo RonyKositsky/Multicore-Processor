@@ -23,11 +23,10 @@ ALL RIGHTS RESERVED
 #include <stdint.h>
 #include "Pipeline.h"
 #include "../../Interface/include/Helpers.h"
-
 /************************************
 *      definitions                 *
 ************************************/
-#define MEMORY_SIZE 1024
+#define INSTRUCTIONS_MEMORY_SIZE 1024
 
 /************************************
 *       types                       *
@@ -42,15 +41,26 @@ typedef struct
 	FILE* StatsFile;
 }Core_Files;
 
+typedef struct 
+{ 
+	uint32_t cycles;
+	uint32_t instructions;
+	uint32_t read_hits;
+	uint32_t write_hits;
+	uint32_t read_misses;
+	uint32_t write_misses;
+	uint32_t decode_stalls;
+	uint32_t mem_stalls;
+}Statistics_s;
+
 typedef struct
 {
-	uint16_t ProgramCounter;						// pc is 10bit
-	uint32_t InstructionCounter;
-	uint32_t RegisterArray[NUMBER_OF_REGISTERS];
-	uint32_t InstructionsMemory[MEMORY_SIZE];		//Instructions memory.
-	InstructionFormat_s InstructionCommand;
-	Core_Files Files;
+	uint16_t program_counter;	// pc is 10bit
+	uint32_t register_array[NUMBER_OF_REGISTERS];
+	uint32_t instructions_memory_image[INSTRUCTIONS_MEMORY_SIZE];				
+	Core_Files core_files;
 	Pipeline_s pipeline;
+	Statistics_s statistics;
 }Core_s;
 
 /************************************
@@ -98,5 +108,6 @@ core is running with pipeline.
 \return none
 *****************************************************************************/
 void CoreIter(Core_s* core);
+
 
 #endif //CORE_H_

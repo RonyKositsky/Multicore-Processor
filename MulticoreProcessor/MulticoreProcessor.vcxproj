@@ -146,7 +146,7 @@
     <ClCompile Include="Interface\src\Bus.c" />
     <ClCompile Include="Interface\src\Files.c" />
     <ClCompile Include="Interface\src\Helpers.c" />
-    <ClCompile Include="Interface\src\Memory.c" />
+    <ClCompile Include="Interface\src\MainMemory.c" />
     <ClCompile Include="MulticoreProcessor.c" />
   </ItemGroup>
   <ItemGroup>
@@ -157,7 +157,7 @@
     <ClInclude Include="Interface\include\Bus.h" />
     <ClInclude Include="Interface\include\Files.h" />
     <ClInclude Include="Interface\include\Helpers.h" />
-    <ClInclude Include="Interface\include\Memory.h" />
+    <ClInclude Include="Interface\include\MainMemory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

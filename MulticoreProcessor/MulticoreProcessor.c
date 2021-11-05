@@ -68,34 +68,34 @@ int main(int argc, char *argv[])
 static void AssignFiles(Core_s* cores)
 {
 	//Core_s 1
-	cores[0].Files.InstructionMemFile = Imem0File;
-	cores[0].Files.RegFile = Regout0File;
-	cores[0].Files.TraceFile = Core0TraceFile;
-	cores[0].Files.DsRamFile = DsRam0TraceFile;
-	cores[0].Files.TsRamFile = TsRam0TraceFile;
-	cores[0].Files.StatsFile = Stats0TraceFile;
+	cores[0].core_files.InstructionMemFile = Imem0File;
+	cores[0].core_files.RegFile = Regout0File;
+	cores[0].core_files.TraceFile = Core0TraceFile;
+	cores[0].core_files.DsRamFile = DsRam0TraceFile;
+	cores[0].core_files.TsRamFile = TsRam0TraceFile;
+	cores[0].core_files.StatsFile = Stats0TraceFile;
 
 	//Core_s 2
-	cores[1].Files.InstructionMemFile = Imem1File;
-	cores[1].Files.RegFile = Regout1File;
-	cores[1].Files.TraceFile = Core1TraceFile;
-	cores[1].Files.DsRamFile = DsRam1TraceFile;
-	cores[1].Files.TsRamFile = TsRam1TraceFile;
-	cores[1].Files.StatsFile = Stats1TraceFile;
+	cores[1].core_files.InstructionMemFile = Imem1File;
+	cores[1].core_files.RegFile = Regout1File;
+	cores[1].core_files.TraceFile = Core1TraceFile;
+	cores[1].core_files.DsRamFile = DsRam1TraceFile;
+	cores[1].core_files.TsRamFile = TsRam1TraceFile;
+	cores[1].core_files.StatsFile = Stats1TraceFile;
 
 	//Core_s 3
-	cores[2].Files.InstructionMemFile = Imem2File;
-	cores[2].Files.RegFile = Regout2File;
-	cores[2].Files.TraceFile = Core2TraceFile;
-	cores[2].Files.DsRamFile = DsRam2TraceFile;
-	cores[2].Files.TsRamFile = TsRam2TraceFile;
-	cores[2].Files.StatsFile = Stats2TraceFile;
+	cores[2].core_files.InstructionMemFile = Imem2File;
+	cores[2].core_files.RegFile = Regout2File;
+	cores[2].core_files.TraceFile = Core2TraceFile;
+	cores[2].core_files.DsRamFile = DsRam2TraceFile;
+	cores[2].core_files.TsRamFile = TsRam2TraceFile;
+	cores[2].core_files.StatsFile = Stats2TraceFile;
 
 	//Core_s 4
-	cores[3].Files.InstructionMemFile = Imem3File;
-	cores[3].Files.RegFile = Regout3File;
-	cores[3].Files.TraceFile = Core3TraceFile;
-	cores[3].Files.DsRamFile = DsRam3TraceFile;
-	cores[3].Files.TsRamFile = TsRam3TraceFile;
-	cores[3].Files.StatsFile = Stats3TraceFile;
+	cores[3].core_files.InstructionMemFile = Imem3File;
+	cores[3].core_files.RegFile = Regout3File;
+	cores[3].core_files.TraceFile = Core3TraceFile;
+	cores[3].core_files.DsRamFile = DsRam3TraceFile;
+	cores[3].core_files.TsRamFile = TsRam3TraceFile;
+	cores[3].core_files.StatsFile = Stats3TraceFile;
 }

@@ -50,15 +50,21 @@ static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 ************************************/
 void Pipeline_Init(Pipeline_s *pipeline)
 {
-	pipeline -> in_stall = false;
+	memset(&pipeline->opcode_params, 0, sizeof(Opcode_fucntion_params_s));
+	memset(pipeline->pipe_stages, 0, sizeof(PIPELINE_SIZE));
+	pipeline -> fetched_operation = 0;
+	pipeline->halted = false;
 	for (int i = 0; i < PIPELINE_SIZE; i++)
 	{
-		//do something
+		pipeline->pipe_stages[i].is_init = false;
+		pipeline->pipe_stages[i].is_stalled = false;
+		pipeline->pipe_stages[i].state = i;
+		pipeline->pipe_stages[i].pc = 0;
 	}
 }
 
 
-void Pipeline_Execute(Pipeline_s* pipeline, uint16_t pc)
+void Pipeline_Execute(Pipeline_s* pipeline)
 {
 	stall_resulotion(pipeline);
 	for (int i = 0; i < PIPELINE_SIZE; i++)
@@ -67,13 +73,23 @@ void Pipeline_Execute(Pipeline_s* pipeline, uint16_t pc)
 	}
 }
 
+void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
+{
+	for (int i = 0; i < PIPELINE_SIZE; i++)
+	{
+		if (!pipeline->pipe_stages[i].is_init || pipeline->pipe_stages[i].is_stalled)
+			fprintf(trace_file, "--- ");
+		else
+			fprintf(trace_file, "%d ", pipeline->pipe_stages[i].pc);
+	}
+}
 
 /************************************
 * static implementation             *
 ************************************/
 static void fetch(Pipeline_s* pipeline)
 {
-	//pipeline -> fetched_operation = pipeline->insturcionts[pipeline->opcode_params.pc];
+	pipeline -> fetched_operation = pipeline->insturcionts[pipeline->opcode_params.pc];
 }
 
 static void decode(Pipeline_s* pipeline)
@@ -98,5 +114,5 @@ static void writeback(Pipeline_s* pipeline)
 
 static void stall_resulotion(Pipeline_s* pipeline)
 {
-	pipeline->in_stall = false;
+	//pipeline->is_stalled = false;
 }

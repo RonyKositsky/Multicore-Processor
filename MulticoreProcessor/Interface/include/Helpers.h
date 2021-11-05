@@ -26,5 +26,18 @@ int GetDecimalFromHex(char* hexValue);
 int GetDecimalFromHex2Comp(char* hexValue);
 void RemoveLastChar(char* str);
 
+typedef union
+{
+	struct
+	{
+		uint16_t immediate : 12;	// [0:11]  Immediate value
+		uint16_t source_1 : 4;		// [12:15] src1 value
+		uint16_t source_0 : 4;		// [16:19] src0 value
+		uint16_t destination : 4;	// [20:23] src0 value
+		uint16_t opcode : 8;		// [24:31] opcode value
+	} bits;
+
+	uint32_t command;
+} InstructionFormat_s;
 
 #endif __HELPER
