@@ -38,6 +38,7 @@ ALL RIGHTS RESERVED
 static void init_memory(Core_s* core);
 static void write_trace(Core_s* core);
 static void write_regs_to_file(Core_s* core);
+static void update_statistics(Core_s* core);
 
 /************************************
 *       API implementation          *
@@ -47,20 +48,24 @@ void Core_Init(Core_s *core)
 	core->program_counter = 0;
 
 	memset(&core->statistics, 0, sizeof(Statistics_s));
+	core->statistics.cycles = -1;
+
 	memset(&core->register_array, 0, sizeof(NUMBER_OF_REGISTERS));
 	init_memory(core);
 
 	memset(&core->pipeline, 0, sizeof(Pipeline_s));
+	Pipeline_Init(&core->pipeline);
 	//core->pipeline.opcode_params.memory_p = cache;
 	core->pipeline.opcode_params.registers_p = core->register_array;
 	core->pipeline.insturcionts = core->instructions_memory_image;
-	core->pipeline.opcode_params.pc = &core->program_counter;
-	Pipeline_Init(&core->pipeline);
+	core->pipeline.opcode_params.pc = &(core->program_counter);
+
 }
 
 void Core_Iter(Core_s* core)
 {
 	Pipeline_Execute(&core->pipeline);
+	update_statistics(core);
 	write_trace(core);
 	core->program_counter++;
 }
@@ -80,7 +85,7 @@ static void init_memory(Core_s* core)
 
 static void write_trace(Core_s* core)
 {
-	fprintf(core->core_files.TraceFile, "%08X ", core->statistics.cycles);
+	fprintf(core->core_files.TraceFile, "%X  ", core->statistics.cycles);
 	Pipeline_WriteToTrace(&core->pipeline, core->core_files.TraceFile);
 	write_regs_to_file(core);
 	fprintf(core->core_files.TraceFile, "\n");
@@ -91,7 +96,13 @@ static void write_regs_to_file(Core_s* core)
 {
 	for (int i = 2; i < NUMBER_OF_REGISTERS; i++) // We are not writing register 0 and 1.
 	{
-		fprintf(core->core_files.TraceFile, "%d ", core->register_array[i]);
+		fprintf(core->core_files.TraceFile, "%08X  ", core->register_array[i]);
 	}
+}
+
+static void update_statistics(Core_s* core)
+{
+	core->statistics.cycles++;
+	core->statistics.instructions++;
 }
 

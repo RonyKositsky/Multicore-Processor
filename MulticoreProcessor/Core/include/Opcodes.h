@@ -23,7 +23,6 @@ typedef struct
 	uint32_t *registers_p;
 	uint32_t *memory_p;
 	uint16_t *pc;			// PC is 10 bits.
-	uint16_t immediate;		// Immediate is 12 bits.
 }Opcode_fucntion_params_s;
 
 typedef struct

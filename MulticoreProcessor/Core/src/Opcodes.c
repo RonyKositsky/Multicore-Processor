@@ -284,7 +284,9 @@ if (R[params->rs] <= R[params->rt]) pc = R[params->rd][low bits 9:0]
 void BranchLessEqual(Opcode_fucntion_params_s *params)
 {
 	if (params->registers_p[params->rs] <= params->registers_p[params->rt])
+	{
 		params->pc = params->registers_p[params->rd] & 0x1FF; // Taking the low 10 bits
+	}
 }
 
 /*!
@@ -303,7 +305,9 @@ if (R[params->rs] >= R[params->rt]) pc = R[params->rd][low bits 9:0]
 void BranchGraterEqual(Opcode_fucntion_params_s *params)
 {
 	if (params->registers_p[params->rs] >= params->registers_p[params->rt])
+	{
 		params->pc = params->registers_p[params->rd] & 0x1FF; // Taking the low 10 bits
+	}
 }
 
 /*!

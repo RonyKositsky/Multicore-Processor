@@ -39,6 +39,8 @@ static void decode(Pipeline_s* pipeline);
 static void execute(Pipeline_s* pipeline);
 static void mem(Pipeline_s* pipeline);
 static void writeback(Pipeline_s* pipeline);
+static void bubble_commands(Pipeline_s* pipeline);
+static void execute_stage(Pipeline_s* pipeline);
 static void prepare_registers_params(Opcode_fucntion_params_s* params, InstructionFormat_s command);
 static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 {
@@ -62,16 +64,15 @@ void Pipeline_Init(Pipeline_s *pipeline)
 		pipeline->pipe_stages[i].state = i;
 		pipeline->pipe_stages[i].pc = 0;
 	}
+
 }
 
 
 void Pipeline_Execute(Pipeline_s* pipeline)
 {
 	stall_resulotion(pipeline);
-	for (int i = 0; i < PIPELINE_SIZE; i++)
-	{
-		pipe_functions[i](pipeline);
-	}
+	bubble_commands(pipeline);
+	execute_stage(pipeline);
 }
 
 void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
@@ -81,7 +82,7 @@ void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
 		if (!pipeline->pipe_stages[i].is_init || pipeline->pipe_stages[i].is_stalled)
 			fprintf(trace_file, "--- ");
 		else
-			fprintf(trace_file, "%d ", pipeline->pipe_stages[i].pc);
+			fprintf(trace_file, "%03X ", pipeline->pipe_stages[i].pc);
 	}
 }
 
@@ -90,7 +91,8 @@ void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
 ************************************/
 static void fetch(Pipeline_s* pipeline)
 {
-	pipeline -> fetched_operation.command = pipeline->insturcionts[*pipeline->opcode_params.pc];
+	pipeline->pipe_stages[FETCH].pc = *(pipeline->opcode_params.pc);
+	pipeline->fetched_operation.command = pipeline->insturcionts[*(pipeline->opcode_params.pc)];
 }
 
 static void decode(Pipeline_s* pipeline)
@@ -115,7 +117,7 @@ static void writeback(Pipeline_s* pipeline)
 
 static void stall_resulotion(Pipeline_s* pipeline)
 {
-	//pipeline->is_stalled = false;
+
 }
 
 static void prepare_registers_params(Opcode_fucntion_params_s* params, InstructionFormat_s command)
@@ -123,5 +125,29 @@ static void prepare_registers_params(Opcode_fucntion_params_s* params, Instructi
 	params->rd		  = command.bits.rd;
 	params->rs		  = command.bits.rd;
 	params->rt		  = command.bits.rd;
-	params->immediate = command.bits.immediate;
+	params->registers_p[IMMEDIATE_REGISTER_INDEX] = command.bits.immediate;
+}
+
+static void bubble_commands(Pipeline_s* pipeline)
+{
+	for (int i = PIPELINE_SIZE - 1; i > 0; i--)
+	{
+		if (pipeline->pipe_stages[i - 1].is_init)
+		{
+			pipeline->pipe_stages[i].is_init = true;
+			pipeline->pipe_stages[i].pc = pipeline->pipe_stages[i - 1].pc;
+		}
+	}
+	pipeline->pipe_stages[FETCH].is_init = true;
+}
+
+static void execute_stage(Pipeline_s* pipeline)
+{
+	for (int i = 0; i < PIPELINE_SIZE; i++)
+	{
+		if (pipeline->pipe_stages[i].is_init)
+		{
+			pipe_functions[i](pipeline);
+		}
+	}
 }

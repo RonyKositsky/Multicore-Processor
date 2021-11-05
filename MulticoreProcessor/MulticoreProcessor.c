@@ -41,8 +41,6 @@ void CoresInit()
 {
 	memset(cores, 0, NUMBER_OF_CORES * sizeof(Core_s));
 	AssignFiles(cores);
-
-	// init all cores regs and memory.
 	for (int i = 0; i < NUMBER_OF_CORES; i++)
 	{
 		Core_Init(&cores[i]);
@@ -56,12 +54,16 @@ int main(int argc, char *argv[])
 {
 	OpenFiles(argv);
 	CoresInit();
-	while (!IsHalted())
+	int i = 0;
+	//while (!IsHalted())
+	while(i < 4)
 	{
-		for (int i = 0; NUMBER_OF_CORES; i++)
+		//for (int i = 0; i < NUMBER_OF_CORES; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			Core_Iter(&cores[i]);
 		}
+		i++;
 	}
 	CloseFiles();
 	return 0;
