@@ -18,6 +18,7 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include "../include/Files.h"
+#include <stdbool.h>
 
 /************************************
 *      definitions                 *
@@ -40,33 +41,35 @@ ALL RIGHTS RESERVED
 ************************************/
 int OpenFiles(char* argv[])
 {
-	Imem0File = fopen(argv[1], "r");
-	Imem1File = fopen(argv[2], "r");
-	Imem2File = fopen(argv[3], "r");
-	Imem3File = fopen(argv[4], "r");
-	MeminFile = fopen(argv[5], "r");
-	MemoutFile = fopen(argv[6], "w");
-	Regout0File = fopen(argv[7], "w");
-	Regout1File = fopen(argv[8], "w");
-	Regout2File = fopen(argv[9], "w");
-	Regout3File = fopen(argv[10], "w");
-	Core0TraceFile = fopen(argv[11], "w");
-	Core1TraceFile = fopen(argv[12], "w");
-	Core2TraceFile = fopen(argv[13], "w");
-	Core3TraceFile = fopen(argv[14], "w");
-	BusTraceFile = fopen(argv[15], "w");
-	DsRam0TraceFile = fopen(argv[16], "w");
-	DsRam1TraceFile = fopen(argv[17], "w");
-	DsRam2TraceFile = fopen(argv[18], "w");
-	DsRam3TraceFile = fopen(argv[19], "w");
-	TsRam0TraceFile = fopen(argv[20], "w");
-	TsRam1TraceFile = fopen(argv[21], "w");
-	TsRam2TraceFile = fopen(argv[22], "w");
-	TsRam3TraceFile = fopen(argv[23], "w");
-	Stats0TraceFile = fopen(argv[24], "w");
-	Stats1TraceFile = fopen(argv[25], "w");
-	Stats2TraceFile = fopen(argv[26], "w");
-	Stats3TraceFile = fopen(argv[27], "w");
+	bool relative_path_input = (sizeof(argv) / sizeof(argv[0])) == 1;
+
+	Imem0File = relative_path_input ? fopen("imem0.txt", "r") : fopen(argv[1], "r");
+	Imem1File = relative_path_input ? fopen("imem1.txt", "r") : fopen(argv[2], "r");
+	Imem2File = relative_path_input ? fopen("imem2.txt", "r") : fopen(argv[3], "r");
+	Imem3File = relative_path_input ? fopen("imem3.txt", "r") : fopen(argv[4], "r");
+	MeminFile = relative_path_input ? fopen("memin.txt", "r") : fopen(argv[5], "r");
+	MemoutFile = relative_path_input ? fopen("memout.txt", "w") : fopen(argv[6], "w");
+	Regout0File = relative_path_input ? fopen("regout0.txt", "w") : fopen(argv[7], "w");
+	Regout1File = relative_path_input ? fopen("regout1.txt", "w") : fopen(argv[8], "w");
+	Regout2File = relative_path_input ? fopen("regout2.txt", "w") : fopen(argv[9], "w");
+	Regout3File = relative_path_input ? fopen("regout3.txt", "w") : fopen(argv[10], "w");
+	Core0TraceFile = relative_path_input ? fopen("core0trace.txt", "w") : fopen(argv[11], "w");
+	Core1TraceFile = relative_path_input ? fopen("core2trace.txt", "w") : fopen(argv[12], "w");
+	Core2TraceFile = relative_path_input ? fopen("core3trace.txt", "w") : fopen(argv[13], "w");
+	Core3TraceFile = relative_path_input ? fopen("core4trace.txt", "w") : fopen(argv[14], "w");
+	BusTraceFile = relative_path_input ? fopen("bustrace.txt", "w") : fopen(argv[15], "w");
+	DsRam0TraceFile = relative_path_input ? fopen("dsram0.txt", "w") : fopen(argv[16], "w");
+	DsRam1TraceFile = relative_path_input ? fopen("dsram1.txt", "w") : fopen(argv[17], "w");
+	DsRam2TraceFile = relative_path_input ? fopen("dsram2.txt", "w") : fopen(argv[18], "w");
+	DsRam3TraceFile = relative_path_input ? fopen("dsram3.txt", "w") : fopen(argv[19], "w");
+	TsRam0TraceFile = relative_path_input ? fopen("tsram0.txt", "w") : fopen(argv[20], "w");
+	TsRam1TraceFile = relative_path_input ? fopen("tsram1.txt", "w") : fopen(argv[21], "w");
+	TsRam2TraceFile = relative_path_input ? fopen("tsram2.txt", "w") : fopen(argv[22], "w");
+	TsRam3TraceFile = relative_path_input ? fopen("tsram3.txt", "w") : fopen(argv[23], "w");
+	Stats0TraceFile = relative_path_input ? fopen("stats0.txt", "w") : fopen(argv[24], "w");
+	Stats1TraceFile = relative_path_input ? fopen("stats1.txt", "w") : fopen(argv[25], "w");
+	Stats2TraceFile = relative_path_input ? fopen("stats2.txt", "w") : fopen(argv[26], "w");
+	Stats3TraceFile = relative_path_input ? fopen("stats3.txt", "w") : fopen(argv[27], "w");
 
 	return Imem0File == NULL || Imem1File == NULL || Imem2File == NULL || Imem3File == NULL ||
 		MeminFile == NULL || MemoutFile == NULL || Regout0File == NULL || Regout1File == NULL ||

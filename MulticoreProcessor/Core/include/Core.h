@@ -42,7 +42,6 @@ typedef struct
 	FILE* StatsFile;
 }Core_Files;
 
-
 typedef struct
 {
 	uint16_t ProgramCounter;						// pc is 10bit
