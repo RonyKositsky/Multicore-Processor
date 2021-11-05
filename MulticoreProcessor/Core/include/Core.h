@@ -109,5 +109,4 @@ Teardown of the code.
 *****************************************************************************/
 void Core_Teaddown(Core_s* core);
 
-void Core_AssignFiles(Core_s* core);
 #endif //CORE_H_
