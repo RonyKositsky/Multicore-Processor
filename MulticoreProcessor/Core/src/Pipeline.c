@@ -220,14 +220,12 @@ static bool find_registers_equality(Pipeline_s *pipeline, PipelineSM_s stage)
 	{
 		return false;
 	}
-	InstructionFormat_s tested_ins = pipeline->pipe_stages[stage].instruction;
-	return compare_register(pipeline, tested_ins.bits.rd) || compare_register(pipeline, tested_ins.bits.rs) ||
-		compare_register(pipeline, tested_ins.bits.rt);
+	return compare_register(pipeline, pipeline->pipe_stages[stage].instruction.bits.rd);
 }
 
 static bool pipeline_needs_stall(Pipeline_s* pipeline)
 {
-	return find_registers_equality(pipeline, EXECUTE) || find_registers_equality(pipeline, MEM)
+	return find_registers_equality(pipeline, EXECUTE) || find_registers_equality(pipeline, MEM) 
 		|| find_registers_equality(pipeline, WRITE_BACK);
 }
 
