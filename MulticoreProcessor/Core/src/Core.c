@@ -68,7 +68,10 @@ void Core_Iter(Core_s* core)
 	Pipeline_Execute(&core->pipeline);
 	update_statistics(core);
 	write_trace(core);
-	core->program_counter++;
+	if (!core->pipeline.stalled)
+	{
+		core->program_counter++;
+	}
 }
 
 void Core_Teaddown(Core_s* core)

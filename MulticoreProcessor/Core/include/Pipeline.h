@@ -46,20 +46,21 @@ typedef enum
 
 typedef struct
 {
-	bool is_stalled;
 	bool is_init;
+	bool is_stalled;
 	PipelineSM_s state;
 	uint16_t pc;
+	InstructionFormat_s instruction;
 } PipelineStage_s;
 
 typedef struct
 {
 	bool halted;
+	bool stalled;
 	uint32_t *insturcionts;
 	//cache
 	PipelineStage_s pipe_stages[PIPELINE_SIZE];
 	Opcode_fucntion_params_s opcode_params;
-	InstructionFormat_s fetched_operation;
 	void (*operation)(Opcode_fucntion_params_s *params);
 }Pipeline_s;
 

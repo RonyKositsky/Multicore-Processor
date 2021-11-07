@@ -5,6 +5,7 @@
 #define NUMBER_OF_CORES 4
 #define NUMBER_OF_REGISTERS 16
 #define IMMEDIATE_REGISTER_INDEX 1
+#define ZERO_REGISTER_INDEX 0
 #define ITERATE_OVER_CORES(func, cores)	for(int i = 0; i < NUMBER_OF_CORES; i++) \
 										{										 \
 												func((&cores[i]));	             \
