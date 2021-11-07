@@ -32,14 +32,6 @@ ALL RIGHTS RESERVED
 /************************************
 *       types                       *
 ************************************/
-typedef enum
-{
-	CORE0 = 0,
-	CORE1,
-	CORE2,
-	CORE3
-};
-
 typedef struct 
 { 
 	uint32_t cycles;

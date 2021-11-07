@@ -57,7 +57,9 @@ typedef struct
 {
 	bool halted;
 	bool stalled;
-	uint32_t *insturcionts;
+	bool reset_stall_flag;
+	uint32_t *insturcionts_p;
+	uint32_t* core_registers_p;
 	//cache
 	PipelineStage_s pipe_stages[PIPELINE_SIZE];
 	Opcode_fucntion_params_s opcode_params;

@@ -43,7 +43,7 @@ R[params->rd] = R[params->rs] + R[params->rt]
 *****************************************************************************/
 void Add(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = params->registers_p[params->rs] + params->registers_p[params->rt];
+	params->registers[params->rd] = params->registers[params->rs] + params->registers[params->rt];
 }
 
 /*!
@@ -61,7 +61,7 @@ R[params->rd] = R[params->rs] - R[params->rt]
 *****************************************************************************/
 void Sub(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = params->registers_p[params->rs] - params->registers_p[params->rt];
+	params->registers[params->rd] = params->registers[params->rs] - params->registers[params->rt];
 }
 
 /*!
@@ -79,7 +79,7 @@ R[params->rd] = R[params->rs] & R[params->rt]
 *****************************************************************************/
 void And(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = params->registers_p[params->rs] & params->registers_p[params->rt];
+	params->registers[params->rd] = params->registers[params->rs] & params->registers[params->rt];
 }
 
 /*!
@@ -97,7 +97,7 @@ R[params->rd] = R[params->rs] | R[params->rt]
 *****************************************************************************/
 void Or(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = params->registers_p[params->rs] | params->registers_p[params->rt];
+	params->registers[params->rd] = params->registers[params->rs] | params->registers[params->rt];
 }
 
 /*!
@@ -115,7 +115,7 @@ R[params->rd] = R[params->rs] ^ R[params->rt]
 *****************************************************************************/
 void Xor(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = params->registers_p[params->rs] ^ params->registers_p[params->rt];
+	params->registers[params->rd] = params->registers[params->rs] ^ params->registers[params->rt];
 }
 
 /*!
@@ -133,7 +133,7 @@ R[params->rd] = R[params->rs] * R[params->rt]
 *****************************************************************************/
 void Multiply(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = params->registers_p[params->rs] * params->registers_p[params->rt];
+	params->registers[params->rd] = params->registers[params->rs] * params->registers[params->rt];
 }
 
 /*!
@@ -151,7 +151,7 @@ R[params->rd] = R[params->rs] << R[params->rt]
 *****************************************************************************/
 void LogicShiftLeft(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = params->registers_p[params->rs] << params->registers_p[params->rt];
+	params->registers[params->rd] = params->registers[params->rs] << params->registers[params->rt];
 }
 
 /*!
@@ -169,7 +169,7 @@ R[params->rd] = R[params->rs] >> R[params->rt] (arithmetic shift with sign exten
 *****************************************************************************/
 void ArithmeticShiftRight(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = (int)params->registers_p[params->rs] >> (int)params->registers_p[params->rt];
+	params->registers[params->rd] = (int)params->registers[params->rs] >> (int)params->registers[params->rt];
 } 
 
 /*!
@@ -187,7 +187,7 @@ R[params->rd] = R[params->rs] >> R[params->rt]
 *****************************************************************************/
 void LogicShiftRight(Opcode_fucntion_params_s *params)
 {
-	params->registers_p[params->rd] = params->registers_p[params->rs] >> params->registers_p[params->rt];
+	params->registers[params->rd] = params->registers[params->rs] >> params->registers[params->rt];
 }
 
 /*!
@@ -205,9 +205,9 @@ if (R[params->rs] == R[params->rt]) pc = R[params->rd][low bits 9:0]
 *****************************************************************************/
 void BranchEqual(Opcode_fucntion_params_s *params)
 {
-	if (params->registers_p[params->rs] == params->registers_p[params->rt])
+	if (params->registers[params->rs] == params->registers[params->rt])
 	{
-		params->pc = params->registers_p[params->rd] & 0x1FF; // Taking the low 10 bits
+		params->pc = params->registers[params->rd] & 0x1FF; // Taking the low 10 bits
 	}
 }
 
@@ -224,10 +224,12 @@ if (R[params->rs] != R[params->rt]) pc = R[params->rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchNotEqual(Opcode_fucntion_params_s *params)
+void BranchNotEqual(Opcode_fucntion_params_s* params)
 {
-	if (params->registers_p[params->rs] != params->registers_p[params->rt])
-		params->pc = params->registers_p[params->rd] & 0x1FF; // Taking the low 10 bits
+	if (params->registers[params->rs] != params->registers[params->rt])
+	{
+		params->pc = params->registers[params->rd] & 0x1FF; // Taking the low 10 bits
+	}
 }
 
 /*!
@@ -243,10 +245,12 @@ if (R[params->rs] < R[params->rt]) pc = R[params->rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchLessThen(Opcode_fucntion_params_s *params)
+void BranchLessThen(Opcode_fucntion_params_s* params)
 {
-	if (params->registers_p[params->rs] < params->registers_p[params->rt])
-		params->pc = params->registers_p[params->rd] & 0x1FF; // Taking the low 10 bits
+	if (params->registers[params->rs] < params->registers[params->rt])
+	{
+		*params->pc = params->registers[params->rd] & 0x1FF; // Taking the low 10 bits
+	}
 }
 
 /*!
@@ -262,10 +266,12 @@ if (R[params->rs] > R[params->rt]) pc = R[params->rd][low bits 9:0]
 
 \return none
 *****************************************************************************/
-void BranchGraterthen(Opcode_fucntion_params_s *params)
+void BranchGraterthen(Opcode_fucntion_params_s* params)
 {
-	if (params->registers_p[params->rs] > params->registers_p[params->rt])
-		params->pc = params->registers_p[params->rd] & 0x1FF; // Taking the low 10 bits
+	if (params->registers[params->rs] > params->registers[params->rt])
+	{
+		params->pc = params->registers[params->rd] & 0x1FF; // Taking the low 10 bits
+	}
 }
 
 /*!
@@ -283,9 +289,9 @@ if (R[params->rs] <= R[params->rt]) pc = R[params->rd][low bits 9:0]
 *****************************************************************************/
 void BranchLessEqual(Opcode_fucntion_params_s *params)
 {
-	if (params->registers_p[params->rs] <= params->registers_p[params->rt])
+	if (params->registers[params->rs] <= params->registers[params->rt])
 	{
-		params->pc = params->registers_p[params->rd] & 0x1FF; // Taking the low 10 bits
+		params->pc = params->registers[params->rd] & 0x1FF; // Taking the low 10 bits
 	}
 }
 
@@ -304,9 +310,9 @@ if (R[params->rs] >= R[params->rt]) pc = R[params->rd][low bits 9:0]
 *****************************************************************************/
 void BranchGraterEqual(Opcode_fucntion_params_s *params)
 {
-	if (params->registers_p[params->rs] >= params->registers_p[params->rt])
+	if (params->registers[params->rs] >= params->registers[params->rt])
 	{
-		params->pc = params->registers_p[params->rd] & 0x1FF; // Taking the low 10 bits
+		params->pc = params->registers[params->rd] & 0x1FF; // Taking the low 10 bits
 	}
 }
 
@@ -325,8 +331,8 @@ R[15] = next instruction address, pc = R[params->rd][9:0]
 *****************************************************************************/
 void JumpAndLink(Opcode_fucntion_params_s *params) 
 {
-	params->registers_p[PROGRAM_COUNTER_REGISTER_NUM] = params->pc;
-	params->pc = params->registers_p[params->rd] & 0x1FF;
+	params->registers[PROGRAM_COUNTER_REGISTER_NUM] = params->pc;
+	params->pc = params->registers[params->rd] & 0x1FF;
 }
 
 /*!
@@ -344,8 +350,8 @@ R[params->rd] = MEM[R[params->rs]+R[params->rt]]
 *****************************************************************************/
 void LoadWord(Opcode_fucntion_params_s *params) 
 {
-	uint32_t address = params->registers_p[params->rs] + params->registers_p[params->rt];
-	params->registers_p[params->rd] = params->memory_p[address];
+	uint32_t address = params->registers[params->rs] + params->registers[params->rt];
+	params->registers[params->rd] = params->memory_p[address];
 }
 
 /*!
@@ -363,8 +369,8 @@ MEM[R[params->rs]+R[params->rt]] = R[params->rd]
 *****************************************************************************/
 void StoreWord(Opcode_fucntion_params_s *params)
 {
-	uint32_t address = params->registers_p[params->rs] + params->registers_p[params->rt];
-	params->memory_p[address] = params->registers_p[params->rd];
+	uint32_t address = params->registers[params->rs] + params->registers[params->rt];
+	params->memory_p[address] = params->registers[params->rd];
 }
 
 /*!

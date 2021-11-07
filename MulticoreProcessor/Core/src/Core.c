@@ -26,7 +26,6 @@ ALL RIGHTS RESERVED
 *      definitions                 *
 ************************************/
 #define INSTRUCTION_COUNT 0
-#define STRART_PRINT_REGISTER_INDEX 2
 
 /************************************
 *      variables                    *
@@ -57,20 +56,27 @@ void Core_Init(Core_s *core)
 	memset(&core->pipeline, 0, sizeof(Pipeline_s));
 	Pipeline_Init(&core->pipeline);
 	//core->pipeline.opcode_params.memory_p = cache;
-	core->pipeline.opcode_params.registers_p = core->register_array;
-	core->pipeline.insturcionts = core->instructions_memory_image;
+	memset(core->pipeline.opcode_params.registers, 0 , sizeof(NUMBER_OF_REGISTERS));
+	core->pipeline.core_registers_p = &core->register_array;
+	core->pipeline.insturcionts_p = core->instructions_memory_image;
 	core->pipeline.opcode_params.pc = &(core->program_counter);
 
 }
 
 void Core_Iter(Core_s* core)
 {
-	Pipeline_Execute(&core->pipeline);
 	update_statistics(core);
+	Pipeline_Execute(&core->pipeline);
 	write_trace(core);
 	if (!core->pipeline.stalled)
 	{
 		core->program_counter++;
+	}
+
+	if (core->pipeline.reset_stall_flag)
+	{
+		core->pipeline.reset_stall_flag = false;
+		core->pipeline.stalled = false;
 	}
 }
 
@@ -94,7 +100,7 @@ static void init_memory(Core_s* core)
 
 static void write_trace(Core_s* core)
 {
-	fprintf(core->core_files.TraceFile, "%X  ", core->statistics.cycles);
+	fprintf(core->core_files.TraceFile, "%d ", core->statistics.cycles);
 	Pipeline_WriteToTrace(&core->pipeline, core->core_files.TraceFile);
 	write_regs_to_file(core);
 	fprintf(core->core_files.TraceFile, "\n");
@@ -103,7 +109,7 @@ static void write_trace(Core_s* core)
 
 static void write_regs_to_file(Core_s* core)
 {
-	for (int i = STRART_PRINT_REGISTER_INDEX; i < NUMBER_OF_REGISTERS; i++) // We are not writing register 0 and 1.
+	for (int i = STRART_MUTABLE_REGISTER_INDEX; i < NUMBER_OF_REGISTERS; i++) // We are not writing register 0 and 1.
 	{
 		fprintf(core->core_files.TraceFile, "%08X ", core->register_array[i]);
 	}

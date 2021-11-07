@@ -49,11 +49,11 @@ void CoresInit()
 ************************************/
 int main(int argc, char *argv[])
 {
-	OpenFiles(argv);
+	bool failed_open_file = OpenFiles(argv);
 	CoresInit();
 	int i = 0;
 	//while (!IsHalted())
-	while(i < 4)
+	while(i < 16)
 	{
 		//for (int i = 0; i < NUMBER_OF_CORES; i++)
 		ITERATE_OVER_CORES(Core_Iter, cores);

@@ -31,6 +31,7 @@ ALL RIGHTS RESERVED
 /************************************
 *      variables                    *
 ************************************/
+Core_Files CoresFilesArray[NUMBER_OF_CORES];
 
 /************************************
 *      static functions             *

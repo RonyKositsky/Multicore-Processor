@@ -35,7 +35,8 @@ typedef struct
 	FILE* StatsFile;
 }Core_Files;
 
-static Core_Files CoresFilesArray[NUMBER_OF_CORES];
+extern Core_Files CoresFilesArray[NUMBER_OF_CORES];
+
 FILE* MeminFile;
 FILE* MemoutFile;
 FILE* BusTraceFile;
