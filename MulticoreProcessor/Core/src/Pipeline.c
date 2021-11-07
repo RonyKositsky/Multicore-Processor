@@ -58,12 +58,14 @@ static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 ************************************/
 void Pipeline_Init(Pipeline_s *pipeline)
 {
-	memset(&pipeline->opcode_params, 0, sizeof(Opcode_fucntion_params_s));
-	memset(pipeline->pipe_stages, 0, sizeof(PIPELINE_SIZE));
 	pipeline->halted = false;
 	pipeline->stalled = false;
 	pipeline->reset_stall_flag = false;
+	
+	memset(&pipeline->opcode_params, 0, sizeof(Opcode_fucntion_params_s));
+	pipeline->opcode_params.halt = &pipeline->halted;
 
+	memset(pipeline->pipe_stages, 0, sizeof(PIPELINE_SIZE));
 	for (int stage = FETCH; stage < PIPELINE_SIZE; stage++)
 	{
 		pipeline->pipe_stages[stage].is_init =  false;

@@ -49,7 +49,10 @@ void CoresInit()
 ************************************/
 int main(int argc, char *argv[])
 {
-	bool failed_open_file = OpenFiles(argv);
+	if (FIles_TryToOpenFIles(argv))
+	{
+		//Handle files error.
+	}
 	CoresInit();
 	int i = 0;
 	//while (!IsHalted())

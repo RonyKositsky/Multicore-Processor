@@ -78,6 +78,11 @@ void Core_Iter(Core_s* core)
 		core->pipeline.reset_stall_flag = false;
 		core->pipeline.stalled = false;
 	}
+
+	if (core->pipeline.halted)
+	{
+		//handle halted.
+	}
 }
 
 void Core_Teaddown(Core_s* core)

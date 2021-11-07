@@ -59,7 +59,7 @@ Called at the start of the program.
 
 \return none
 *****************************************************************************/
-int OpenFiles(char* argv[]);
+int FIles_TryToOpenFIles(char* argv[]);
 
 /*!
 ******************************************************************************

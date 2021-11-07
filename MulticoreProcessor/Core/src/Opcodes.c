@@ -388,7 +388,7 @@ Halt this core
 *****************************************************************************/
 void Halt(Opcode_fucntion_params_s *params)
 {
-	//TODO: Think how to do it.
+	*params->halt = true;
 }
 
 /************************************

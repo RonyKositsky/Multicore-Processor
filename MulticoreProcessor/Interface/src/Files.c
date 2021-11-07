@@ -42,7 +42,7 @@ static void close_core_files(Core_Files* core_files);
 /************************************
 *       API implementation          *
 ************************************/
-int OpenFiles(char* argv[])
+int FIles_TryToOpenFIles(char* argv[])
 {
 	memset(CoresFilesArray, 0, 4 * sizeof(Core_Files));
 	bool relative_path_input = (sizeof(argv) / sizeof(argv[0])) == 1;

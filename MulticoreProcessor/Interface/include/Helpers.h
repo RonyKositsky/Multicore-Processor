@@ -20,6 +20,7 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include <stdint.h>
+#include <stdbool.h>
 
 /************************************
 *      definitions                 *

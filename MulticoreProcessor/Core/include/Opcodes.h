@@ -24,6 +24,7 @@ typedef struct
 	uint32_t registers[NUMBER_OF_REGISTERS];
 	uint32_t *memory_p;
 	uint16_t *pc;			// PC is 10 bits.
+	bool* halt;
 }Opcode_fucntion_params_s;
 
 typedef struct
