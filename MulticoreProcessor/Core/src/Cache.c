@@ -86,7 +86,7 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 	wire.bus_addr = addr.address;
 	wire.bus_cmd = bus_busRd;		// TODO: check if this right
 
-	Bus_AddTransaction(wire);
+	//Bus_AddTransaction(wire);
 
 	return false;
 }
