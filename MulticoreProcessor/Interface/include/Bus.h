@@ -30,6 +30,7 @@ typedef enum
 	bus_core1,
 	bus_core2,
 	bus_core3,
+	bus_main_memory
 } Bus_originator_e;
 
 typedef enum
@@ -60,10 +61,10 @@ typedef struct
 /*!
 ******************************************************************************
 \brief
-Initialize bus
+ Initialize bus
 
 \details
-Must be called only once
+ Must be called only once
 
 \param
  [in] counter_val - reset counter value
@@ -76,10 +77,10 @@ void Bus_Init(void);
 /*!
 ******************************************************************************
 \brief
-Initialize bus
+ Create a new transaction on the bus.
 
 \details
-Must be called only once
+ this function add the transaction into the round-robin queue.
 
 \param
  [in] counter_val - reset counter value
@@ -87,7 +88,15 @@ Must be called only once
 
 \return none
 *****************************************************************************/
-void Bus_MakeTransaction(Bus_wires_s wire);
+void Bus_AddTransaction(Bus_wires_s wire);
 
+/*!
+******************************************************************************
+\brief
+ Bus iteration
+
+\return none
+*****************************************************************************/
+void Bus_Iter(void);
 
 #endif //__BUS_H__

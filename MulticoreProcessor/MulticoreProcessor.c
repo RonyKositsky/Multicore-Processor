@@ -18,6 +18,7 @@ ALL RIGHTS RESERVED
 ************************************/
 #include "Interface/include/Files.h"
 #include "Core/include/Core.h"
+#include "Interface/include/MainMemory.h"
 
 /************************************
 *      definitions                  *
@@ -31,7 +32,7 @@ static Core_s cores[NUMBER_OF_CORES];
 /************************************
 *      static functions             *
 ************************************/
-static void AssignFiles(Core_s* cores);
+static void AssignCoresFiles(Core_s* cores);
 
 
 /************************************
@@ -46,7 +47,7 @@ void CoresInit()
 	}
 
 	// first assign all files into the cores.
-	AssignFiles(cores);
+	AssignCoresFiles(cores);
 
 }
 
@@ -56,7 +57,15 @@ void CoresInit()
 int main(int argc, char *argv[])
 {
 	OpenFiles(argv);
+	//
+	// Init submodules
+	MainMemory_Init();
+	CoresInit();
 
+	// iterations
+
+
+	// 
 	CloseFiles();
 	return 0;
 } 
@@ -65,7 +74,7 @@ int main(int argc, char *argv[])
 /************************************
 * static implementation             *
 ************************************/
-static void AssignFiles(Core_s* cores)
+static void AssignCoresFiles(Core_s* cores)
 {
 	//Core_s 1
 	cores[0].core_files.InstructionMemFile = Imem0File;
