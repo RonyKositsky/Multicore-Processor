@@ -19,10 +19,11 @@ ALL RIGHTS RESERVED
 /************************************
 *      include                      *
 ************************************/
-#include <stdio.h>
 #include <stdint.h>
 #include "Pipeline.h"
 #include "../../Interface/include/Helpers.h"
+#include "../../Interface/include/Files.h"
+
 /************************************
 *      definitions                 *
 ************************************/
@@ -31,16 +32,6 @@ ALL RIGHTS RESERVED
 /************************************
 *       types                       *
 ************************************/
-typedef struct 
-{
-	FILE* InstructionMemFile;
-	FILE* RegFile;
-	FILE* TraceFile;
-	FILE* DsRamFile;
-	FILE* TsRamFile;
-	FILE* StatsFile;
-}Core_Files;
-
 typedef struct 
 { 
 	uint32_t cycles;
@@ -55,6 +46,7 @@ typedef struct
 
 typedef struct
 {
+	uint8_t index;
 	uint16_t program_counter;	// pc is 10bit
 	uint32_t register_array[NUMBER_OF_REGISTERS];
 	uint32_t instructions_memory_image[INSTRUCTIONS_MEMORY_SIZE];				
@@ -80,19 +72,7 @@ Called at the start of the run.
 
 \return none
 *****************************************************************************/
-void InitCore(Core_s* core);
-
-/*!
-******************************************************************************
-\brief
-Asks whether the core is halted or not.
-
-\param
- [in] core - the operating core
-
-\return True if halted, false otherwise.
-*****************************************************************************/
-int CoreHalted(Core_s* core);
+void Core_Init(Core_s* core);
 
 /*!
 ******************************************************************************
@@ -107,7 +87,18 @@ core is running with pipeline.
 
 \return none
 *****************************************************************************/
-void CoreIter(Core_s* core);
+void Core_Iter(Core_s* core);
 
+/*!
+******************************************************************************
+\brief
+Teardown of the code.
+
+\param
+ [in] core - the operating core
+
+\return none
+*****************************************************************************/
+void Core_Teaddown(Core_s* core);
 
 #endif //CORE_H_
