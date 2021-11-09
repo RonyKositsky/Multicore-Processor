@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
 	//while (!IsHalted())
 	while(i < 20)
 	{
-		//for (int i = 0; i < NUMBER_OF_CORES; i++)
 		ITERATE_OVER_CORES(Core_Iter, cores);
 		i++;
 	}
