@@ -29,7 +29,6 @@ ALL RIGHTS RESERVED
 *      definitions                 *
 ************************************/
 
-
 /************************************
 *       types                       *
 ************************************/
@@ -42,28 +41,27 @@ typedef enum
 	WRITE_BACK,
 
 	PIPELINE_SIZE
-} PipelineSM_s;
+} PipelineSM_e;
 
 typedef struct
 {
-	bool is_init;
 	bool is_stalled;
-	PipelineSM_s state;
+	PipelineSM_e state;
 	uint16_t pc;
 	InstructionFormat_s instruction;
+	uint32_t execute_result;
+	void (*operation)(Opcode_fucntion_params_s* params);
 } PipelineStage_s;
 
 typedef struct
 {
 	bool halted;
 	bool stalled;
-	bool reset_stall_flag;
 	uint32_t *insturcionts_p;
 	uint32_t* core_registers_p;
 	//cache
 	PipelineStage_s pipe_stages[PIPELINE_SIZE];
 	Opcode_fucntion_params_s opcode_params;
-	void (*operation)(Opcode_fucntion_params_s *params);
 }Pipeline_s;
 
 
@@ -110,5 +108,19 @@ Writing the pipeline to the trace file.
 \return none
 *****************************************************************************/
 void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE *trace_file);
+
+
+/*!
+******************************************************************************
+\brief
+Init the pipeline.
+
+\param
+ [in]  none
+ [out] none
+
+\return none
+*****************************************************************************/
+void Pipeline_BubbleCommands(Pipeline_s* pipeline);
 
 #endif //__PIPELINE_H__
