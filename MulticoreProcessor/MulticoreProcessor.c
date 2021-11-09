@@ -18,6 +18,7 @@ ALL RIGHTS RESERVED
 ************************************/
 #include "Interface/include/Files.h"
 #include "Core/include/Core.h"
+#include "Interface/include/MainMemory.h"
 
 /************************************
 *      definitions                  *
@@ -53,6 +54,7 @@ int main(int argc, char *argv[])
 	{
 		//Handle files error.
 	}
+	MainMemory_Init();
 	CoresInit();
 	int i = 0;
 	//while (!IsHalted())

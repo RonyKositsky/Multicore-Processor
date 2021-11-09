@@ -31,6 +31,22 @@ ALL RIGHTS RESERVED
 /************************************
 *       types                       *
 ************************************/
+typedef enum
+{
+	cache_core0,
+	cache_core1,
+	cache_core2,
+	cache_core3,
+} Cache_Id_e;
+
+typedef enum
+{
+	cache_mesi_invalid,
+	cache_mesi_shared,
+	cache_mesi_exclusive,
+	cache_mesi_modified,
+} Cache_mesi_e;
+
 typedef union
 {
 	uint16_t data;
@@ -38,12 +54,13 @@ typedef union
 	struct
 	{
 		uint16_t tag : 12;	// [0:11]
-		uint16_t mesi : 2;	// [12:13]
+		Cache_mesi_e mesi : 2;	// [12:13]
 	}fields;
 } Tsram_s;
 
 typedef struct
 {
+	Cache_Id_e id;
 	uint32_t dsram[CACHE_SIZE];
 	Tsram_s tsram[FRAME_SIZE];
 } CacheData_s;

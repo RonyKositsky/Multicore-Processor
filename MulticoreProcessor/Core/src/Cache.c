@@ -72,9 +72,21 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 		return true;
 	}
 	// we had a miss.
-	// we need to take the data from the main memory.
-	Bus_wires_s wire;
+	
+	// first, check if the required block is dirty
+	// if so, we need first to send the block into the memory
+	if (cache_data->tsram[addr.fields.index].fields.mesi == cache_mesi_modified)
+	{
 
+	}
+
+	// now, we need to take the new block from the main memory.
+	Bus_wires_s wire;
+	wire.bus_origid = cache_data->id;
+	wire.bus_addr = addr.address;
+	wire.bus_cmd = bus_busRd;		// TODO: check if this right
+
+	//Bus_AddTransaction(wire);
 
 	return false;
 }

@@ -19,6 +19,7 @@ ALL RIGHTS RESERVED
 ************************************/
 #include "../include/Files.h"
 #include <stdbool.h>
+#include <string.h>
 
 /************************************
 *      definitions                 *
