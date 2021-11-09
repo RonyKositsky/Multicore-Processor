@@ -43,10 +43,10 @@ static void close_core_files(Core_Files* core_files);
 /************************************
 *       API implementation          *
 ************************************/
-int FIles_TryToOpenFIles(char* argv[])
+int FIles_TryToOpenFIles(char* argv[], int argc)
 {
 	memset(CoresFilesArray, 0, 4 * sizeof(Core_Files));
-	bool relative_path_input = (sizeof(argv) / sizeof(argv[0])) == 1;
+	bool relative_path_input = argc == 1;
 	
 	MeminFile = relative_path_input ? fopen("memin.txt", "r") : fopen(argv[5], "r");
 	MemoutFile = relative_path_input ? fopen("memout.txt", "w") : fopen(argv[6], "w");

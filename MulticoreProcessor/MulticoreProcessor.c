@@ -19,6 +19,7 @@ ALL RIGHTS RESERVED
 #include "Interface/include/Files.h"
 #include "Core/include/Core.h"
 #include "Interface/include/MainMemory.h"
+#include <string.h>
 
 /************************************
 *      definitions                  *
@@ -50,7 +51,7 @@ void CoresInit()
 ************************************/
 int main(int argc, char *argv[])
 {
-	if (FIles_TryToOpenFIles(argv))
+	if (FIles_TryToOpenFIles(argv, argc))
 	{
 		//Handle files error.
 	}
