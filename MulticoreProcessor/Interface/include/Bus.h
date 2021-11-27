@@ -20,9 +20,14 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include <stdint.h>
+#include <stdbool.h>
 
 /************************************
 *      definitions                 *
+************************************/
+
+/************************************
+*       types                       *
 ************************************/
 typedef enum
 {
@@ -42,17 +47,24 @@ typedef enum
 } Bus_command_s;
 
 typedef struct
-{	
+{
 	Bus_originator_e bus_origid;
 	Bus_command_s bus_cmd;
 	uint32_t bus_addr;
 	uint32_t bus_data;
-	uint8_t bus_shared;
-}Bus_wires_s;
-/************************************
-*       types                       *
-************************************/
+	bool bus_shared;
+} Bus_packet_s;
 
+typedef struct
+{
+	int core_id;
+	void* cache_data;
+	bool (*shared_signal_callback)(void* cache_data, Bus_packet_s* packet);
+	bool (*cache_snooping_callback)(void* cache_data, Bus_packet_s* packet, uint8_t address_offset);
+	bool (*cache_response_callback)(void* cache_data, Bus_packet_s* packet, uint8_t* address_offset);
+} Bus_cache_interface_s;
+
+typedef bool (*memory_callback_t)(Bus_packet_s* packet, bool direct_transaction);
 
 /************************************
 *       API                         *
@@ -74,6 +86,9 @@ typedef struct
 *****************************************************************************/
 void Bus_Init(void);
 
+void Bus_RegisterCache(Bus_cache_interface_s cache_interface);
+void Bus_RegisterMemoryCallback(memory_callback_t callback);
+
 /*!
 ******************************************************************************
 \brief
@@ -88,7 +103,7 @@ void Bus_Init(void);
 
 \return none
 *****************************************************************************/
-void Bus_AddTransaction(Bus_wires_s wire);
+void Bus_AddTransaction(Bus_packet_s packet);
 
 /*!
 ******************************************************************************
@@ -97,6 +112,6 @@ void Bus_AddTransaction(Bus_wires_s wire);
 
 \return none
 *****************************************************************************/
-void Bus_Iter(void);
+void Bus_Itereration(void);
 
 #endif //__BUS_H__

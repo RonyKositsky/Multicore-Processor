@@ -56,7 +56,7 @@ void Core_Init(Core_s *core)
 	memset(&core->pipeline, 0, sizeof(Pipeline_s));
 	Pipeline_Init(&core->pipeline);
 	//core->pipeline.opcode_params.memory_p = cache;
-	core->pipeline.core_registers_p = &core->register_array;
+	core->pipeline.core_registers_p = core->register_array;
 	core->pipeline.insturcionts_p = core->instructions_memory_image;
 	core->pipeline.opcode_params.pc = &(core->program_counter);
 

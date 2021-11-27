@@ -206,7 +206,7 @@ void BranchEqual(Opcode_fucntion_params_s *params)
 {
 	if (params->rs == params->rt)
 	{
-		params->pc = *params->rd & 0x1FF; // Taking the low 10 bits
+		*params->pc = (uint16_t)(*params->rd & 0x1FF); // Taking the low 10 bits
 	}
 }
 
@@ -227,7 +227,7 @@ void BranchNotEqual(Opcode_fucntion_params_s* params)
 {
 	if (params->rs != params->rt)
 	{
-		params->pc = *params->rd & 0x1FF; // Taking the low 10 bits
+		*params->pc = (uint16_t)(*params->rd & 0x1FF); // Taking the low 10 bits
 	}
 }
 
@@ -248,7 +248,7 @@ void BranchLessThen(Opcode_fucntion_params_s* params)
 {
 	if (params->rs < params->rt)
 	{
-		*params->pc = *params->rd & 0x1FF; // Taking the low 10 bits
+		*params->pc = (uint16_t)(*params->rd & 0x1FF); // Taking the low 10 bits
 	}
 }
 
@@ -269,7 +269,7 @@ void BranchGraterthen(Opcode_fucntion_params_s* params)
 {
 	if (params->rs > params->rt)
 	{
-		params->pc = *params->rd & 0x1FF; // Taking the low 10 bits
+		*params->pc = (uint16_t)(*params->rd & 0x1FF); // Taking the low 10 bits
 	}
 }
 
@@ -290,7 +290,7 @@ void BranchLessEqual(Opcode_fucntion_params_s *params)
 {
 	if (params->rs <= params->rt)
 	{
-		params->pc = *params->rd & 0x1FF; // Taking the low 10 bits
+		*params->pc = (uint16_t)(*params->rd & 0x1FF); // Taking the low 10 bits
 	}
 }
 
@@ -311,7 +311,7 @@ void BranchGraterEqual(Opcode_fucntion_params_s *params)
 {
 	if (params->rs >= params->rt)
 	{
-		params->pc = *params->rd & 0x1FF; // Taking the low 10 bits
+		*params->pc = (uint16_t)(*params->rd & 0x1FF); // Taking the low 10 bits
 	}
 }
 
@@ -330,8 +330,8 @@ R[15] = next instruction address, pc = R[params->rd][9:0]
 *****************************************************************************/
 void JumpAndLink(Opcode_fucntion_params_s *params) 
 {
-	*params->rd = params->pc;
-	params->pc = *params->rd & 0x1FF;
+	*params->rd = *params->pc;
+	*params->pc = (uint16_t)(*params->rd & 0x1FF); // Taking the low 10 bits
 }
 
 /*!

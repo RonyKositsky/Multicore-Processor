@@ -39,12 +39,14 @@ typedef enum
 	cache_core3,
 } Cache_Id_e;
 
-typedef enum
+typedef enum 
 {
 	cache_mesi_invalid,
 	cache_mesi_shared,
 	cache_mesi_exclusive,
 	cache_mesi_modified,
+	//
+	cache_mesi_max_state
 } Cache_mesi_e;
 
 typedef union
@@ -61,6 +63,7 @@ typedef union
 typedef struct
 {
 	Cache_Id_e id;
+	bool memory_stall;
 	uint32_t dsram[CACHE_SIZE];
 	Tsram_s tsram[FRAME_SIZE];
 } CacheData_s;
@@ -81,7 +84,7 @@ Must be called only once
 
 \return none
 *****************************************************************************/
-void Cache_Init(CacheData_s* cache_data);
+void Cache_Init(CacheData_s* data, Cache_Id_e id);
 
 /*!
 ******************************************************************************

@@ -46,35 +46,4 @@ Must be called only once
 *****************************************************************************/
 void MainMemory_Init(void);
 
-/*!
-******************************************************************************
-\brief
- Read value from memory
-
-\details
- read from specific index.
-
-\param
- [in] index - memory index.
-
-\return memory value at index.
-*****************************************************************************/
-uint32_t MainMemory_ReadValue(uint32_t index);
-
-/*!
-******************************************************************************
-\brief
- Write value to memory
-
-\details
- write to specific index at memory.
-
-\param
- [in] index - memory index.
- [in] data - data to store.
-
-\return memory value at index.
-*****************************************************************************/
-void MainMemory_WriteValue(uint32_t index, uint32_t data);
-
 #endif //__MAIN_MEMORY_H__
