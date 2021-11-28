@@ -31,10 +31,6 @@ ALL RIGHTS RESERVED
 #define ZERO_REGISTER_INDEX 0
 #define STRART_MUTABLE_REGISTER_INDEX 2
 #define PROGRAM_COUNTER_REGISTER_NUM 15
-#define ITERATE_OVER_CORES(func, cores)	for(int i = 1; i < 2; i++) \
-										{										 \
-												func((&cores[i]));	             \
-										}			
 
 /************************************
 *       types                       *

@@ -72,7 +72,7 @@ Called at the start of the run.
 
 \return none
 *****************************************************************************/
-void Core_Init(Core_s* core);
+void Core_Init(Core_s* core, uint8_t id);
 
 /*!
 ******************************************************************************

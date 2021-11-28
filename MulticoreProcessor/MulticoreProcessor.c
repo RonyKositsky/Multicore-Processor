@@ -43,7 +43,10 @@ void CoresInit()
 {
 	memset(cores, 0, NUMBER_OF_CORES * sizeof(Core_s));
 	AssignFiles(cores);
-	ITERATE_OVER_CORES(Core_Init, cores);
+	for (int i = 0; i < NUMBER_OF_CORES; i++)
+	{
+		Core_Init(&cores[i], i);
+	}
 }
 
 /************************************
@@ -57,14 +60,23 @@ int main(int argc, char *argv[])
 	}
 	MainMemory_Init();
 	CoresInit();
+
 	int i = 0;
 	//while (!IsHalted())
 	while(i < 20)
 	{
-		ITERATE_OVER_CORES(Core_Iter, cores);
+		for (int i = 0; i < NUMBER_OF_CORES; i++)
+		{
+			Core_Iter(&cores[i]);
+		}
 		i++;
 	}
-	ITERATE_OVER_CORES(Core_Teaddown, cores);
+
+	for (int i = 0; i < NUMBER_OF_CORES; i++)
+	{
+		Core_Teaddown(&cores[i]);
+	}
+
 	CloseFiles();
 	return 0;
 } 

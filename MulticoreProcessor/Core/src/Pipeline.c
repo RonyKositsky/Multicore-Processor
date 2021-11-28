@@ -17,8 +17,8 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #include "..\include\Pipeline.h"
-
 #include <string.h>
+#include "..\include\Cache.h"
 
 /************************************
 *      definitions                 *
@@ -148,18 +148,34 @@ static void decode(Pipeline_s* pipeline)
 
 static void execute(Pipeline_s* pipeline)
 {
-	if (Opcode_IsBranchResulotion(pipeline->pipe_stages[EXECUTE].instruction.bits.opcode))
+	uint8_t opcode = pipeline->pipe_stages[EXECUTE].instruction.bits.opcode;
+	if (!Opcode_IsBranchResulotion(opcode) && !Opcode_IsMemoryCommand(opcode))
 	{
-		return;
+		prepare_registers_params(pipeline, EXECUTE);
+		pipeline->pipe_stages[EXECUTE].operation(&pipeline->opcode_params);
 	}
-
-	prepare_registers_params(pipeline, EXECUTE);
-	pipeline->pipe_stages[EXECUTE].operation(&pipeline->opcode_params);
 }
+
+	
 
 static void mem(Pipeline_s* pipeline)
 {
+	uint8_t opcode = pipeline->pipe_stages[MEM].instruction.bits.opcode;
+ 	if (Opcode_IsMemoryCommand(opcode))
+	{
+		uint32_t address = pipeline->pipe_stages[MEM].instruction.bits.rs + 
+			pipeline->pipe_stages[MEM].instruction.bits.rt;
 
+		if (opcode == LW)
+		{
+			uint32_t* data = &pipeline->core_registers_p[pipeline->pipe_stages[MEM].instruction.bits.rd];
+			Cache_ReadData(&pipeline->cache_data, address, data);
+		}
+		else
+		{
+			Cache_WriteData(&pipeline->cache_data, address, pipeline->pipe_stages[MEM].instruction.bits.rd);
+		}
+	}
 }
 
 static void writeback(Pipeline_s* pipeline)
@@ -233,10 +249,12 @@ static void free_stall_flags(Pipeline_s* pipeline)
 	pipeline->pipe_stages[DECODE].is_stalled = false;
 }
 
-static bool can_free_pipeline(Pipeline_s *pipeline)
+bool can_free_pipeline(Pipeline_s *pipeline)
 {
 	return pipeline->stalled && !pipeline_needs_stall(pipeline);
 }
+
+
 
 
 

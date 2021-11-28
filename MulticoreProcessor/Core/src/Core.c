@@ -17,7 +17,6 @@ ALL RIGHTS RESERVED
 *      include                      *
 ************************************/
 #define _CRT_SECURE_NO_WARNINGS
-
 #include "../include/Core.h"
 #include <stdio.h>
 #include <string.h>
@@ -43,9 +42,10 @@ static void print_register_file(Core_s* core);
 /************************************
 *       API implementation          *
 ************************************/
-void Core_Init(Core_s *core)
+void Core_Init(Core_s *core, uint8_t id)
 {
 	core->program_counter = 0;
+	core->index = id;
 
 	memset(&core->statistics, 0, sizeof(Statistics_s));
 	core->statistics.cycles = -1; // To start the count from 0.
@@ -55,11 +55,13 @@ void Core_Init(Core_s *core)
 
 	memset(&core->pipeline, 0, sizeof(Pipeline_s));
 	Pipeline_Init(&core->pipeline);
-	//core->pipeline.opcode_params.memory_p = cache;
+
+	memset(&core->pipeline.cache_data, 0, sizeof(CacheData_s));
+	Cache_Init(&core->pipeline.cache_data, id);
+
 	core->pipeline.core_registers_p = core->register_array;
 	core->pipeline.insturcionts_p = core->instructions_memory_image;
 	core->pipeline.opcode_params.pc = &(core->program_counter);
-
 }
 
 void Core_Iter(Core_s* core)

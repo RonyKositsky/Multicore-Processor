@@ -420,4 +420,9 @@ bool Opcode_IsBranchResulotion(uint16_t opcode)
 	return opcode >= BEQ && opcode < LW;
 }
 
+bool Opcode_IsMemoryCommand(uint16_t opcode)
+{
+	return opcode == LW || opcode == SW;
+}
+
 

@@ -34,7 +34,7 @@ typedef enum
 	JAL,
 	LW,
 	SW,
-	HALT 
+	HALT = 20 
 }OpcodeOperations;
 
 typedef struct
@@ -58,5 +58,7 @@ Opcode OpcodeMapping[NUMBER_OF_OPCODES];
 
 
 bool Opcode_IsBranchResulotion(uint16_t opcode);
+
+bool Opcode_IsMemoryCommand(uint16_t opcode);
 
 #endif __OPCODES

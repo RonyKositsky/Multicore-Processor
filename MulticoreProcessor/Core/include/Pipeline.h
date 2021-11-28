@@ -22,6 +22,7 @@ ALL RIGHTS RESERVED
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "Cache.h"
 #include "../../Interface/include/Helpers.h"
 #include "Opcodes.h"
 
@@ -59,7 +60,7 @@ typedef struct
 	bool stalled;
 	uint32_t *insturcionts_p;
 	uint32_t* core_registers_p;
-	//cache
+	CacheData_s cache_data;
 	PipelineStage_s pipe_stages[PIPELINE_SIZE];
 	Opcode_fucntion_params_s opcode_params;
 }Pipeline_s;

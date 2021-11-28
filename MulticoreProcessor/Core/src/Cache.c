@@ -86,12 +86,16 @@ void Cache_Init(CacheData_s* data, Cache_Id_e id)
 	// set all cache memory to 0;
 	memset((uint8_t*)data, 0, sizeof(data));
 	data->id = id;
+
 	// Register callback
-	Bus_cache_interface_s cache_interface = {
+	Bus_cache_interface_s cache_interface = 
+	{
 		.core_id = id, .cache_data = data, 
 		.shared_signal_callback = shared_signal_handle, 
 		.cache_snooping_callback = cache_snooping_handle,
-		.cache_response_callback = cache_response_handle };
+		.cache_response_callback = cache_response_handle 
+	};
+
 	Bus_RegisterCache(cache_interface);
 }
 
