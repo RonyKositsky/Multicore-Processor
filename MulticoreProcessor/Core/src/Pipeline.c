@@ -42,17 +42,18 @@ static void mem(Pipeline_s* pipeline);
 static void writeback(Pipeline_s* pipeline);
 static void execute_stages(Pipeline_s* pipeline);
 static void prepare_registers_params(Pipeline_s* pipeline, PipelineSM_e stage);
-static void init_stall_flags(Pipeline_s* pipeline);
-static void free_stall_flags(Pipeline_s* pipeline);
-static bool pipeline_needs_stall(Pipeline_s* pipeline);
+static void init_data_hazard_stall(Pipeline_s* pipeline);
+static void free_data_hazard_stall(Pipeline_s* pipeline);
+static void handle_mem_stall(Pipeline_s* pipeline, bool stall);
+static bool pipe_stalled(Pipeline_s* pipeline);
+static bool pipeline_needs_data_hazard_stall(Pipeline_s* pipeline);
 static bool compare_register(Pipeline_s* pipeline, uint16_t reg);
 static bool check_registers_hazrads(Pipeline_s* pipeline, PipelineSM_e stage);
-static bool can_free_pipeline(Pipeline_s* pipeline);
+static bool can_free_data_hazard_stall(Pipeline_s* pipeline);
 static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 {
 	fetch, decode, execute, mem, writeback
 };
-
 
 /************************************
 *       API implementation          *
@@ -60,7 +61,8 @@ static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 void Pipeline_Init(Pipeline_s *pipeline)
 {
 	pipeline->halted = false;
-	pipeline->stalled = false;
+	pipeline->data_hazard_stall = false;
+	pipeline->memory_stall = false;
 	
 	memset((uint8_t *) &pipeline->opcode_params, 0, sizeof(pipeline->opcode_params));
 	pipeline->opcode_params.halt = &pipeline->halted;
@@ -73,15 +75,14 @@ void Pipeline_Init(Pipeline_s *pipeline)
 	}
 
 	pipeline->pipe_stages[FETCH].pc = 0;
-
 }
 
 void Pipeline_Execute(Pipeline_s* pipeline)
 {
 	execute_stages(pipeline);
-	if (can_free_pipeline(pipeline))
+	if (can_free_data_hazard_stall(pipeline))
 	{
-		free_stall_flags(pipeline);
+		free_data_hazard_stall(pipeline);
 	}
 }
 
@@ -123,7 +124,7 @@ static void fetch(Pipeline_s* pipeline)
 {
 	pipeline->pipe_stages[FETCH].pc = *(pipeline->opcode_params.pc);
 	pipeline->pipe_stages[FETCH].instruction.command = pipeline->insturcionts_p[*(pipeline->opcode_params.pc)];
-	if (!pipeline->stalled)
+	if (!pipe_stalled(pipeline))
 	{
 		*(pipeline->opcode_params.pc)+= 1;
 	}
@@ -140,9 +141,9 @@ static void decode(Pipeline_s* pipeline)
 		pipeline->pipe_stages[DECODE].operation(&pipeline->opcode_params);
 	}
 
-	if (pipeline_needs_stall(pipeline))
+	if (pipeline_needs_data_hazard_stall(pipeline))
 	{
-		init_stall_flags(pipeline);
+		init_data_hazard_stall(pipeline);
 	}
 }
 
@@ -156,7 +157,6 @@ static void execute(Pipeline_s* pipeline)
 	}
 }
 
-	
 
 static void mem(Pipeline_s* pipeline)
 {
@@ -166,15 +166,11 @@ static void mem(Pipeline_s* pipeline)
 		uint32_t address = pipeline->pipe_stages[MEM].instruction.bits.rs + 
 			pipeline->pipe_stages[MEM].instruction.bits.rt;
 
-		if (opcode == LW)
-		{
-			uint32_t* data = &pipeline->core_registers_p[pipeline->pipe_stages[MEM].instruction.bits.rd];
-			Cache_ReadData(&pipeline->cache_data, address, data);
-		}
-		else
-		{
+		uint32_t* data = &pipeline->core_registers_p[pipeline->pipe_stages[MEM].instruction.bits.rd];
+		bool response = opcode == LW ? Cache_ReadData(&pipeline->cache_data, address, data) :
 			Cache_WriteData(&pipeline->cache_data, address, pipeline->pipe_stages[MEM].instruction.bits.rd);
-		}
+
+		handle_mem_stall(pipeline, !response);
 	}
 }
 
@@ -198,14 +194,25 @@ static void prepare_registers_params(Pipeline_s *pipeline, PipelineSM_e stage)
 
 static void execute_stages(Pipeline_s* pipeline)
 {
-	for (PipelineSM_e stage = 0; stage < PIPELINE_SIZE; stage++)
+	if (pipeline->memory_stall)
 	{
-		if (pipeline->pipe_stages[stage].is_stalled || pipeline->pipe_stages[stage].pc == UINT16_MAX)
-		{
-			continue;
-		}
+		if(pipeline->pipe_stages[WRITE_BACK].pc != UINT16_MAX)
+			pipe_functions[WRITE_BACK](pipeline);
+		pipe_functions[MEM](pipeline);
+	}
 
-		pipe_functions[stage](pipeline);
+	else 
+	{
+		for (PipelineSM_e stage = 0; stage < PIPELINE_SIZE; stage++)
+		{
+
+			if (pipeline->pipe_stages[stage].is_stalled || pipeline->pipe_stages[stage].pc == UINT16_MAX)
+			{
+				continue;
+			}
+
+			pipe_functions[stage](pipeline);
+		}
 	}
 }
 
@@ -229,32 +236,42 @@ static bool check_registers_hazrads(Pipeline_s *pipeline, PipelineSM_e stage)
 	return compare_register(pipeline, pipeline->pipe_stages[stage].instruction.bits.rd);
 }
 
-static bool pipeline_needs_stall(Pipeline_s* pipeline)
+static bool pipeline_needs_data_hazard_stall(Pipeline_s* pipeline)
 {
 	return check_registers_hazrads(pipeline, EXECUTE) || check_registers_hazrads(pipeline, MEM) 
 		|| check_registers_hazrads(pipeline, WRITE_BACK);
 }
 
-static void init_stall_flags(Pipeline_s* pipeline)
+static void init_data_hazard_stall(Pipeline_s* pipeline)
 {
-	pipeline->stalled = true;
+	pipeline->data_hazard_stall = true;
 	pipeline->pipe_stages[FETCH].is_stalled  = true;
 	pipeline->pipe_stages[DECODE].is_stalled = true;
 }
 
-static void free_stall_flags(Pipeline_s* pipeline)
+static void free_data_hazard_stall(Pipeline_s* pipeline)
 {
-	pipeline->stalled = false;
+	pipeline->data_hazard_stall = false;
 	pipeline->pipe_stages[FETCH].is_stalled = false;
 	pipeline->pipe_stages[DECODE].is_stalled = false;
 }
 
-bool can_free_pipeline(Pipeline_s *pipeline)
+bool can_free_data_hazard_stall(Pipeline_s *pipeline)
 {
-	return pipeline->stalled && !pipeline_needs_stall(pipeline);
+	return pipeline->data_hazard_stall && !pipeline_needs_data_hazard_stall(pipeline);
 }
 
+static void handle_mem_stall(Pipeline_s* pipeline, bool stall)
+{
+	pipeline -> memory_stall = stall;
+	for (int stage = FETCH; stage < WRITE_BACK; stage++)
+	{
+		pipeline->pipe_stages[stage].is_stalled = stall;
+	}
+}
 
-
-
+static bool pipe_stalled(Pipeline_s* pipeline)
+{
+	return pipeline->data_hazard_stall || pipeline->memory_stall;
+}
 
