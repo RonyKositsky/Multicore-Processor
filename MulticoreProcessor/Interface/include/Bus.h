@@ -59,34 +59,20 @@ typedef struct
 {
 	int core_id;
 	void* cache_data;
-	bool (*shared_signal_callback)(void* cache_data, Bus_packet_s* packet);
-	bool (*cache_snooping_callback)(void* cache_data, Bus_packet_s* packet, uint8_t address_offset);
-	bool (*cache_response_callback)(void* cache_data, Bus_packet_s* packet, uint8_t* address_offset);
 } Bus_cache_interface_s;
 
+typedef bool (*shared_signal_callback)(void* cache_data, Bus_packet_s* packet);
+typedef bool (*cache_snooping_callback)(void* cache_data, Bus_packet_s* packet, uint8_t address_offset);
+typedef bool (*cache_response_callback)(void* cache_data, Bus_packet_s* packet, uint8_t* address_offset);
 typedef bool (*memory_callback_t)(Bus_packet_s* packet, bool direct_transaction);
 
 /************************************
 *       API                         *
 ************************************/
-
-/*!
-******************************************************************************
-\brief
- Initialize bus
-
-\details
- Must be called only once
-
-\param
- [in] counter_val - reset counter value
- [out] out_val    -
-
-\return none
-*****************************************************************************/
-void Bus_Init(void);
-
 void Bus_RegisterCache(Bus_cache_interface_s cache_interface);
+void Bus_RegisterCacheCallbacks(shared_signal_callback signal_callback, 
+								cache_snooping_callback snooping_callback, 
+								cache_response_callback response_callback);
 void Bus_RegisterMemoryCallback(memory_callback_t callback);
 
 /*!

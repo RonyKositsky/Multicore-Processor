@@ -89,6 +89,18 @@ void Cache_Init(CacheData_s* data, Cache_Id_e id);
 /*!
 ******************************************************************************
 \brief
+Register cache callback handles to the bus.
+
+\details
+Must be called only once, after initialization
+
+\return none
+*****************************************************************************/
+void Cache_RegisterBusHandles(void)
+
+/*!
+******************************************************************************
+\brief
  Read data from cache
 
 \details

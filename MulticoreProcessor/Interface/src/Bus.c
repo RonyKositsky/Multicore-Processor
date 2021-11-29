@@ -52,7 +52,14 @@ typedef struct _queue_item_s
 *      variables                    *
 ************************************/
 static Bus_cache_interface_s gCacheInterface[NUMBER_OF_CORES];
-static memory_callback_t gMemoryCallback;
+//
+// Callbacks
+static shared_signal_callback	gSharedSignalCallback;
+static cache_snooping_callback	gCacheSnoopingCallback;
+static cache_response_callback	gCacheResponseCallback;
+static memory_callback_t		gMemoryCallback;
+//
+// global variables
 static bool gBusInProgress;
 static Bus_packet_s gCurrentPacket;
 static uint8_t gAddressOffset;
@@ -80,6 +87,16 @@ void Bus_RegisterCache(Bus_cache_interface_s cache_interface)
 {
 	gCacheInterface[cache_interface.core_id] = cache_interface;
 }
+
+void Bus_RegisterCacheCallbacks(shared_signal_callback signal_callback,
+								cache_snooping_callback snooping_callback,
+								cache_response_callback response_callback)
+{
+	gSharedSignalCallback = signal_callback;
+	gCacheSnoopingCallback = snooping_callback;
+	gCacheResponseCallback = response_callback;
+}
+
 
 void Bus_RegisterMemoryCallback(memory_callback_t callback)
 {
@@ -124,7 +141,7 @@ void Bus_Itereration(void)
 		// print response trace.
 
 		// send the response packet back to the sender
-		if (gCacheInterface[gCurrentPacket.bus_origid].cache_response_callback(gCacheInterface[gCurrentPacket.bus_origid].cache_data, &packet, &gAddressOffset))
+		if (gCacheResponseCallback(gCacheInterface[gCurrentPacket.bus_origid].cache_data, &packet, &gAddressOffset))
 			gBusInProgress = false;
 	}
 }
@@ -137,7 +154,7 @@ static bool check_shared_line(Bus_packet_s* packet)
 {
 	for (int i = 0; i < NUMBER_OF_CORES; i++)
 	{
-		if (gCacheInterface[i].shared_signal_callback(gCacheInterface[i].cache_data, packet))
+		if (gSharedSignalCallback(gCacheInterface[i].cache_data, packet))
 			return true;
 	}
 	return false;
@@ -150,7 +167,7 @@ static bool check_cache_snooping(Bus_packet_s* packet)
 
 	bool cache_response = false;
 	for (int i = 0; i < NUMBER_OF_CORES; i++)
-		cache_response |= gCacheInterface[i].cache_snooping_callback(gCacheInterface[i].cache_data, packet, gAddressOffset);
+		cache_response |= gCacheSnoopingCallback(gCacheInterface[i].cache_data, packet, gAddressOffset);
 	
 	return cache_response;
 }

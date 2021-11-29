@@ -45,6 +45,8 @@ typedef Cache_mesi_e(*snooping_state)(CacheData_s* data, Bus_packet_s* packet);
 /************************************
 *      static functions             *
 ************************************/
+static void dirty_block_handling(CacheData_s* data, cache_addess_s addr);
+//
 static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet);
 static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t address_offset);
 static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t* address_offset);
@@ -88,15 +90,15 @@ void Cache_Init(CacheData_s* data, Cache_Id_e id)
 	data->id = id;
 
 	// Register callback
-	Bus_cache_interface_s cache_interface = 
-	{
-		.core_id = id, .cache_data = data, 
-		.shared_signal_callback = shared_signal_handle, 
-		.cache_snooping_callback = cache_snooping_handle,
-		.cache_response_callback = cache_response_handle 
-	};
-
+	Bus_cache_interface_s cache_interface = { .core_id = id, .cache_data = data };
 	Bus_RegisterCache(cache_interface);
+}
+
+void Cache_RegisterBusHandles(void)
+{
+	Bus_RegisterCacheCallbacks(shared_signal_handle,
+							cache_snooping_handle,
+							cache_response_handle);
 }
 
 bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
@@ -115,32 +117,13 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 	}
 	// we had a miss.
 	//
-	Bus_packet_s packet;
-	packet.bus_origid = cache_data->id;
-
 	// first, check if the required block is dirty
 	// if so, we need first to send the block into the memory
-	if (cache_data->tsram[addr.fields.index].fields.mesi == cache_mesi_modified)
-	{
-		// get stored block address
-		cache_addess_s block_addr = {
-			.fields.index = addr.fields.index,
-			.fields.tag = cache_data->tsram[addr.fields.index].fields.tag,
-			.fields.offset = 0
-		};
-
-		// send bus flush
-		packet.bus_cmd = bus_flush;
-		packet.bus_addr = block_addr.address;
-
-		uint16_t index = addr.fields.index * BLOCK_SIZE + addr.fields.offset;
-		packet.bus_data = cache_data->dsram[index];
-		
-		// add the flush transaction into the bus queue
-		Bus_AddTransaction(packet);
-	}
+	dirty_block_handling(cache_data, addr);
 
 	// now, we need to take the new block from the main memory.
+	Bus_packet_s packet;
+	packet.bus_origid = cache_data->id;
 	packet.bus_cmd = bus_busRd;
 	packet.bus_addr = addr.address;
 
@@ -157,9 +140,6 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 	//
 	Tsram_s* tsram = &(cache_data->tsram[addr.fields.index]);
 	//
- 	Bus_packet_s packet;
-	packet.bus_origid = cache_data->id;
-
 	// check if addresss tag is locate on block_number
 	if (tsram->fields.tag == addr.fields.tag)
 	{
@@ -172,6 +152,8 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 		else if (tsram->fields.mesi == cache_mesi_shared)
 		{
 			// Send Bus_Rdx to make sure this block is exclusive ours
+			Bus_packet_s packet;
+			packet.bus_origid = cache_data->id;
 			packet.bus_cmd = bus_busRdX;
 			packet.bus_addr = addr.address;
 			Bus_AddTransaction(packet);
@@ -181,15 +163,23 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 		cache_data->dsram[index] = data;
 		// update modified flag.
 		cache_data->tsram[addr.fields.index].fields.mesi = cache_mesi_modified;
-
-
-
 		return true;
 	}
 	// we had a miss.
+	//
+	// first, check if the required block is dirty
+	// if so, we need first to send the block into the memory
+	dirty_block_handling(cache_data, addr);
+
 	// we need to take the data from the main memory.
-
-
+	Bus_packet_s packet;
+	packet.bus_origid = cache_data->id;
+	packet.bus_cmd = bus_busRdX;
+	packet.bus_addr = addr.address;
+	
+	// add the read transaction into the bus queue
+	Bus_AddTransaction(packet);
+	
 	return false;
 }
 
@@ -197,6 +187,33 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 /************************************
 * static implementation             *
 ************************************/
+static void dirty_block_handling(CacheData_s* data, cache_addess_s addr)
+{
+	Bus_packet_s packet;
+	packet.bus_origid = data->id;
+
+	if (data->tsram[addr.fields.index].fields.mesi == cache_mesi_modified)
+	{
+		// get stored block address
+		cache_addess_s block_addr = {
+			.fields.index = addr.fields.index,
+			.fields.tag = data->tsram[addr.fields.index].fields.tag,
+			.fields.offset = 0
+		};
+
+		// send bus flush
+		packet.bus_cmd = bus_flush;
+		packet.bus_addr = block_addr.address;
+
+		uint16_t index = addr.fields.index * BLOCK_SIZE + addr.fields.offset;
+		packet.bus_data = data->dsram[index];
+
+		// add the flush transaction into the bus queue
+		Bus_AddTransaction(packet);
+	}
+}
+
+
 static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet)
 {
 	// check if this is my packet

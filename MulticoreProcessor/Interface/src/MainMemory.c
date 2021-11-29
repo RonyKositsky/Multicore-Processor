@@ -74,7 +74,7 @@ void MainMemory_Init(void)
 ************************************/
 static bool bus_transaction_handler(Bus_packet_s* packet, bool direct_transaction)
 {
-	if (packet->bus_cmd == bus_no_command || packet->bus_cmd == bus_busRdX)
+	if (packet->bus_cmd == bus_no_command)
 		return false;
 
 	if (!gMemoryTransaction)
@@ -85,7 +85,7 @@ static bool bus_transaction_handler(Bus_packet_s* packet, bool direct_transactio
 
 	if (counter >= 16)
 	{
-		if (packet->bus_cmd == bus_busRd)
+		if (packet->bus_cmd == bus_busRd || packet->bus_cmd == bus_busRdX)
 		{
 			// send the memory value
 			packet->bus_origid = bus_main_memory;
