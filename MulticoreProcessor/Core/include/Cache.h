@@ -96,7 +96,7 @@ Must be called only once, after initialization
 
 \return none
 *****************************************************************************/
-void Cache_RegisterBusHandles(void)
+void Cache_RegisterBusHandles(void);
 
 /*!
 ******************************************************************************
