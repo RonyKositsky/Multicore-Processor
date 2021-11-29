@@ -57,7 +57,8 @@ typedef struct
 typedef struct
 {
 	bool halted;
-	bool stalled;
+	bool data_hazard_stall;
+	bool memory_stall;
 	uint32_t *insturcionts_p;
 	uint32_t* core_registers_p;
 	CacheData_s cache_data;
