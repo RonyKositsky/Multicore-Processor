@@ -35,7 +35,8 @@ typedef enum
 	bus_core1,
 	bus_core2,
 	bus_core3,
-	bus_main_memory
+	bus_main_memory,
+	bus_invalid_originator = 0xFFFF
 } Bus_originator_e;
 
 typedef enum

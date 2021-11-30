@@ -137,7 +137,10 @@ void Bus_Iter(void)
 
 
 	if (bus_fifo_IsEmpty() && !gBusInProgress)
+	{
+		gCurrentPacket.bus_origid = bus_invalid_originator;
 		return;
+	}
 
 
 	if (!gBusInProgress)
