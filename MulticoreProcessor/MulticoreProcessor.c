@@ -19,6 +19,7 @@ ALL RIGHTS RESERVED
 #include "Interface/include/Files.h"
 #include "Core/include/Core.h"
 #include "Interface/include/MainMemory.h"
+#include "Interface/include/Bus.h"
 #include <string.h>
 
 /************************************
@@ -63,12 +64,14 @@ int main(int argc, char *argv[])
 
 	int i = 0;
 	//while (!IsHalted())
-	while(i < 20)
+	while(i < 200)
 	{
-		for (int i = 0; i < NUMBER_OF_CORES; i++)
+		/*for (int i = 0; i < NUMBER_OF_CORES; i++)
 		{
 			Core_Iter(&cores[i]);
-		}
+		}*/
+		Bus_Iter();
+		Core_Iter(&cores[2]);
 		i++;
 	}
 

@@ -98,6 +98,6 @@ void Bus_AddTransaction(Bus_packet_s packet);
 
 \return none
 *****************************************************************************/
-void Bus_Itereration(void);
+void Bus_Iter(void);
 
 #endif //__BUS_H__

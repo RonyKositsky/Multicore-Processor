@@ -59,6 +59,9 @@ void Core_Init(Core_s *core, uint8_t id)
 	memset(&core->pipeline.cache_data, 0, sizeof(CacheData_s));
 	Cache_Init(&core->pipeline.cache_data, id);
 
+	//TODO: maybe move it to different location.
+	Cache_RegisterBusHandles();
+
 	core->pipeline.core_registers_p = core->register_array;
 	core->pipeline.insturcionts_p = core->instructions_memory_image;
 	core->pipeline.opcode_params.pc = &(core->program_counter);

@@ -30,6 +30,7 @@ typedef enum
 	BNE,
 	BLT,
 	BGT,
+	BLE,
 	BGE,
 	JAL,
 	LW,

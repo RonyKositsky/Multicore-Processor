@@ -60,6 +60,7 @@ static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 ************************************/
 void Pipeline_Init(Pipeline_s *pipeline)
 {
+
 	pipeline->halted = false;
 	pipeline->data_hazard_stall = false;
 	pipeline->memory_stall = false;
@@ -157,18 +158,17 @@ static void execute(Pipeline_s* pipeline)
 	}
 }
 
-
 static void mem(Pipeline_s* pipeline)
 {
 	uint8_t opcode = pipeline->pipe_stages[MEM].instruction.bits.opcode;
  	if (Opcode_IsMemoryCommand(opcode))
 	{
-		uint32_t address = pipeline->pipe_stages[MEM].instruction.bits.rs + 
-			pipeline->pipe_stages[MEM].instruction.bits.rt;
+		prepare_registers_params(pipeline, MEM);
+		uint32_t address = pipeline->opcode_params.rs + pipeline->opcode_params.rt;
 
-		uint32_t* data = &pipeline->core_registers_p[pipeline->pipe_stages[MEM].instruction.bits.rd];
+		uint32_t* data = pipeline->opcode_params.rd;
 		bool response = opcode == LW ? Cache_ReadData(&pipeline->cache_data, address, data) :
-			Cache_WriteData(&pipeline->cache_data, address, pipeline->pipe_stages[MEM].instruction.bits.rd);
+			Cache_WriteData(&pipeline->cache_data, address, *data);
 
 		handle_mem_stall(pipeline, !response);
 	}
@@ -203,7 +203,7 @@ static void execute_stages(Pipeline_s* pipeline)
 
 	else 
 	{
-		for (PipelineSM_e stage = 0; stage < PIPELINE_SIZE; stage++)
+		for (PipelineSM_e stage = FETCH; stage < PIPELINE_SIZE; stage++)
 		{
 
 			if (pipeline->pipe_stages[stage].is_stalled || pipeline->pipe_stages[stage].pc == UINT16_MAX)
@@ -229,7 +229,7 @@ static bool compare_register(Pipeline_s* pipeline, uint16_t reg)
 
 static bool check_registers_hazrads(Pipeline_s *pipeline, PipelineSM_e stage)
 {
-	if (pipeline->pipe_stages[stage].is_stalled)
+	if (pipeline->pipe_stages[stage].pc == UINT16_MAX)
 	{
 		return false;
 	}
@@ -264,10 +264,8 @@ bool can_free_data_hazard_stall(Pipeline_s *pipeline)
 static void handle_mem_stall(Pipeline_s* pipeline, bool stall)
 {
 	pipeline -> memory_stall = stall;
-	for (int stage = FETCH; stage < WRITE_BACK; stage++)
-	{
-		pipeline->pipe_stages[stage].is_stalled = stall;
-	}
+	pipeline->pipe_stages[EXECUTE].is_stalled = stall;
+	pipeline->pipe_stages[MEM].is_stalled = stall;
 }
 
 static bool pipe_stalled(Pipeline_s* pipeline)

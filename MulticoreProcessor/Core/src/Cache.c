@@ -107,7 +107,8 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 	addr.address = address;
 
 	// check if addresss tag is locate on block_number
-	if (cache_data->tsram[addr.fields.index].fields.tag == addr.fields.tag) 
+	if (cache_data->tsram[addr.fields.index].fields.tag == addr.fields.tag && 
+		cache_data->tsram[addr.fields.index].fields.mesi != cache_mesi_invalid)
 	{
 		// hit on cache, getting the value 
 		uint16_t index = addr.fields.index * BLOCK_SIZE + addr.fields.offset;
@@ -141,7 +142,7 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 	Tsram_s* tsram = &(cache_data->tsram[addr.fields.index]);
 	//
 	// check if addresss tag is locate on block_number
-	if (tsram->fields.tag == addr.fields.tag)
+	if (tsram->fields.tag == addr.fields.tag && tsram->fields.mesi != cache_mesi_invalid)
 	{
 		// hit on cache, write data
 		// if the block is exclusive ours, we just change it locally
@@ -269,11 +270,16 @@ static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8
 		return false;
 
 	// execute block state machine
-	Cache_mesi_e next_state = gResponseSM[tsram->fields.mesi](data, packet);
+	//Cache_mesi_e next_state = gResponseSM[tsram->fields.mesi](data, packet);
+	if (packet->bus_cmd == bus_flush)
+	{
+		uint16_t index = address.fields.index * BLOCK_SIZE + address.fields.offset;
+		data->dsram[index] = packet->bus_data;
+	}
 
 	if (*address_offset == (BLOCK_SIZE - 1))
 	{
-		tsram->fields.mesi = next_state;
+		tsram->fields.mesi = packet->bus_shared ? cache_mesi_shared : cache_mesi_exclusive;
 		return true;
 	}
 

@@ -80,7 +80,7 @@ static bool bus_transaction_handler(Bus_packet_s* packet, bool direct_transactio
 	if (!gMemoryTransaction)
 	{
 		gMemoryTransaction = true;
-		counter = !direct_transaction ? 1 : 16;
+		counter = !direct_transaction ? 0 : 16;
 	}
 
 	if (counter >= 16)
@@ -101,6 +101,7 @@ static bool bus_transaction_handler(Bus_packet_s* packet, bool direct_transactio
 		if (counter == 19)
 			gMemoryTransaction = false;
 		
+		counter++;
 		return true;
 	}
 

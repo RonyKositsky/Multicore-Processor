@@ -21,6 +21,7 @@ ALL RIGHTS RESERVED
 //
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /************************************
 *      definitions                 *
@@ -63,6 +64,7 @@ static memory_callback_t		gMemoryCallback;
 static bool gBusInProgress;
 static Bus_packet_s gCurrentPacket;
 static uint8_t gAddressOffset;
+static uint32_t gIterCounter = 0;
 
 // Fifo variables
 static queue_item_s* gQueueHead;
@@ -108,8 +110,11 @@ void Bus_AddTransaction(Bus_packet_s packet)
 	bus_fifo_Enqueue(packet);
 }
 
-void Bus_Itereration(void)
+void Bus_Iter(void)
 {
+	if (!gIterCounter++)
+		return;
+
 	if (bus_fifo_IsEmpty() && !gBusInProgress)
 		return;
 
@@ -121,7 +126,7 @@ void Bus_Itereration(void)
 		gBusInProgress = true;
 		gAddressOffset = 0;
 		// print bus trace
-		
+		printf("bus trace - (#%d) dequeue next cmd\n", gIterCounter);
 	}
 
 	Bus_packet_s packet;
@@ -139,6 +144,7 @@ void Bus_Itereration(void)
 	if (cache_response || memory_response)
 	{
 		// print response trace.
+		printf("bus trace - (#%d) response to sender\n", gIterCounter);
 
 		// send the response packet back to the sender
 		if (gCacheResponseCallback(gCacheInterface[gCurrentPacket.bus_origid].cache_data, &packet, &gAddressOffset))
