@@ -103,6 +103,9 @@ void Cache_RegisterBusHandles(void)
 
 bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 {
+	if (Bus_InTransaction(cache_data->id))
+		return false;
+	
 	cache_addess_s addr;
 	addr.address = address;
 
@@ -136,6 +139,9 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 
 bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data) 
 {
+	if (Bus_InTransaction(cache_data->id))
+		return false; 
+	
 	cache_addess_s addr;
 	addr.address = address;
 	//

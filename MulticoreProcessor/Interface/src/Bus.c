@@ -41,6 +41,14 @@ typedef union
 	} fields;
 } memory_addess_s;
 
+typedef enum
+{
+	transaction_idle_state,
+	transaction_start_operation_state,
+	transaction_operation_state,
+	transaction_finally_state,
+} transaction_state_e;
+
 // Fifo types
 typedef struct _queue_item_s
 {
@@ -62,6 +70,7 @@ static memory_callback_t		gMemoryCallback;
 //
 // global variables
 static bool gBusInProgress;
+static transaction_state_e gBusTransactionState[NUMBER_OF_CORES] = { 0, 0, 0, 0 };
 static Bus_packet_s gCurrentPacket;
 static uint8_t gAddressOffset;
 static uint32_t gIterCounter = 0;
@@ -107,23 +116,40 @@ void Bus_RegisterMemoryCallback(memory_callback_t callback)
 
 void Bus_AddTransaction(Bus_packet_s packet)
 {
+	// check if this a duplicate transaction
 	bus_fifo_Enqueue(packet);
+}
+
+bool Bus_InTransaction(Bus_originator_e originator)
+{
+	return gBusTransactionState[gCurrentPacket.bus_origid] != transaction_idle_state &&
+		gBusTransactionState[gCurrentPacket.bus_origid] != transaction_start_operation_state;
 }
 
 void Bus_Iter(void)
 {
-	if (!gIterCounter++)
-		return;
+	gIterCounter++;
+	
+	if (gBusTransactionState[gCurrentPacket.bus_origid] == transaction_finally_state)
+		gBusTransactionState[gCurrentPacket.bus_origid] = transaction_idle_state;
+	else if (gBusTransactionState[gCurrentPacket.bus_origid] == transaction_start_operation_state)
+		gBusTransactionState[gCurrentPacket.bus_origid] = transaction_operation_state;
+
 
 	if (bus_fifo_IsEmpty() && !gBusInProgress)
 		return;
 
+
 	if (!gBusInProgress)
 	{
+		int prev_origid = gCurrentPacket.bus_origid;
+		
 		if (!bus_fifo_Dequeue(&gCurrentPacket))
 			return;
 
 		gBusInProgress = true;
+		gBusTransactionState[gCurrentPacket.bus_origid] = prev_origid == gCurrentPacket.bus_origid ? 
+			transaction_start_operation_state : transaction_operation_state;
 		gAddressOffset = 0;
 		// print bus trace
 		printf("bus trace - (#%d) dequeue next cmd\n", gIterCounter);
@@ -148,7 +174,10 @@ void Bus_Iter(void)
 
 		// send the response packet back to the sender
 		if (gCacheResponseCallback(gCacheInterface[gCurrentPacket.bus_origid].cache_data, &packet, &gAddressOffset))
+		{
+			gBusTransactionState[gCurrentPacket.bus_origid] = transaction_finally_state;
 			gBusInProgress = false;
+		}
 	}
 }
 

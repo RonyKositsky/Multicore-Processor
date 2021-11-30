@@ -94,6 +94,18 @@ void Bus_AddTransaction(Bus_packet_s packet);
 /*!
 ******************************************************************************
 \brief
+ Check if the bus is in transaction
+
+\param
+ [in] originator - the id of the core.
+
+\return true if the bus is in transaction
+*****************************************************************************/
+bool Bus_InTransaction(Bus_originator_e originator);
+
+/*!
+******************************************************************************
+\brief
  Bus iteration
 
 \return none
