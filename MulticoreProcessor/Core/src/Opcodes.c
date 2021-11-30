@@ -349,8 +349,7 @@ R[params->rd] = MEM[R[params->rs]+R[params->rt]]
 *****************************************************************************/
 void LoadWord(Opcode_fucntion_params_s *params) 
 {
-	uint32_t address = params->rs + params->rt;
-	*params->rd = params->memory_p[address];
+	
 }
 
 /*!
@@ -368,8 +367,7 @@ MEM[R[params->rs]+R[params->rt]] = R[params->rd]
 *****************************************************************************/
 void StoreWord(Opcode_fucntion_params_s *params)
 {
-	uint32_t address = params->rs + params->rt;
-	params->memory_p[address] = *params->rd;
+	
 }
 
 /*!

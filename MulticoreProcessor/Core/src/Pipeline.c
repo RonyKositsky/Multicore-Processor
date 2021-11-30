@@ -42,14 +42,9 @@ static void mem(Pipeline_s* pipeline);
 static void writeback(Pipeline_s* pipeline);
 static void execute_stages(Pipeline_s* pipeline);
 static void prepare_registers_params(Pipeline_s* pipeline, PipelineSM_e stage);
-static void init_data_hazard_stall(Pipeline_s* pipeline);
-static void free_data_hazard_stall(Pipeline_s* pipeline);
-static void handle_mem_stall(Pipeline_s* pipeline, bool stall);
-static bool pipe_stalled(Pipeline_s* pipeline);
 static bool pipeline_needs_data_hazard_stall(Pipeline_s* pipeline);
 static bool compare_register(Pipeline_s* pipeline, uint16_t reg);
 static bool check_registers_hazrads(Pipeline_s* pipeline, PipelineSM_e stage);
-static bool can_free_data_hazard_stall(Pipeline_s* pipeline);
 static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 {
 	fetch, decode, execute, mem, writeback
@@ -60,7 +55,6 @@ static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 ************************************/
 void Pipeline_Init(Pipeline_s *pipeline)
 {
-
 	pipeline->halted = false;
 	pipeline->data_hazard_stall = false;
 	pipeline->memory_stall = false;
@@ -81,10 +75,7 @@ void Pipeline_Init(Pipeline_s *pipeline)
 void Pipeline_Execute(Pipeline_s* pipeline)
 {
 	execute_stages(pipeline);
-	if (can_free_data_hazard_stall(pipeline))
-	{
-		free_data_hazard_stall(pipeline);
-	}
+	pipeline->data_hazard_stall = pipeline_needs_data_hazard_stall(pipeline);
 }
 
 void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
@@ -102,10 +93,19 @@ void Pipeline_BubbleCommands(Pipeline_s* pipeline)
 {
 	for (int stage = PIPELINE_SIZE - 1; stage > FETCH; stage--)
 	{
-		if (pipeline->pipe_stages[stage - 1].is_stalled) 
+		if (pipeline->memory_stall)
+		{
+			pipeline->pipe_stages[WRITE_BACK].pc = UINT16_MAX;
+			break;
+		}
+		else if (pipeline->data_hazard_stall && stage == EXECUTE)
+		{
+			pipeline->pipe_stages[EXECUTE].pc = UINT16_MAX;
+			break;
+		}
+		else if (pipeline->pipe_stages[stage - 1].pc == UINT16_MAX)
 		{
 			pipeline->pipe_stages[stage].pc = UINT16_MAX;
-			break;
 		}
 		else
 		{
@@ -125,7 +125,7 @@ static void fetch(Pipeline_s* pipeline)
 {
 	pipeline->pipe_stages[FETCH].pc = *(pipeline->opcode_params.pc);
 	pipeline->pipe_stages[FETCH].instruction.command = pipeline->insturcionts_p[*(pipeline->opcode_params.pc)];
-	if (!pipe_stalled(pipeline))
+	if (!(pipeline->data_hazard_stall || pipeline->memory_stall)) // Not in stall
 	{
 		*(pipeline->opcode_params.pc)+= 1;
 	}
@@ -140,11 +140,6 @@ static void decode(Pipeline_s* pipeline)
 	{
 		prepare_registers_params(pipeline, DECODE);
 		pipeline->pipe_stages[DECODE].operation(&pipeline->opcode_params);
-	}
-
-	if (pipeline_needs_data_hazard_stall(pipeline))
-	{
-		init_data_hazard_stall(pipeline);
 	}
 }
 
@@ -170,7 +165,7 @@ static void mem(Pipeline_s* pipeline)
 		bool response = opcode == LW ? Cache_ReadData(&pipeline->cache_data, address, data) :
 			Cache_WriteData(&pipeline->cache_data, address, *data);
 
-		handle_mem_stall(pipeline, !response);
+		pipeline->memory_stall = !response;
 	}
 }
 
@@ -194,23 +189,12 @@ static void prepare_registers_params(Pipeline_s *pipeline, PipelineSM_e stage)
 
 static void execute_stages(Pipeline_s* pipeline)
 {
-	if (pipeline->memory_stall)
-	{
-		if(pipeline->pipe_stages[WRITE_BACK].pc != UINT16_MAX)
-			pipe_functions[WRITE_BACK](pipeline);
-		pipe_functions[MEM](pipeline);
-	}
+	uint8_t stage = pipeline->memory_stall ? MEM : pipeline->data_hazard_stall ? EXECUTE : FETCH;
 
-	else 
+	for (; stage < PIPELINE_SIZE; stage++)
 	{
-		for (PipelineSM_e stage = FETCH; stage < PIPELINE_SIZE; stage++)
+		if (!(pipeline->pipe_stages[stage].pc == UINT16_MAX))
 		{
-
-			if (pipeline->pipe_stages[stage].is_stalled || pipeline->pipe_stages[stage].pc == UINT16_MAX)
-			{
-				continue;
-			}
-
 			pipe_functions[stage](pipeline);
 		}
 	}
@@ -224,6 +208,10 @@ static bool compare_register(Pipeline_s* pipeline, uint16_t reg)
 	}
 
 	InstructionFormat_s decode_ins = pipeline->pipe_stages[DECODE].instruction;
+
+	if(decode_ins.bits.opcode <= SRL || decode_ins.bits.opcode == LW)
+		return reg == decode_ins.bits.rs || reg == decode_ins.bits.rt;
+
 	return reg == decode_ins.bits.rd || reg == decode_ins.bits.rs || reg == decode_ins.bits.rt;
 }
 
@@ -240,36 +228,5 @@ static bool pipeline_needs_data_hazard_stall(Pipeline_s* pipeline)
 {
 	return check_registers_hazrads(pipeline, EXECUTE) || check_registers_hazrads(pipeline, MEM) 
 		|| check_registers_hazrads(pipeline, WRITE_BACK);
-}
-
-static void init_data_hazard_stall(Pipeline_s* pipeline)
-{
-	pipeline->data_hazard_stall = true;
-	pipeline->pipe_stages[FETCH].is_stalled  = true;
-	pipeline->pipe_stages[DECODE].is_stalled = true;
-}
-
-static void free_data_hazard_stall(Pipeline_s* pipeline)
-{
-	pipeline->data_hazard_stall = false;
-	pipeline->pipe_stages[FETCH].is_stalled = false;
-	pipeline->pipe_stages[DECODE].is_stalled = false;
-}
-
-bool can_free_data_hazard_stall(Pipeline_s *pipeline)
-{
-	return pipeline->data_hazard_stall && !pipeline_needs_data_hazard_stall(pipeline);
-}
-
-static void handle_mem_stall(Pipeline_s* pipeline, bool stall)
-{
-	pipeline -> memory_stall = stall;
-	pipeline->pipe_stages[EXECUTE].is_stalled = stall;
-	pipeline->pipe_stages[MEM].is_stalled = stall;
-}
-
-static bool pipe_stalled(Pipeline_s* pipeline)
-{
-	return pipeline->data_hazard_stall || pipeline->memory_stall;
 }
 
