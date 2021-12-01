@@ -410,7 +410,9 @@ Opcode OpcodeMapping[NUMBER_OF_OPCODES] = {
 	{"jal", "0F", JumpAndLink},
 	{"lw", "10", LoadWord},
 	{"sw", "11", StoreWord},
-	{"halt", "12", Halt},
+	{"rsv", "12", NULL},
+	{"rsv", "13", NULL},
+	{"halt", "14", Halt},
 };
 
 bool Opcode_IsBranchResulotion(uint16_t opcode)

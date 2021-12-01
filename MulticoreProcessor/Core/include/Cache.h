@@ -46,7 +46,7 @@ typedef enum
 	cache_mesi_exclusive,
 	cache_mesi_modified,
 	//
-	cache_mesi_max_state
+	cache_mesi_max_state,
 } Cache_mesi_e;
 
 typedef union
@@ -56,7 +56,7 @@ typedef union
 	struct
 	{
 		uint16_t tag : 12;	// [0:11]
-		Cache_mesi_e mesi : 2;	// [12:13]
+		uint8_t mesi : 2;	// [12:13]
 	}fields;
 } Tsram_s;
 

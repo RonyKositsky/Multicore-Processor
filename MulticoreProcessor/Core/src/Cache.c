@@ -108,10 +108,11 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 	
 	cache_addess_s addr;
 	addr.address = address;
-
+	//
+	Tsram_s* tsram = &(cache_data->tsram[addr.fields.index]);
+	// 
 	// check if addresss tag is locate on block_number
-	if (cache_data->tsram[addr.fields.index].fields.tag == addr.fields.tag && 
-		cache_data->tsram[addr.fields.index].fields.mesi != cache_mesi_invalid)
+	if (tsram->fields.tag == addr.fields.tag && tsram->fields.mesi != cache_mesi_invalid)
 	{
 		// hit on cache, getting the value 
 		uint16_t index = addr.fields.index * BLOCK_SIZE + addr.fields.offset;
@@ -228,14 +229,9 @@ static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet)
 		return false;
 
 	cache_addess_s address = { .address = packet->bus_addr };
-	//if (packet->bus_cmd == bus_busRd)			// TODO: check if need this if statement
-	//{
-	//	// check if addresss tag is locate on block_number
-	//	if (data->tsram[address.fields.index].fields.tag == address.fields.tag)
-	//		return true;
-	//}
-
-	return data->tsram[address.fields.index].fields.tag == address.fields.tag;
+	Tsram_s* tsram = &(data->tsram[address.fields.index]);
+	//
+	return tsram->fields.tag == address.fields.tag && tsram->fields.mesi != cache_mesi_invalid;
 }
 
 static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t address_offset)
