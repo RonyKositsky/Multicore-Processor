@@ -69,6 +69,9 @@ void Core_Init(Core_s *core, uint8_t id)
 
 void Core_Iter(Core_s* core)
 {
+	if (Pipeline_PipeFlushed(&core->pipeline))
+		return;
+
 	uint32_t regs_copy[NUMBER_OF_REGISTERS];
 	memcpy(regs_copy, core->register_array, sizeof(core->register_array));
 
@@ -76,11 +79,6 @@ void Core_Iter(Core_s* core)
 	Pipeline_Execute(&core->pipeline);
 	write_trace(core, regs_copy);
 	Pipeline_BubbleCommands(&core->pipeline);
-
-	if (core->pipeline.halted)
-	{
-		//handle halted.
-	}
 }
 
 void Core_Teaddown(Core_s* core)

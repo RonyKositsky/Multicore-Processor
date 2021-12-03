@@ -48,15 +48,28 @@ typedef struct
 	bool* halt;
 }Opcode_fucntion_params_s;
 
-typedef struct
-{
-	char* OpcodeName;
-	char* OpcodeNumber;
-	void (*OperationFunc)(Opcode_fucntion_params_s *params);
-}Opcode;
+void Add(Opcode_fucntion_params_s* params);
+void Sub(Opcode_fucntion_params_s* params);
+void And(Opcode_fucntion_params_s* params);
+void Or(Opcode_fucntion_params_s* params);
+void Xor(Opcode_fucntion_params_s* params);
+void Multiply(Opcode_fucntion_params_s* params);
+void LogicShiftLeft(Opcode_fucntion_params_s* params);
+void ArithmeticShiftRight(Opcode_fucntion_params_s* params);
+void LogicShiftRight(Opcode_fucntion_params_s* params);
+void BranchEqual(Opcode_fucntion_params_s* params);
+void BranchNotEqual(Opcode_fucntion_params_s* params);
+void BranchLessThen(Opcode_fucntion_params_s* params);
+void BranchGraterthen(Opcode_fucntion_params_s* params);
+void BranchLessEqual(Opcode_fucntion_params_s* params);
+void BranchGraterEqual(Opcode_fucntion_params_s* params);
+void JumpAndLink(Opcode_fucntion_params_s* params);
 
-Opcode OpcodeMapping[NUMBER_OF_OPCODES];
-
+static void (*OpcodeMapping[NUMBER_OF_OPCODES])(Opcode_fucntion_params_s* params) = {
+	 Add, Sub, And, Or, Xor, Multiply, LogicShiftLeft, ArithmeticShiftRight,
+	 LogicShiftRight, BranchEqual, BranchNotEqual, BranchLessThen, BranchGraterthen,
+	 BranchLessEqual, BranchGraterEqual, JumpAndLink
+};
 
 bool Opcode_IsBranchResulotion(uint16_t opcode);
 

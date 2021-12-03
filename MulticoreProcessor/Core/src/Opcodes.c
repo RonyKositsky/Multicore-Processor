@@ -334,87 +334,9 @@ void JumpAndLink(Opcode_fucntion_params_s *params)
 	*params->pc = (uint16_t)(*params->rd & 0x1FF); // Taking the low 10 bits
 }
 
-/*!
-******************************************************************************
-\brief
-R[params->rd] = MEM[R[params->rs]+R[params->rt]]
-
-\param
-[in] params->rd - params->rd register value.
-[in] params->rs - params->rs register value.
-[in] params->rt - params->rt register value.
-[in] core - The core on which we will run the operation.
-
-\return none
-*****************************************************************************/
-void LoadWord(Opcode_fucntion_params_s *params) 
-{
-	
-}
-
-/*!
-******************************************************************************
-\brief
-MEM[R[params->rs]+R[params->rt]] = R[params->rd]
-
-\param
-[in] params->rd - params->rd register value.
-[in] params->rs - params->rs register value.
-[in] params->rt - params->rt register value.
-[in] core - The core on which we will run the operation.
-
-\return none
-*****************************************************************************/
-void StoreWord(Opcode_fucntion_params_s *params)
-{
-	
-}
-
-/*!
-******************************************************************************
-\brief
-Halt this core
-
-\param
-[in] params->rd - params->rd register value.
-[in] params->rs - params->rs register value.
-[in] params->rt - params->rt register value.
-[in] core - The core on which we will run the operation.
-
-\return none
-*****************************************************************************/
-void Halt(Opcode_fucntion_params_s *params)
-{
-	*params->halt = true;
-}
-
 /************************************
 *       API implementation          *
 ************************************/
-Opcode OpcodeMapping[NUMBER_OF_OPCODES] = {
-	{"add", "00", Add},
-	{"sub", "01", Sub},
-	{"and", "02", And},
-	{"or", "03", Or},
-	{"xor", "04", Xor},
-	{"mul", "05", Multiply},
-	{"sll", "06", LogicShiftLeft},
-	{"sra", "07", ArithmeticShiftRight},
-	{"srl", "08", LogicShiftRight},
-	{"beq", "09", BranchEqual},
-	{"bne", "0A", BranchNotEqual},
-	{"blt", "0B", BranchLessThen},
-	{"bgt", "0C", BranchGraterthen},
-	{"ble", "0D", BranchLessEqual},
-	{"bge", "0E", BranchGraterEqual},
-	{"jal", "0F", JumpAndLink},
-	{"lw", "10", LoadWord},
-	{"sw", "11", StoreWord},
-	{"rsv", "12", NULL},
-	{"rsv", "13", NULL},
-	{"halt", "14", Halt},
-};
-
 bool Opcode_IsBranchResulotion(uint16_t opcode)
 {
 	return opcode >= BEQ && opcode < LW;

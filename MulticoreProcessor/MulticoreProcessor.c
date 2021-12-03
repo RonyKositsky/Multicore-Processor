@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
 	int i = 0;
 	//while (!IsHalted())
-	while(i < 1180)
+	while(i < 1200)
 	{
 		/*for (int i = 0; i < NUMBER_OF_CORES; i++)
 		{

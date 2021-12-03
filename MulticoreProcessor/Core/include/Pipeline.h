@@ -125,4 +125,17 @@ Init the pipeline.
 *****************************************************************************/
 void Pipeline_BubbleCommands(Pipeline_s* pipeline);
 
+/*!
+******************************************************************************
+\brief
+The pipeline flushed all the stages.
+
+\param
+ [in]  none
+ [out] none
+
+\return none
+*****************************************************************************/
+bool Pipeline_PipeFlushed(Pipeline_s* pipeline);
+
 #endif //__PIPELINE_H__

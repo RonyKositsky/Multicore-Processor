@@ -43,7 +43,7 @@ static void writeback(Pipeline_s* pipeline);
 static void execute_stages(Pipeline_s* pipeline);
 static void prepare_registers_params(Pipeline_s* pipeline, PipelineSM_e stage);
 static bool pipeline_needs_data_hazard_stall(Pipeline_s* pipeline);
-static bool compare_register(Pipeline_s* pipeline, uint16_t reg);
+static bool compare_register(Pipeline_s* pipeline, uint16_t reg, uint16_t stage);
 static bool check_registers_hazrads(Pipeline_s* pipeline, PipelineSM_e stage);
 static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 {
@@ -76,6 +76,17 @@ void Pipeline_Execute(Pipeline_s* pipeline)
 {
 	execute_stages(pipeline);
 	pipeline->data_hazard_stall = pipeline_needs_data_hazard_stall(pipeline);
+}
+
+bool Pipeline_PipeFlushed(Pipeline_s* pipeline)
+{
+	bool flushed = pipeline->halted;
+	for (int stage = FETCH; stage < PIPELINE_SIZE; stage++)
+	{
+		flushed &= (pipeline->pipe_stages[stage].pc == UINT16_MAX);
+	}
+
+	return flushed;
 }
 
 void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
@@ -116,6 +127,12 @@ void Pipeline_BubbleCommands(Pipeline_s* pipeline)
 			pipeline->pipe_stages[stage].execute_result = pipeline->pipe_stages[stage - 1].execute_result;
 		}
 	}
+
+	if (pipeline->halted)
+	{
+		pipeline->pipe_stages[FETCH].pc = UINT16_MAX;
+		pipeline->pipe_stages[DECODE].pc = UINT16_MAX;
+	}
 }
 
 /************************************
@@ -133,8 +150,14 @@ static void fetch(Pipeline_s* pipeline)
 
 static void decode(Pipeline_s* pipeline)
 {
-	pipeline->pipe_stages[DECODE].operation =
-		OpcodeMapping[pipeline->pipe_stages[DECODE].instruction.bits.opcode].OperationFunc;
+	uint8_t opcode = pipeline->pipe_stages[DECODE].instruction.bits.opcode;
+	if (opcode == HALT)
+	{
+		pipeline->halted = true;
+		return;
+	}
+
+	pipeline->pipe_stages[DECODE].operation = OpcodeMapping[opcode];
 
 	if (Opcode_IsBranchResulotion(pipeline->pipe_stages[DECODE].instruction.bits.opcode))
 	{
@@ -146,7 +169,7 @@ static void decode(Pipeline_s* pipeline)
 static void execute(Pipeline_s* pipeline)
 {
 	uint8_t opcode = pipeline->pipe_stages[EXECUTE].instruction.bits.opcode;
-	if (!Opcode_IsBranchResulotion(opcode) && !Opcode_IsMemoryCommand(opcode))
+	if (!Opcode_IsBranchResulotion(opcode) && !Opcode_IsMemoryCommand(opcode) && opcode != HALT)
 	{
 		prepare_registers_params(pipeline, EXECUTE);
 		pipeline->pipe_stages[EXECUTE].operation(&pipeline->opcode_params);
@@ -200,19 +223,30 @@ static void execute_stages(Pipeline_s* pipeline)
 	}
 }
 
-static bool compare_register(Pipeline_s* pipeline, uint16_t reg)
+static bool compare_register(Pipeline_s* pipeline, uint16_t reg, uint16_t stage)
 {
+	bool ret = false;
+	InstructionFormat_s decode_ins = pipeline->pipe_stages[DECODE].instruction;
+	uint16_t op = pipeline->pipe_stages[WRITE_BACK].instruction.bits.opcode;
+
 	if (reg == IMMEDIATE_REGISTER_INDEX || reg == ZERO_REGISTER_INDEX)
 	{
-		return false;
+		ret = false;
+	}
+	else if (decode_ins.bits.opcode <= SRL || decode_ins.bits.opcode == LW)
+	{
+		ret = (reg == decode_ins.bits.rs || reg == decode_ins.bits.rt);
+	}
+	else if (decode_ins.bits.opcode == SW && op == SW)
+	{
+		ret = (reg == decode_ins.bits.rs || reg == decode_ins.bits.rt);
+	}
+	else
+	{
+		ret = (reg == decode_ins.bits.rd || reg == decode_ins.bits.rs || reg == decode_ins.bits.rt);
 	}
 
-	InstructionFormat_s decode_ins = pipeline->pipe_stages[DECODE].instruction;
-
-	if(decode_ins.bits.opcode <= SRL || decode_ins.bits.opcode == LW)
-		return reg == decode_ins.bits.rs || reg == decode_ins.bits.rt;
-
-	return reg == decode_ins.bits.rd || reg == decode_ins.bits.rs || reg == decode_ins.bits.rt;
+	return ret;
 }
 
 static bool check_registers_hazrads(Pipeline_s *pipeline, PipelineSM_e stage)
@@ -221,7 +255,7 @@ static bool check_registers_hazrads(Pipeline_s *pipeline, PipelineSM_e stage)
 	{
 		return false;
 	}
-	return compare_register(pipeline, pipeline->pipe_stages[stage].instruction.bits.rd);
+	return compare_register(pipeline, pipeline->pipe_stages[stage].instruction.bits.rd, stage);
 }
 
 static bool pipeline_needs_data_hazard_stall(Pipeline_s* pipeline)
