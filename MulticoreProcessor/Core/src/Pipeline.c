@@ -220,7 +220,7 @@ Decode stage of the pipeline.
 *****************************************************************************/
 static void decode(Pipeline_s* pipeline)
 {
-	uint8_t opcode = pipeline->pipe_stages[DECODE].instruction.bits.opcode;
+	uint16_t opcode = pipeline->pipe_stages[DECODE].instruction.bits.opcode;
 	if (opcode == HALT)
 	{
 		pipeline->halted = true;
@@ -249,7 +249,7 @@ Execute stage of the pipeline.
 *****************************************************************************/
 static void execute(Pipeline_s* pipeline)
 {
-	uint8_t opcode = pipeline->pipe_stages[EXECUTE].instruction.bits.opcode;
+	uint16_t opcode = pipeline->pipe_stages[EXECUTE].instruction.bits.opcode;
 	if (!Opcode_IsBranchResulotion(opcode) && !Opcode_IsMemoryCommand(opcode) && opcode != HALT)
 	{
 		prepare_registers_params(pipeline, EXECUTE);
@@ -270,7 +270,7 @@ Memory stage of the pipeline.
 *****************************************************************************/
 static void mem(Pipeline_s* pipeline)
 {
-	uint8_t opcode = pipeline->pipe_stages[MEM].instruction.bits.opcode;
+	uint16_t opcode = pipeline->pipe_stages[MEM].instruction.bits.opcode;
  	if (Opcode_IsMemoryCommand(opcode))
 	{
 		prepare_registers_params(pipeline, MEM);
