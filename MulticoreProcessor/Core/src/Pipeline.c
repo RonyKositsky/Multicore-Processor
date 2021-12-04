@@ -41,6 +41,18 @@ static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 /************************************
 *       API implementation          *
 ************************************/
+
+/*!
+******************************************************************************
+\brief
+Init the pipeline.
+
+\param
+ [in]  none
+ [out] none
+
+\return none
+*****************************************************************************/
 void Pipeline_Init(Pipeline_s *pipeline)
 {
 	pipeline->halted = false;
@@ -60,12 +72,35 @@ void Pipeline_Init(Pipeline_s *pipeline)
 	pipeline->pipe_stages[FETCH].pc = 0;
 }
 
+/*!
+******************************************************************************
+\brief
+One iteration of the pipeline. We will bubble the values inside the pipeline
+based on it's condition.
+
+\param
+ [in]  none
+ [out] none
+
+\return none
+*****************************************************************************/
 void Pipeline_Execute(Pipeline_s* pipeline)
 {
 	pipeline->data_hazard_stall = pipeline_needs_data_hazard_stall(pipeline);
 	execute_stages(pipeline);
 }
 
+/*!
+******************************************************************************
+\brief
+The pipeline flushed all the stages.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] bool
+
+\return true if flushed, false otherwise.
+*****************************************************************************/
 bool Pipeline_PipeFlushed(Pipeline_s* pipeline)
 {
 	bool flushed = pipeline->halted;
@@ -77,6 +112,18 @@ bool Pipeline_PipeFlushed(Pipeline_s* pipeline)
 	return flushed;
 }
 
+/*!
+******************************************************************************
+\brief
+Writing the pipeline to the trace file.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [in]  FILE *trace_file		- Pointer to trace file.
+ [out] none
+
+\return none
+*****************************************************************************/
 void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
 {
 	for (int stage = FETCH; stage < PIPELINE_SIZE; stage++)
@@ -88,6 +135,18 @@ void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE* trace_file)
 	}
 }
 
+/*!
+******************************************************************************
+\brief
+Bubble the commands through the pipeline. Entering bubble where such thing
+is necessary.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] none
+
+\return none
+*****************************************************************************/
 void Pipeline_BubbleCommands(Pipeline_s* pipeline)
 {
 	for (int stage = PIPELINE_SIZE - 1; stage > FETCH; stage--)
@@ -126,6 +185,18 @@ void Pipeline_BubbleCommands(Pipeline_s* pipeline)
 /************************************
 * static implementation             *
 ************************************/
+
+/*!
+******************************************************************************
+\brief
+Fetch stage of the pipeline.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] none
+
+\return none
+*****************************************************************************/
 static void fetch(Pipeline_s* pipeline)
 {
 	pipeline->pipe_stages[FETCH].pc = *(pipeline->opcode_params.pc);
@@ -136,6 +207,17 @@ static void fetch(Pipeline_s* pipeline)
 	}
 }
 
+/*!
+******************************************************************************
+\brief
+Decode stage of the pipeline.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] none
+
+\return none
+*****************************************************************************/
 static void decode(Pipeline_s* pipeline)
 {
 	uint8_t opcode = pipeline->pipe_stages[DECODE].instruction.bits.opcode;
@@ -154,6 +236,17 @@ static void decode(Pipeline_s* pipeline)
 	}
 }
 
+/*!
+******************************************************************************
+\brief
+Execute stage of the pipeline.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] none
+
+\return none
+*****************************************************************************/
 static void execute(Pipeline_s* pipeline)
 {
 	uint8_t opcode = pipeline->pipe_stages[EXECUTE].instruction.bits.opcode;
@@ -164,6 +257,17 @@ static void execute(Pipeline_s* pipeline)
 	}
 }
 
+/*!
+******************************************************************************
+\brief
+Memory stage of the pipeline.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] none
+
+\return none
+*****************************************************************************/
 static void mem(Pipeline_s* pipeline)
 {
 	uint8_t opcode = pipeline->pipe_stages[MEM].instruction.bits.opcode;
@@ -180,6 +284,17 @@ static void mem(Pipeline_s* pipeline)
 	}
 }
 
+/*!
+******************************************************************************
+\brief
+Write back stage of the pipeline.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] none
+
+\return none
+*****************************************************************************/
 static void writeback(Pipeline_s* pipeline)
 {
 	InstructionFormat_s instuction = { .command = pipeline->pipe_stages[WRITE_BACK].instruction.command };
@@ -187,6 +302,18 @@ static void writeback(Pipeline_s* pipeline)
 	pipeline->core_registers_p[index] = pipeline->pipe_stages[WRITE_BACK].execute_result;
 }
 
+/*!
+******************************************************************************
+\brief
+Preparing the parans struct for the operations functions.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [in]  PipelineSM_e stage - The pipeline stage this function is called.
+ [out] none
+
+\return none
+*****************************************************************************/
 static void prepare_registers_params(Pipeline_s *pipeline, PipelineSM_e stage)
 {
 	InstructionFormat_s instuction = {.command = pipeline->pipe_stages[stage].instruction.command};
@@ -198,6 +325,17 @@ static void prepare_registers_params(Pipeline_s *pipeline, PipelineSM_e stage)
 	pipeline->opcode_params.rd = &pipeline->pipe_stages[stage].execute_result;
 }
 
+/*!
+******************************************************************************
+\brief
+Executing the pipeline.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] none
+
+\return none
+*****************************************************************************/
 static void execute_stages(Pipeline_s* pipeline)
 {
 	uint8_t stage = pipeline->memory_stall ? MEM : pipeline->data_hazard_stall ? EXECUTE : DECODE;
@@ -213,6 +351,19 @@ static void execute_stages(Pipeline_s* pipeline)
 	}
 }
 
+/*!
+******************************************************************************
+\brief
+Comparing between the registers of certain stage and the rd register.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [in]  uint16_t reg			- The rd register we are comparing to.
+ [in]  uint16_t stage		- The pipeline stage we are comparing to.
+ [out] bool
+
+\return true if found two identical registed index, false otherwise.
+*****************************************************************************/
 static bool compare_register(Pipeline_s* pipeline, uint16_t reg, uint16_t stage)
 {
 	bool ret = false;
@@ -223,11 +374,8 @@ static bool compare_register(Pipeline_s* pipeline, uint16_t reg, uint16_t stage)
 	{
 		ret = false;
 	}
-	else if (decode_ins.bits.opcode <= SRL || decode_ins.bits.opcode == LW)
-	{
-		ret = (reg == decode_ins.bits.rs || reg == decode_ins.bits.rt);
-	}
-	else if (decode_ins.bits.opcode == SW && op == SW)
+	else if (decode_ins.bits.opcode <= SRL || decode_ins.bits.opcode == LW ||
+		(decode_ins.bits.opcode == SW && op == SW))
 	{
 		ret = (reg == decode_ins.bits.rs || reg == decode_ins.bits.rt);
 	}
@@ -239,6 +387,18 @@ static bool compare_register(Pipeline_s* pipeline, uint16_t reg, uint16_t stage)
 	return ret;
 }
 
+/*!
+******************************************************************************
+\brief
+Checking registers data hazards.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [in]  uint16_t stage		- The pipeline stage we are comparing to.
+ [out] bool
+
+\return true if found data hazard, false otherwise.
+*****************************************************************************/
 static bool check_registers_hazrads(Pipeline_s *pipeline, PipelineSM_e stage)
 {
 	if (pipeline->pipe_stages[stage].pc == UINT16_MAX)
@@ -248,6 +408,17 @@ static bool check_registers_hazrads(Pipeline_s *pipeline, PipelineSM_e stage)
 	return compare_register(pipeline, pipeline->pipe_stages[stage].instruction.bits.rd, stage);
 }
 
+/*!
+******************************************************************************
+\brief
+Checking if pipeline needs data hazard.
+
+\param
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] bool
+
+\return true pipeline in data hazard, false otherwise.
+*****************************************************************************/
 static bool pipeline_needs_data_hazard_stall(Pipeline_s* pipeline)
 {
 	return check_registers_hazrads(pipeline, EXECUTE) || check_registers_hazrads(pipeline, MEM) 

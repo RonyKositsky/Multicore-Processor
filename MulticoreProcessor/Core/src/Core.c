@@ -42,6 +42,20 @@ static void print_register_file(Core_s* core);
 /************************************
 *       API implementation          *
 ************************************/
+
+/*!
+******************************************************************************
+\brief
+Init the core.
+
+\details
+Called at the start of the run.
+
+\param
+ [in] core - the operating core
+
+\return none
+*****************************************************************************/
 void Core_Init(Core_s *core, uint8_t id)
 {
 	core->program_counter = 0;
@@ -68,6 +82,19 @@ void Core_Init(Core_s *core, uint8_t id)
 	core->pipeline.opcode_params.pc = &(core->program_counter);
 }
 
+/*!
+******************************************************************************
+\brief
+Run core iteration
+
+\details
+core is running with pipeline.
+
+\param
+ [in] core - the operating core
+
+\return none
+*****************************************************************************/
 void Core_Iter(Core_s* core)
 {
 	if (Pipeline_PipeFlushed(&core->pipeline))
@@ -85,11 +112,32 @@ void Core_Iter(Core_s* core)
 	Pipeline_BubbleCommands(&core->pipeline);
 }
 
+/*!
+******************************************************************************
+\brief
+Teardown of the code.
+
+\param
+ [in] core - the operating core
+
+\return none
+*****************************************************************************/
 void Core_Teaddown(Core_s* core)
 {
 	print_register_file(core);
 }
 
+/*!
+******************************************************************************
+\brief
+If the core is halted.
+
+\param
+ [in] core - the operating core
+ [out] bool
+
+\return true if core is halted, fale otherwise.
+*****************************************************************************/
 bool Core_Halted(Core_s* core)
 {
 	return core->core_halted;
@@ -100,6 +148,16 @@ bool Core_Halted(Core_s* core)
 * static implementation             *
 ************************************/
 
+/*!
+******************************************************************************
+\brief
+Init the core instructions memory.
+
+\param
+ [in] core - the operating core
+
+\return none
+*****************************************************************************/
 static void init_memory(Core_s* core)
 {
 	uint16_t lineInProgram = 0; // Making sure we are not exceeding the memory image.
@@ -108,6 +166,17 @@ static void init_memory(Core_s* core)
 		lineInProgram++;
 }
 
+/*!
+******************************************************************************
+\brief
+Writing the trace of the core.
+
+\param
+ [in] core				  - the operating core
+ [in] uint32_t *regs_copy - pointer to the regs copied values.
+
+\return none
+*****************************************************************************/
 static void write_trace(Core_s* core, uint32_t *regs_copy)
 {
 	fprintf(core->core_files.TraceFile, "%d ", core->statistics.cycles);
@@ -117,6 +186,17 @@ static void write_trace(Core_s* core, uint32_t *regs_copy)
 
 }
 
+/*!
+******************************************************************************
+\brief
+Writing the registers to file.
+
+\param
+ [in] core				  - the operating core.
+ [in] uint32_t *regs_copy - pointer to the regs copied values.
+
+\return none
+*****************************************************************************/
 static void write_regs_to_file(Core_s* core, uint32_t* regs_copy)
 {
 	for (int i = STRART_MUTABLE_REGISTER_INDEX; i < NUMBER_OF_REGISTERS; i++) // We are not writing register 0 and 1.
@@ -125,12 +205,32 @@ static void write_regs_to_file(Core_s* core, uint32_t* regs_copy)
 	}
 }
 
+/*!
+******************************************************************************
+\brief
+Updating staistics struct.
+
+\param
+ [in] core - the operating core.
+
+\return none
+*****************************************************************************/
 static void update_statistics(Core_s* core)
 {
 	core->statistics.cycles++;
 	core->statistics.instructions++;
 }
 
+/*!
+******************************************************************************
+\brief
+Printing the registers file.
+
+\param
+ [in] core - the operating core.
+
+\return none
+*****************************************************************************/
 static void print_register_file(Core_s* core)
 {
 	for (int i = 0; i < NUMBER_OF_REGISTERS; i++)

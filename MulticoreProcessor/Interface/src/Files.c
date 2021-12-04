@@ -22,14 +22,6 @@ ALL RIGHTS RESERVED
 #include <string.h>
 
 /************************************
-*      definitions                 *
-************************************/
-
-/************************************
-*       types                       *
-************************************/
-
-/************************************
 *      variables                    *
 ************************************/
 Core_Files CoresFilesArray[NUMBER_OF_CORES];
@@ -89,6 +81,20 @@ int FIles_TryToOpenFIles(char* argv[], int argc)
 	return failed || MeminFile == NULL || MemoutFile == NULL || BusTraceFile == NULL;
 }
 
+/*!
+******************************************************************************
+\brief
+Closing all the files.
+
+\details
+Called at the end of the run.
+
+\param
+ [in]  none
+ [out] none
+
+\return none
+*****************************************************************************/
 void CloseFiles()
 {
 	fclose(MeminFile);
@@ -105,12 +111,33 @@ void CloseFiles()
 * static implementation             *
 ************************************/
 
+/*!
+******************************************************************************
+\brief
+Checking if the closing were done succesfully.
+
+\param
+ [in]  Core_Files* core_files - pointer to core files struct.
+ [out] bool
+
+\return true if it were closed succesfully, false otherwise.
+*****************************************************************************/
 static bool opened_core_files_successfully(Core_Files* core_files)
 {
 	return core_files->DsRamFile == NULL || core_files->TsRamFile == NULL || core_files->InstructionMemFile == NULL ||
 		core_files->RegFile == NULL || core_files->TraceFile == NULL || core_files->StatsFile == NULL;
 }
 
+/*!
+******************************************************************************
+\brief
+Closing core files.
+
+\param
+ [in]  Core_Files* core_files - pointer to core files struct.
+
+\return none
+*****************************************************************************/
 static void close_core_files(Core_Files* core_files)
 {
 	fclose(core_files->DsRamFile);

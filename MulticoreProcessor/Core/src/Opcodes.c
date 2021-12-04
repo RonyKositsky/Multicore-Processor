@@ -337,11 +337,34 @@ void JumpAndLink(Opcode_fucntion_params_s *params)
 /************************************
 *       API implementation          *
 ************************************/
+
+/*!
+******************************************************************************
+\brief
+Returns wether the opcode is of baranch resulotion.
+
+\param
+ [in] uint16_t opcode - the opcode we are testing.
+ [out] bool
+
+\return true if thie is branch resulotion, false otherwise.
+*****************************************************************************/
 bool Opcode_IsBranchResulotion(uint16_t opcode)
 {
 	return opcode >= BEQ && opcode < LW;
 }
 
+/*!
+******************************************************************************
+\brief
+Returns wether the opcode is of memory command.
+
+\param
+ [in] uint16_t opcode - the opcode we are testing.
+ [out] bool
+
+\return true if thie is memory command, false otherwise.
+*****************************************************************************/
 bool Opcode_IsMemoryCommand(uint16_t opcode)
 {
 	return opcode == LW || opcode == SW;

@@ -36,19 +36,9 @@ static Core_s cores[NUMBER_OF_CORES];
 ************************************/
 static bool ProcessorHalted();
 static void AssignFiles(Core_s* cores);
+static void CoresInit();
 
-/************************************
-*      functions					*
-************************************/
-void CoresInit()
-{
-	memset(cores, 0, NUMBER_OF_CORES * sizeof(Core_s));
-	AssignFiles(cores);
-	for (int i = 0; i < NUMBER_OF_CORES; i++)
-	{
-		Core_Init(&cores[i], i);
-	}
-}
+
 
 /************************************
 *      Main							*
@@ -57,8 +47,10 @@ int main(int argc, char *argv[])
 {
 	if (FIles_TryToOpenFIles(argv, argc))
 	{
-		//Handle files error.
+		printf("Error in opening files.\n");
+		return 1;
 	}
+
 	MainMemory_Init();
 	CoresInit();
 
@@ -83,6 +75,18 @@ int main(int argc, char *argv[])
 /************************************
 * static implementation             *
 ************************************/
+
+/*!
+******************************************************************************
+\brief
+Returns wether the processor halted.
+
+\param
+ [in] none
+ [out] bool
+
+\return true if thie is branch resulotion, false otherwise.
+*****************************************************************************/
 static bool ProcessorHalted()
 {
 	bool is_halted = true;
@@ -94,10 +98,40 @@ static bool ProcessorHalted()
 	return is_halted;
 }
 
+/*!
+******************************************************************************
+\brief
+Returns wether the processor halted.
+
+\param
+ [in] Core_s* cores - pointer to the cores array.
+ [out] none
+
+ *****************************************************************************/
 static void AssignFiles(Core_s* cores)
 {
+	for (int core = 0; core < NUMBER_OF_CORES; core++)
+	{
+		cores[core].core_files = CoresFilesArray[core];
+	}
+}
+
+/*!
+******************************************************************************
+\brief
+Init all the cores.
+
+\param
+ [in] none
+ [out] none
+
+*****************************************************************************/
+void CoresInit()
+{
+	memset(cores, 0, NUMBER_OF_CORES * sizeof(Core_s));
+	AssignFiles(cores);
 	for (int i = 0; i < NUMBER_OF_CORES; i++)
 	{
-		cores[i].core_files = CoresFilesArray[i];
+		Core_Init(&cores[i], i);
 	}
 }

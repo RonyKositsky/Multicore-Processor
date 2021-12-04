@@ -102,7 +102,17 @@ Teardown of the code.
 *****************************************************************************/
 void Core_Teaddown(Core_s* core);
 
+/*!
+******************************************************************************
+\brief
+If the core is halted.
 
+\param
+ [in] core - the operating core
+ [out] bool
+
+\return true if core is halted, fale otherwise.
+*****************************************************************************/
 bool Core_Halted(Core_s* core);
 
 #endif //CORE_H_

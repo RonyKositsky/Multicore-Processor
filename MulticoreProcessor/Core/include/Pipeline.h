@@ -77,7 +77,7 @@ typedef struct
 Init the pipeline.
 
 \param
- [in]  none
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
  [out] none
 
 \return none
@@ -91,7 +91,7 @@ One iteration of the pipeline. We will bubble the values inside the pipeline
 based on it's condition.
 
 \param
- [in]  none
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
  [out] none
 
 \return none
@@ -104,21 +104,22 @@ void Pipeline_Execute(Pipeline_s* pipeline);
 Writing the pipeline to the trace file.
 
 \param
- [in]  none
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [in]  FILE *trace_file		- Pointer to trace file.
  [out] none
 
 \return none
 *****************************************************************************/
 void Pipeline_WriteToTrace(Pipeline_s* pipeline, FILE *trace_file);
 
-
 /*!
 ******************************************************************************
 \brief
-Init the pipeline.
+Bubble the commands through the pipeline. Entering bubble where such thing 
+is necessary. 
 
 \param
- [in]  none
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
  [out] none
 
 \return none
@@ -131,10 +132,10 @@ void Pipeline_BubbleCommands(Pipeline_s* pipeline);
 The pipeline flushed all the stages.
 
 \param
- [in]  none
- [out] none
+ [in]  Pipeline_s *pipeline - Pointer to the relevant pipeline.
+ [out] true
 
-\return none
+\return true if flushed, false otherwise.
 *****************************************************************************/
 bool Pipeline_PipeFlushed(Pipeline_s* pipeline);
 

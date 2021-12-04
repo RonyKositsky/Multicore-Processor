@@ -20,12 +20,7 @@ ALL RIGHTS RESERVED
 #include "../include/MainMemory.h"
 #include "../include/Files.h"
 #include "../include/Bus.h"
-//
 #include <string.h>
-
-/************************************
-*      definitions                 *
-************************************/
 
 /************************************
 *       types                       *
@@ -56,6 +51,17 @@ static bool bus_transaction_handler(Bus_packet_s* packet, bool direct_transactio
 /************************************
 *       API implementation          *
 ************************************/
+
+/*!
+******************************************************************************
+\brief
+Initialize main memory from input file.
+
+\details
+Must be called only once
+
+\return none
+*****************************************************************************/
 void MainMemory_Init(void)
 {
 	memset((uint8_t*)gMemory, 0, sizeof(gMemory));
@@ -72,6 +78,18 @@ void MainMemory_Init(void)
 /************************************
 * static implementation             *
 ************************************/
+
+/*!
+******************************************************************************
+\brief
+Initialize main memory from input file.
+
+[in] Bus_packet_s* packet	 - pointer to bus packet.
+[in] bool direct_transaction - is direct transaction to the memory.
+[out] bool
+
+\return false if finished, true otherwise.
+*****************************************************************************/
 static bool bus_transaction_handler(Bus_packet_s* packet, bool direct_transaction)
 {
 	if (packet->bus_cmd == bus_no_command)

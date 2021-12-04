@@ -71,8 +71,34 @@ static void (*OpcodeMapping[NUMBER_OF_OPCODES])(Opcode_fucntion_params_s* params
 	 BranchLessEqual, BranchGraterEqual, JumpAndLink
 };
 
+/************************************
+*				API                 *
+************************************/
+
+/*!
+******************************************************************************
+\brief
+Returns wether the opcode is of baranch resulotion.
+
+\param
+ [in] uint16_t opcode - the opcode we are testing.
+ [out] bool
+
+\return true if thie is branch resulotion, false otherwise.
+*****************************************************************************/
 bool Opcode_IsBranchResulotion(uint16_t opcode);
 
+/*!
+******************************************************************************
+\brief
+Returns wether the opcode is of memory command.
+
+\param
+ [in] uint16_t opcode - the opcode we are testing.
+ [out] bool
+
+\return true if thie is memory command, false otherwise.
+*****************************************************************************/
 bool Opcode_IsMemoryCommand(uint16_t opcode);
 
 #endif __OPCODES

@@ -49,29 +49,6 @@ typedef union
 	uint32_t command;
 } InstructionFormat_s;
 
-/************************************
-*       API                         *
-************************************/
-
-/*!
-******************************************************************************
-\brief
-Initialize func
-
-\details
-Must be called only once
-
-\param
- [in] counter_val - reset counter value
- [out] out_val    -
-
-\return none
-*****************************************************************************/
-int GetDecimalFromHex(char* hexValue);
-int GetDecimalFromHex2Comp(char* hexValue);
-void RemoveLastChar(char* str);
-
-
 #endif //__FILE_NAME_H__
 
 
