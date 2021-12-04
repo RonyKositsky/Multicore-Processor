@@ -253,10 +253,9 @@ static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8
 	if (address_offset == (BLOCK_SIZE - 1))
 	{
 		tsram->fields.mesi = next_state;
-		return true;
 	}
 	
-	return false;
+	return true;
 }
 
 static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t* address_offset)
@@ -327,6 +326,7 @@ static Cache_mesi_e mesi_snooping_modified_state(CacheData_s* data, Bus_packet_s
 		// send back the modified data
 		packet->bus_cmd = bus_flush;
 		packet->bus_data = data->dsram[index];
+		packet->bus_origid = data->id;
 
 		return cache_mesi_shared;
 	}
@@ -336,6 +336,7 @@ static Cache_mesi_e mesi_snooping_modified_state(CacheData_s* data, Bus_packet_s
 		// send back the modified data
 		packet->bus_cmd = bus_flush;
 		packet->bus_data = data->dsram[index];
+		packet->bus_origid = data->id;
 
 		return cache_mesi_invalid;
 	}

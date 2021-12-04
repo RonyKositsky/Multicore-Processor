@@ -128,8 +128,9 @@ bool Bus_InTransaction(Bus_originator_e originator)
 
 void Bus_Iter(void)
 {
+	static bool is_first_shared = true;
 	gIterCounter++;
-	
+		
 	if (gBusTransactionState[gCurrentPacket.bus_origid] == transaction_finally_state)
 		gBusTransactionState[gCurrentPacket.bus_origid] = transaction_idle_state;
 	else if (gBusTransactionState[gCurrentPacket.bus_origid] == transaction_start_operation_state)
@@ -145,6 +146,7 @@ void Bus_Iter(void)
 
 	if (!gBusInProgress)
 	{
+		is_first_shared = true;
 		int prev_origid = gCurrentPacket.bus_origid;
 		
 		if (!bus_fifo_Dequeue(&gCurrentPacket))
@@ -160,16 +162,21 @@ void Bus_Iter(void)
 
 	Bus_packet_s packet;
 	memcpy(&packet, &gCurrentPacket, sizeof(gCurrentPacket));
-	//
+
 	memory_addess_s address = { .address = gCurrentPacket.bus_addr };
 	address.fields.offset = gAddressOffset;
 	packet.bus_addr = address.address;
-	//
-	packet.bus_shared = check_shared_line(&gCurrentPacket);
-	//
-	bool cache_response = check_cache_snooping(&packet);
-	bool memory_response = gMemoryCallback(&packet, cache_response);
 
+	packet.bus_shared = check_shared_line(&gCurrentPacket);
+	if (packet.bus_shared && is_first_shared)
+	{
+		is_first_shared = false;
+		return;
+	}
+
+	bool cache_response  = check_cache_snooping(&packet);
+	bool memory_response = gMemoryCallback(&packet, cache_response);
+	
 	if (cache_response || memory_response)
 	{
 		// print response trace.

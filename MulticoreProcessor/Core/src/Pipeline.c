@@ -21,18 +21,6 @@ ALL RIGHTS RESERVED
 #include "..\include\Cache.h"
 
 /************************************
-*      definitions                 *
-************************************/
-
-/************************************
-*       types                       *
-************************************/
-
-/************************************
-*      variables                    *
-************************************/
-
-/************************************
 *      static functions             *
 ************************************/
 static void fetch(Pipeline_s* pipeline);
@@ -74,8 +62,8 @@ void Pipeline_Init(Pipeline_s *pipeline)
 
 void Pipeline_Execute(Pipeline_s* pipeline)
 {
-	execute_stages(pipeline);
 	pipeline->data_hazard_stall = pipeline_needs_data_hazard_stall(pipeline);
+	execute_stages(pipeline);
 }
 
 bool Pipeline_PipeFlushed(Pipeline_s* pipeline)
@@ -212,7 +200,9 @@ static void prepare_registers_params(Pipeline_s *pipeline, PipelineSM_e stage)
 
 static void execute_stages(Pipeline_s* pipeline)
 {
-	uint8_t stage = pipeline->memory_stall ? MEM : pipeline->data_hazard_stall ? EXECUTE : FETCH;
+	uint8_t stage = pipeline->memory_stall ? MEM : pipeline->data_hazard_stall ? EXECUTE : DECODE;
+	if(!pipeline->halted)
+		pipe_functions[FETCH](pipeline);
 
 	for (; stage < PIPELINE_SIZE; stage++)
 	{

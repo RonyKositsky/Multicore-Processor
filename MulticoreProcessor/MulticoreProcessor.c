@@ -34,7 +34,7 @@ static Core_s cores[NUMBER_OF_CORES];
 /************************************
 *      static functions             *
 ************************************/
-static bool IsHalted();
+static bool ProcessorHalted();
 static void AssignFiles(Core_s* cores);
 
 /************************************
@@ -62,22 +62,18 @@ int main(int argc, char *argv[])
 	MainMemory_Init();
 	CoresInit();
 
-	int i = 0;
-	//while (!IsHalted())
-	while(i < 1200)
+	while (!ProcessorHalted())
 	{
-		/*for (int i = 0; i < NUMBER_OF_CORES; i++)
-		{
-			Core_Iter(&cores[i]);
-		}*/
 		Bus_Iter();
-		Core_Iter(&cores[2]);
-		i++;
+		for (int core = 0; core < NUMBER_OF_CORES; core++)
+		{
+			Core_Iter(&cores[core]);
+		}
 	}
 
-	for (int i = 0; i < NUMBER_OF_CORES; i++)
+	for (int core = 0; core < NUMBER_OF_CORES; core++)
 	{
-		Core_Teaddown(&cores[i]);
+		Core_Teaddown(&cores[core]);
 	}
 
 	CloseFiles();
@@ -87,12 +83,12 @@ int main(int argc, char *argv[])
 /************************************
 * static implementation             *
 ************************************/
-static bool IsHalted()
+static bool ProcessorHalted()
 {
 	bool is_halted = true;
-	for (int i = 0; i < NUMBER_OF_CORES; i++)
+	for (int core = 0; core < NUMBER_OF_CORES; core++)
 	{
-		is_halted &= cores[i].pipeline.halted;
+		is_halted &= Core_Halted(&cores[core]);
 	}
 
 	return is_halted;

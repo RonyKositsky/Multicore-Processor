@@ -46,6 +46,7 @@ void Core_Init(Core_s *core, uint8_t id)
 {
 	core->program_counter = 0;
 	core->index = id;
+	core->core_halted = false;
 
 	memset(&core->statistics, 0, sizeof(Statistics_s));
 	core->statistics.cycles = -1; // To start the count from 0.
@@ -70,7 +71,10 @@ void Core_Init(Core_s *core, uint8_t id)
 void Core_Iter(Core_s* core)
 {
 	if (Pipeline_PipeFlushed(&core->pipeline))
+	{
+		core->core_halted = true;
 		return;
+	}
 
 	uint32_t regs_copy[NUMBER_OF_REGISTERS];
 	memcpy(regs_copy, core->register_array, sizeof(core->register_array));
@@ -84,6 +88,11 @@ void Core_Iter(Core_s* core)
 void Core_Teaddown(Core_s* core)
 {
 	print_register_file(core);
+}
+
+bool Core_Halted(Core_s* core)
+{
+	return core->core_halted;
 }
 
 

@@ -46,6 +46,7 @@ typedef struct
 
 typedef struct
 {
+	bool core_halted;
 	uint8_t index;
 	uint16_t program_counter;	// pc is 10bit
 	uint32_t register_array[NUMBER_OF_REGISTERS];
@@ -100,5 +101,8 @@ Teardown of the code.
 \return none
 *****************************************************************************/
 void Core_Teaddown(Core_s* core);
+
+
+bool Core_Halted(Core_s* core);
 
 #endif //CORE_H_
