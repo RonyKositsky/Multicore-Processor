@@ -440,7 +440,7 @@ Updating staistics struct.
 *****************************************************************************/
 static void update_statistics(Pipeline_s* pipeline)
 {
-	if (pipeline->data_hazard_stall)
+	if (pipeline->data_hazard_stall && !pipeline->memory_stall)
 		pipeline->statistics.decode_stalls++;
 
 	if (pipeline->memory_stall)
