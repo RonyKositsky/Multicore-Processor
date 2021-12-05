@@ -36,12 +36,6 @@ typedef struct
 { 
 	uint32_t cycles;
 	uint32_t instructions;
-	uint32_t read_hits;
-	uint32_t write_hits;
-	uint32_t read_misses;
-	uint32_t write_misses;
-	uint32_t decode_stalls;
-	uint32_t mem_stalls;
 }Statistics_s;
 
 typedef struct

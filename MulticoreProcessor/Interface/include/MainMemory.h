@@ -42,4 +42,16 @@ Must be called only once
 *****************************************************************************/
 void MainMemory_Init(void);
 
+/*!
+******************************************************************************
+\brief
+ Print memory data to file.
+
+\details
+ Called only at the end
+
+\return none
+*****************************************************************************/
+void MainMemory_PrintData(void);
+
 #endif //__MAIN_MEMORY_H__

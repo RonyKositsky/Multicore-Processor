@@ -53,6 +53,11 @@ typedef struct
 	void (*operation)(Opcode_fucntion_params_s* params);
 } PipelineStage_s;
 
+typedef struct
+{
+	uint32_t decode_stalls;
+	uint32_t mem_stalls;
+} PiplineStatistics_s;
 
 typedef struct
 {
@@ -64,6 +69,7 @@ typedef struct
 	CacheData_s cache_data;
 	PipelineStage_s pipe_stages[PIPELINE_SIZE];
 	Opcode_fucntion_params_s opcode_params;
+	PiplineStatistics_s statistics;
 }Pipeline_s;
 
 

@@ -47,6 +47,7 @@ static bool gMemoryTransaction;
 *      static functions             *
 ************************************/
 static bool bus_transaction_handler(Bus_packet_s* packet, bool direct_transaction);
+static uint32_t get_memory_length(void);
 
 /************************************
 *       API implementation          *
@@ -75,6 +76,14 @@ void MainMemory_Init(void)
 	Bus_RegisterMemoryCallback(bus_transaction_handler);
 }
 
+void MainMemory_PrintData(void)
+{
+	uint32_t length = get_memory_length();
+	for (uint32_t i = 0; i < length; i++)
+		fprintf(MemoutFile, "%08X\n", gMemory[i]);
+}
+
+
 /************************************
 * static implementation             *
 ************************************/
@@ -86,7 +95,6 @@ Initialize main memory from input file.
 
 [in] Bus_packet_s* packet	 - pointer to bus packet.
 [in] bool direct_transaction - is direct transaction to the memory.
-[out] bool
 
 \return false if finished, true otherwise.
 *****************************************************************************/
@@ -127,3 +135,15 @@ static bool bus_transaction_handler(Bus_packet_s* packet, bool direct_transactio
 	return false;
 }
 
+static uint32_t get_memory_length(void)
+{
+	uint32_t length = MAIN_MEMORY_SIZE - 1;
+
+	for (; length > 0; length--)
+	{
+		if (gMemory[length])
+			break;
+	}
+
+	return length + 1;
+}

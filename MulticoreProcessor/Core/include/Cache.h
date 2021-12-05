@@ -20,6 +20,7 @@ ALL RIGHTS RESERVED
 ************************************/
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /************************************
 *      definitions                 *
@@ -51,14 +52,22 @@ typedef enum
 
 typedef union
 {
-	uint16_t data;
+	uint32_t data;
 
 	struct
 	{
 		uint16_t tag : 12;	// [0:11]
-		uint8_t mesi : 2;	// [12:13]
+		uint16_t mesi : 2;	// [12:13]
 	}fields;
 } Tsram_s;
+
+typedef struct
+{
+	uint32_t read_hits;
+	uint32_t write_hits;
+	uint32_t read_misses;
+	uint32_t write_misses;
+} CacheStatistics_s;
 
 typedef struct
 {
@@ -66,6 +75,7 @@ typedef struct
 	bool memory_stall;
 	uint32_t dsram[CACHE_SIZE];
 	Tsram_s tsram[FRAME_SIZE];
+	CacheStatistics_s statistics;
 } CacheData_s;
 
 /************************************
@@ -131,5 +141,21 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data);
 \return true if address exist on cache.
 *****************************************************************************/
 bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data);
+
+/*!
+******************************************************************************
+\brief
+ Print cache memory data (dsram, tsram) to file.
+
+\details
+ Called only at the end
+
+ \param
+ [in] cache_data - the cache data of specific core.
+ [in] file - the file pointer.
+
+\return none
+*****************************************************************************/
+void Cache_PrintData(CacheData_s* cache_data, FILE* dsram_file, FILE* tsram_file);
 
 #endif // __CACHE_H__

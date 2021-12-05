@@ -145,7 +145,6 @@
     <ClCompile Include="Core\src\Pipeline.c" />
     <ClCompile Include="Interface\src\Bus.c" />
     <ClCompile Include="Interface\src\Files.c" />
-    <ClCompile Include="Interface\src\Helpers.c" />
     <ClCompile Include="Interface\src\MainMemory.c" />
     <ClCompile Include="MulticoreProcessor.c" />
   </ItemGroup>

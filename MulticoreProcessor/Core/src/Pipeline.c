@@ -37,6 +37,7 @@ static void (*pipe_functions[PIPELINE_SIZE])(Pipeline_s* pipeline) =
 {
 	fetch, decode, execute, mem, writeback
 };
+static void update_statistics(Pipeline_s* pipeline);
 
 /************************************
 *       API implementation          *
@@ -59,6 +60,7 @@ void Pipeline_Init(Pipeline_s *pipeline)
 	pipeline->data_hazard_stall = false;
 	pipeline->memory_stall = false;
 	
+	memset((uint8_t *)&pipeline->statistics, 0, sizeof(pipeline->statistics));
 	memset((uint8_t *) &pipeline->opcode_params, 0, sizeof(pipeline->opcode_params));
 	pipeline->opcode_params.halt = &pipeline->halted;
 
@@ -88,6 +90,7 @@ void Pipeline_Execute(Pipeline_s* pipeline)
 {
 	pipeline->data_hazard_stall = pipeline_needs_data_hazard_stall(pipeline);
 	execute_stages(pipeline);
+	update_statistics(pipeline);
 }
 
 /*!
@@ -421,7 +424,26 @@ Checking if pipeline needs data hazard.
 *****************************************************************************/
 static bool pipeline_needs_data_hazard_stall(Pipeline_s* pipeline)
 {
-	return check_registers_hazrads(pipeline, EXECUTE) || check_registers_hazrads(pipeline, MEM) 
-		|| check_registers_hazrads(pipeline, WRITE_BACK);
+	return check_registers_hazrads(pipeline, EXECUTE) || check_registers_hazrads(pipeline, WRITE_BACK) ||
+		check_registers_hazrads(pipeline, MEM);
+}
+
+/*!
+******************************************************************************
+\brief
+Updating staistics struct.
+
+\param
+ [in] core - the operating core.
+
+\return none
+*****************************************************************************/
+static void update_statistics(Pipeline_s* pipeline)
+{
+	if (pipeline->data_hazard_stall)
+		pipeline->statistics.decode_stalls++;
+
+	if (pipeline->memory_stall)
+		pipeline->statistics.mem_stalls++;
 }
 

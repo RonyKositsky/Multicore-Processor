@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 		Core_Teaddown(&cores[core]);
 	}
 
+	MainMemory_PrintData();
 	CloseFiles();
 	return 0;
 } 

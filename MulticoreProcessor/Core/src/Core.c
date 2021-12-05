@@ -38,6 +38,7 @@ static void write_trace(Core_s* core, uint32_t* regs_copy);
 static void write_regs_to_file(Core_s* core, uint32_t* regs_copy);
 static void update_statistics(Core_s* core);
 static void print_register_file(Core_s* core);
+static void print_statistics(Core_s* core);
 
 /************************************
 *       API implementation          *
@@ -125,6 +126,9 @@ Teardown of the code.
 void Core_Teaddown(Core_s* core)
 {
 	print_register_file(core);
+	Cache_PrintData(&core->pipeline.cache_data,
+		core->core_files.DsRamFile, core->core_files.TsRamFile);
+	print_statistics(core);
 }
 
 /*!
@@ -199,7 +203,7 @@ Writing the registers to file.
 *****************************************************************************/
 static void write_regs_to_file(Core_s* core, uint32_t* regs_copy)
 {
-	for (int i = STRART_MUTABLE_REGISTER_INDEX; i < NUMBER_OF_REGISTERS; i++) // We are not writing register 0 and 1.
+	for (int i = START_MUTABLE_REGISTER_INDEX; i < NUMBER_OF_REGISTERS; i++) // We are not writing register 0 and 1.
 	{
 		fprintf(core->core_files.TraceFile, "%08X ", regs_copy[i]);
 	}
@@ -218,7 +222,9 @@ Updating staistics struct.
 static void update_statistics(Core_s* core)
 {
 	core->statistics.cycles++;
-	core->statistics.instructions++;
+
+	if (!core->pipeline.halted && !core->pipeline.memory_stall && !core->pipeline.data_hazard_stall)
+		core->statistics.instructions++;
 }
 
 /*!
@@ -233,9 +239,22 @@ Printing the registers file.
 *****************************************************************************/
 static void print_register_file(Core_s* core)
 {
-	for (int i = 0; i < NUMBER_OF_REGISTERS; i++)
+	for (int i = START_MUTABLE_REGISTER_INDEX; i < NUMBER_OF_REGISTERS; i++)
 	{
 		fprintf(core->core_files.RegFile, "%08X\n", core->register_array[i]);
 	}
 }
+
+static void print_statistics(Core_s* core)
+{
+	fprintf(core->core_files.StatsFile, "cycles %d\n", core->statistics.cycles + 1);
+	fprintf(core->core_files.StatsFile, "instructions %d\n", core->statistics.instructions - 1);
+	fprintf(core->core_files.StatsFile, "read_hit %d\n", core->pipeline.cache_data.statistics.read_hits);
+	fprintf(core->core_files.StatsFile, "write_hit %d\n", core->pipeline.cache_data.statistics.write_hits);
+	fprintf(core->core_files.StatsFile, "read_miss %d\n", core->pipeline.cache_data.statistics.read_misses);
+	fprintf(core->core_files.StatsFile, "write_miss %d\n", core->pipeline.cache_data.statistics.write_misses);
+	fprintf(core->core_files.StatsFile, "decode_stall %d\n", core->pipeline.statistics.decode_stalls);
+	fprintf(core->core_files.StatsFile, "mem_stall %d\n", core->pipeline.statistics.mem_stalls);
+}
+
 

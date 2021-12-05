@@ -51,12 +51,6 @@ static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet);
 static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t address_offset);
 static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t* address_offset);
 //
-// state machine for response
-static Cache_mesi_e mesi_response_invalid_state(CacheData_s* data, Bus_packet_s* packet);
-static Cache_mesi_e mesi_response_shared_state(CacheData_s* data, Bus_packet_s* packet);
-static Cache_mesi_e mesi_response_exlusive_state(CacheData_s* data, Bus_packet_s* packet);
-static Cache_mesi_e mesi_response_modified_state(CacheData_s* data, Bus_packet_s* packet);
-//
 // state machine for snooping
 static Cache_mesi_e mesi_snooping_invalid_state(CacheData_s* data, Bus_packet_s* packet);
 static Cache_mesi_e mesi_snooping_shared_state(CacheData_s* data, Bus_packet_s* packet);
@@ -66,13 +60,6 @@ static Cache_mesi_e mesi_snooping_modified_state(CacheData_s* data, Bus_packet_s
 /************************************
 *      variables                    *
 ************************************/
-static response_state gResponseSM[cache_mesi_max_state] = {
-	mesi_response_invalid_state,
-	mesi_response_shared_state,
-	mesi_response_exlusive_state,
-	mesi_response_modified_state
-};
-
 static snooping_state gSnoopingSM[cache_mesi_max_state] = {
 	mesi_snooping_invalid_state,
 	mesi_snooping_shared_state,
@@ -103,6 +90,8 @@ void Cache_RegisterBusHandles(void)
 
 bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 {
+	static bool miss_occurred = false;
+
 	if (Bus_InTransaction(cache_data->id))
 		return false;
 	
@@ -118,19 +107,24 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 		uint16_t index = addr.fields.index * BLOCK_SIZE + addr.fields.offset;
 		*data = cache_data->dsram[index];
 
+		if (!miss_occurred)
+			cache_data->statistics.read_hits++;
+		else
+			miss_occurred = false;
+
 		return true;
 	}
 	// we had a miss.
-	//
+	miss_occurred = true;
+	cache_data->statistics.read_misses++;
+
 	// first, check if the required block is dirty
 	// if so, we need first to send the block into the memory
 	dirty_block_handling(cache_data, addr);
 
 	// now, we need to take the new block from the main memory.
-	Bus_packet_s packet;
-	packet.bus_origid = cache_data->id;
-	packet.bus_cmd = bus_busRd;
-	packet.bus_addr = addr.address;
+	Bus_packet_s packet = {
+		.bus_origid = cache_data->id, .bus_cmd = bus_busRd, .bus_addr = addr.address, .bus_data = 0, .bus_shared = 0 };
 
 	// add the read transaction into the bus queue
 	Bus_AddTransaction(packet);
@@ -140,6 +134,8 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 
 bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data) 
 {
+	static bool miss_occurred = false;
+	
 	if (Bus_InTransaction(cache_data->id))
 		return false; 
 	
@@ -160,12 +156,16 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 		else if (tsram->fields.mesi == cache_mesi_shared)
 		{
 			// Send Bus_Rdx to make sure this block is exclusive ours
-			Bus_packet_s packet;
-			packet.bus_origid = cache_data->id;
-			packet.bus_cmd = bus_busRdX;
-			packet.bus_addr = addr.address;
+			Bus_packet_s packet = {
+				.bus_origid = cache_data->id, .bus_cmd = bus_busRdX, .bus_addr = addr.address, .bus_data = 0, .bus_shared = 0 };
+
 			Bus_AddTransaction(packet);
 		}
+
+		if (!miss_occurred)
+			cache_data->statistics.write_hits++;
+		else
+			miss_occurred = false;
 
 		uint16_t index = addr.fields.index * BLOCK_SIZE + addr.fields.offset;
 		cache_data->dsram[index] = data;
@@ -174,23 +174,31 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 		return true;
 	}
 	// we had a miss.
-	//
+	miss_occurred = true;
+	cache_data->statistics.write_misses++;
+
 	// first, check if the required block is dirty
 	// if so, we need first to send the block into the memory
 	dirty_block_handling(cache_data, addr);
 
 	// we need to take the data from the main memory.
-	Bus_packet_s packet;
-	packet.bus_origid = cache_data->id;
-	packet.bus_cmd = bus_busRdX;
-	packet.bus_addr = addr.address;
-	
+	Bus_packet_s packet = {
+		.bus_origid = cache_data->id, .bus_cmd = bus_busRdX, .bus_addr = addr.address, .bus_data = 0, .bus_shared = 0 };
+
 	// add the read transaction into the bus queue
 	Bus_AddTransaction(packet);
 	
 	return false;
 }
 
+void Cache_PrintData(CacheData_s* cache_data, FILE* dsram_file, FILE* tsram_file)
+{
+	for (uint32_t i = 0; i < CACHE_SIZE; i++)
+		fprintf(dsram_file, "%08X\n", cache_data->dsram[i]);
+
+	for (uint32_t i = 0; i < FRAME_SIZE; i++)
+		fprintf(tsram_file, "%08X\n", cache_data->tsram[i].data);
+}
 
 /************************************
 * static implementation             *
@@ -271,7 +279,6 @@ static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8
 		return false;
 
 	// execute block state machine
-	//Cache_mesi_e next_state = gResponseSM[tsram->fields.mesi](data, packet);
 	if (packet->bus_cmd == bus_flush)
 	{
 		uint16_t index = address.fields.index * BLOCK_SIZE + address.fields.offset;
@@ -344,50 +351,3 @@ static Cache_mesi_e mesi_snooping_modified_state(CacheData_s* data, Bus_packet_s
 	// todo: check the default return value
 	return cache_mesi_modified;
 }
-
-// state machine for response
-static Cache_mesi_e mesi_response_invalid_state(CacheData_s* data, Bus_packet_s* packet)
-{
-	if (packet->bus_cmd == bus_busRd)
-		return packet->bus_shared ? cache_mesi_shared : cache_mesi_exclusive;
-	
-	if (packet->bus_cmd == bus_busRdX)
-		return cache_mesi_modified;
-	
-	// todo: check the default return value
-	return cache_mesi_invalid;
-}
-
-static Cache_mesi_e mesi_response_shared_state(CacheData_s* data, Bus_packet_s* packet)
-{
-	if (packet->bus_cmd == bus_busRdX)
-		return cache_mesi_modified;
-
-	// todo: check the default return value
-	return cache_mesi_shared;
-}
-
-static Cache_mesi_e mesi_response_exlusive_state(CacheData_s* data, Bus_packet_s* packet)
-{
-	// todo: check the default return value
-	return cache_mesi_exclusive;
-}
-
-static Cache_mesi_e mesi_response_modified_state(CacheData_s* data, Bus_packet_s* packet)
-{
-	// hadle flush
-	if (packet->bus_cmd == bus_flush)
-	{
-		// change packet data to the next item in the block
-		cache_addess_s address = { .address = packet->bus_addr };
-		address.fields.offset++;
-
-		uint16_t index = address.fields.index * BLOCK_SIZE + address.fields.offset;
-		packet->bus_data = data->dsram[index];
-		return cache_mesi_invalid;
-	}
-
-	// todo: check the default return value
-	return cache_mesi_modified;
-}
-

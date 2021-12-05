@@ -18,6 +18,7 @@ ALL RIGHTS RESERVED
 ************************************/
 #include "../include/Bus.h"
 #include "../include/Helpers.h"
+#include "../include/Files.h"
 //
 #include <string.h>
 #include <stdlib.h>
@@ -84,7 +85,7 @@ static queue_item_s* gQueueTail;
 ************************************/
 static bool check_shared_line(Bus_packet_s* packet);
 static bool check_cache_snooping(Bus_packet_s* packet);
-
+static void print_bus_status(Bus_packet_s packet);
 
 // Fifo functions
 bool bus_fifo_IsEmpty(void);
@@ -158,6 +159,7 @@ void Bus_Iter(void)
 		gAddressOffset = 0;
 		// print bus trace
 		printf("bus trace - (#%d) dequeue next cmd\n", gIterCounter);
+		print_bus_status(gCurrentPacket);
 	}
 
 	Bus_packet_s packet;
@@ -181,6 +183,7 @@ void Bus_Iter(void)
 	{
 		// print response trace.
 		printf("bus trace - (#%d) response to sender\n", gIterCounter);
+		print_bus_status(packet);
 
 		// send the response packet back to the sender
 		if (gCacheResponseCallback(gCacheInterface[gCurrentPacket.bus_origid].cache_data, &packet, &gAddressOffset))
@@ -215,6 +218,12 @@ static bool check_cache_snooping(Bus_packet_s* packet)
 		cache_response |= gCacheSnoopingCallback(gCacheInterface[i].cache_data, packet, gAddressOffset);
 	
 	return cache_response;
+}
+
+static void print_bus_status(Bus_packet_s packet)
+{
+	fprintf(BusTraceFile, "%d %d %d %05X %08X %d\n", gIterCounter, packet.bus_origid, packet.bus_cmd, 
+		packet.bus_addr, packet.bus_data, packet.bus_shared);
 }
 
 
