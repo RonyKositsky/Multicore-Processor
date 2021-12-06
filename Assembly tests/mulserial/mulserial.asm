@@ -7,13 +7,12 @@ add $r6, $zero, $zero, 0			#pc:4, R6 = temp
 add $r7, $zero, $zero, 0			#pc:5, R7 = 0, i
 add $r8, $zero, $zero, 0			#pc:6, R8 = 0, j
 add $r9, $zero, $zero, 0			#pc:7, R9 = 0, k
-add $r10, $zero, $zero, $zero		#pc:8, R10 = 0, jj
-add $r11, $zero, $zero, $zero		#pc:9, R11 = 0, kk
-add $r12, $zero, $zero, $zero		#pc:10, R12 = 0, address inside first mat 
-add $r13, $zero, $zero, $zero		#pc:11, R13 = 0, calculation result, r
-add $r14, $zero, $zero, $zero		#pc:12, R14 = 0, temp
-add $r15, $zero, $zero, $zero		#pc:13, R15 = 0, address inside second mat 
-
+add $r10, $zero, $zero, 0			#pc:8, R10 = 0, jj
+add $r11, $zero, $zero, 0			#pc:9, R11 = 0, kk
+add $r12, $zero, $zero, 0			#pc:10, R12 = 0, address inside first mat 
+add $r13, $zero, $zero, 0			#pc:11, R13 = 0, calculation result, r
+add $r14, $zero, $zero, 0			#pc:12, R14 = 0, temp
+add $r15, $zero, $zero, 0			#pc:13, R15 = 0, address inside second mat 
 bge $imm, $r10, $r5, 55				#pc:14, if jj >= N, exit jj (main) loop
 add $r11, $zero, $zero, $zero		#pc:15, kk = 0
 bge $imm, $r11, $r5, 53				#pc:16, if kk >= N, exit kk loop
@@ -33,10 +32,10 @@ bge $imm, $r14, $r9, 41				#pc:29, if min(kk + B, N) >= k, exit k loop
 mul $r12, $r7, $r5, 0				#pc:30, address1 = i*N
 add $r12, $r12, $r9, 0				#pc:31, address1 = i*N + k = address1 in memory
 mul $r15, $r9, $r5, 0				#pc:32, address2 = k*N
-add $r15, $r12, $r8, 0				#pc:33, address2 = k*N + j
+add $r15, $r15, $r8, 0				#pc:33, address2 = k*N + j
 add $r15, $r15, $r3, 0				#pc:34, address2 = address2 in memory
 lw $r2, $r12, $zero, 0				#pc:35, R2 = MEM[i*N + k] = Y[i][k]
-lw $r14, $r12, $zero, 0				#pc:36, R14 = MEM[k*N + j] = Z[k][j]
+lw $r14, $r15, $zero, 0				#pc:36, R14 = MEM[k*N + j] = Z[k][j]
 mul $r6, $r2, $r14, 0				#pc:37, R6 = R2 * R14 = Y[i][k] * Z[k][j]
 add $r13, $r13, $r6, 0				#pc:38, r = r + Y[i][k] * Z[k][j]
 add $r9, $r9, $imm, 1				#pc:39, k++
@@ -56,11 +55,3 @@ beq $imm, $zero, $zero, 16			#pc:52, jump to start of kk loop
 add $r10, $r10, $imm, 8				#pc:53, jj =  jj + B
 beq $imm, $zero, $zero, 14			#pc:54, jump to start of jj loop
 halt $zero, $zero, $zero, 0			#pc:55, HALT execution
-
- 
-
-
-
-
-
-
