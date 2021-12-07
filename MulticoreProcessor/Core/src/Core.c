@@ -33,7 +33,7 @@ ALL RIGHTS RESERVED
 /************************************
 *      static functions             *
 ************************************/
-static void init_memory(Core_s* core);
+static int init_memory(Core_s* core);
 static void write_trace(Core_s* core, uint32_t* regs_copy);
 static void write_regs_to_file(Core_s* core, uint32_t* regs_copy);
 static void update_statistics(Core_s* core);
@@ -59,15 +59,20 @@ Called at the start of the run.
 *****************************************************************************/
 void Core_Init(Core_s *core, uint8_t id)
 {
+	memset(&core->register_array, 0, sizeof(NUMBER_OF_REGISTERS));
+	int number_of_lines = init_memory(core);
+	if (!number_of_lines)
+	{
+		core->core_halted = true;
+		return;
+	}
+
 	core->program_counter = 0;
 	core->index = id;
 	core->core_halted = false;
 
 	memset(&core->statistics, 0, sizeof(Statistics_s));
 	core->statistics.cycles = -1; // To start the count from 0.
-
-	memset(&core->register_array, 0, sizeof(NUMBER_OF_REGISTERS));
-	init_memory(core);
 
 	memset(&core->pipeline, 0, sizeof(Pipeline_s));
 	Pipeline_Init(&core->pipeline);
@@ -98,6 +103,11 @@ core is running with pipeline.
 *****************************************************************************/
 void Core_Iter(Core_s* core)
 {
+	if (core->core_halted)
+	{
+		return;
+	}
+
 	if (Pipeline_PipeFlushed(&core->pipeline))
 	{
 		core->core_halted = true;
@@ -108,7 +118,7 @@ void Core_Iter(Core_s* core)
 	memcpy(regs_copy, core->register_array, sizeof(core->register_array));
 
 	update_statistics(core);
-	Pipeline_Execute(&core->pipeline);
+	Pipeline_Execute(&core->pipeline, core->index);
 	write_trace(core, regs_copy);
 	Pipeline_BubbleCommands(&core->pipeline);
 }
@@ -160,14 +170,18 @@ Init the core instructions memory.
 \param
  [in] core - the operating core
 
-\return none
+\return number of memory lines
 *****************************************************************************/
-static void init_memory(Core_s* core)
+static int init_memory(Core_s* core)
 {
-	uint16_t lineInProgram = 0; // Making sure we are not exceeding the memory image.
-	while (lineInProgram < INSTRUCTIONS_MEMORY_SIZE && fscanf(core->core_files.InstructionMemFile, 
-		"%08x", (uint32_t *)&(core->instructions_memory_image[lineInProgram])) != EOF)
-		lineInProgram++;
+	int number_of_lines = 0; 
+	while (number_of_lines < INSTRUCTIONS_MEMORY_SIZE && fscanf(core->core_files.InstructionMemFile,
+		"%08x", (uint32_t*)&(core->instructions_memory_image[number_of_lines])) != EOF)
+	{
+		number_of_lines++;
+	}
+
+	return number_of_lines;
 }
 
 /*!

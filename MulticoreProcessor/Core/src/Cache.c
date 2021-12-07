@@ -97,9 +97,8 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 	
 	cache_addess_s addr;
 	addr.address = address;
-	//
 	Tsram_s* tsram = &(cache_data->tsram[addr.fields.index]);
-	// 
+	 
 	// check if addresss tag is locate on block_number
 	if (tsram->fields.tag == addr.fields.tag && tsram->fields.mesi != cache_mesi_invalid)
 	{
@@ -114,6 +113,7 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 
 		return true;
 	}
+
 	// we had a miss.
 	miss_occurred = true;
 	cache_data->statistics.read_misses++;

@@ -202,9 +202,14 @@ Fetch stage of the pipeline.
 *****************************************************************************/
 static void fetch(Pipeline_s* pipeline)
 {
+	if(pipeline->memory_stall)
+	{
+		return;
+	}
+
 	pipeline->pipe_stages[FETCH].pc = *(pipeline->opcode_params.pc);
 	pipeline->pipe_stages[FETCH].instruction.command = pipeline->insturcionts_p[*(pipeline->opcode_params.pc)];
-	if (!(pipeline->data_hazard_stall || pipeline->memory_stall)) // Not in stall
+	if (!pipeline->data_hazard_stall) // Not in stall
 	{
 		*(pipeline->opcode_params.pc)+= 1;
 	}
@@ -236,6 +241,7 @@ static void decode(Pipeline_s* pipeline)
 	{
 		prepare_registers_params(pipeline, DECODE);
 		pipeline->pipe_stages[DECODE].operation(&pipeline->opcode_params);
+		//TODO: Add fetch here?
 	}
 }
 
