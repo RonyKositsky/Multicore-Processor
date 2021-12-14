@@ -62,7 +62,7 @@ typedef struct
 	void* cache_data;
 } Bus_cache_interface_s;
 
-typedef bool (*shared_signal_callback)(void* cache_data, Bus_packet_s* packet);
+typedef bool (*shared_signal_callback)(void* cache_data, Bus_packet_s* packet, bool* is_modified);
 typedef bool (*cache_snooping_callback)(void* cache_data, Bus_packet_s* packet, uint8_t address_offset);
 typedef bool (*cache_response_callback)(void* cache_data, Bus_packet_s* packet, uint8_t* address_offset);
 typedef bool (*memory_callback_t)(Bus_packet_s* packet, bool direct_transaction);
@@ -103,6 +103,18 @@ void Bus_AddTransaction(Bus_packet_s packet);
 \return true if the bus is in transaction
 *****************************************************************************/
 bool Bus_InTransaction(Bus_originator_e originator);
+
+/*!
+******************************************************************************
+\brief
+ Check if the bus is waiting for transaction
+
+\param
+ [in] originator - the id of the core.
+
+\return true if the bus is waiting
+*****************************************************************************/
+bool Bus_WaitForTransaction(Bus_originator_e originator);
 
 /*!
 ******************************************************************************

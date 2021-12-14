@@ -47,7 +47,7 @@ typedef Cache_mesi_e(*snooping_state)(CacheData_s* data, Bus_packet_s* packet);
 ************************************/
 static void dirty_block_handling(CacheData_s* data, cache_addess_s addr);
 //
-static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet);
+static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet, bool* is_modified);
 static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t address_offset);
 static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t* address_offset);
 //
@@ -92,7 +92,7 @@ bool Cache_ReadData(CacheData_s* cache_data, uint32_t address, uint32_t* data)
 {
 	static bool miss_occurred = false;
 
-	if (Bus_InTransaction(cache_data->id))
+	if (Bus_InTransaction(cache_data->id) || Bus_WaitForTransaction(cache_data->id))
 		return false;
 	
 	cache_addess_s addr;
@@ -136,7 +136,7 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 {
 	static bool miss_occurred = false;
 	
-	if (Bus_InTransaction(cache_data->id))
+	if (Bus_InTransaction(cache_data->id) || Bus_WaitForTransaction(cache_data->id))
 		return false; 
 	
 	cache_addess_s addr;
@@ -147,21 +147,25 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 	// check if addresss tag is locate on block_number
 	if (tsram->fields.tag == addr.fields.tag && tsram->fields.mesi != cache_mesi_invalid)
 	{
-		// hit on cache, write data
-		// if the block is exclusive ours, we just change it locally
-		if (tsram->fields.mesi == cache_mesi_exclusive || tsram->fields.mesi == cache_mesi_modified)
+		// if the block is shared, we need to go with RdX transaction and we have a miss.
+;		if (tsram->fields.mesi == cache_mesi_shared)
 		{
-			// do nothing
-		}
-		else if (tsram->fields.mesi == cache_mesi_shared)
-		{
+			miss_occurred = true;
+			cache_data->statistics.write_misses++;
 			// Send Bus_Rdx to make sure this block is exclusive ours
 			Bus_packet_s packet = {
 				.bus_origid = cache_data->id, .bus_cmd = bus_busRdX, .bus_addr = addr.address, .bus_data = 0, .bus_shared = 0 };
 
 			Bus_AddTransaction(packet);
+
+			// add invalid packet for delay the in one cycle the next request
+			Bus_packet_s invalid_packet = { .bus_origid = bus_invalid_originator };
+			Bus_AddTransaction(invalid_packet);
+			return false;
 		}
 
+		// hit on cache, write data
+		// if the block is exclusive ours, we just change it locally
 		if (!miss_occurred)
 			cache_data->statistics.write_hits++;
 		else
@@ -230,7 +234,7 @@ static void dirty_block_handling(CacheData_s* data, cache_addess_s addr)
 }
 
 
-static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet)
+static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet, bool* is_modified)
 {
 	// check if this is my packet
 	if (data->id == packet->bus_origid)
@@ -239,6 +243,7 @@ static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet)
 	cache_addess_s address = { .address = packet->bus_addr };
 	Tsram_s* tsram = &(data->tsram[address.fields.index]);
 	//
+	*is_modified |= tsram->fields.mesi == cache_mesi_modified;
 	return tsram->fields.tag == address.fields.tag && tsram->fields.mesi != cache_mesi_invalid;
 }
 
@@ -252,13 +257,13 @@ static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8
 	Tsram_s* tsram = &(data->tsram[address.fields.index]);
 
 	// check if the block is in the cache, if not, do nothing.
-	if (tsram->fields.tag != address.fields.tag)
+	if (tsram->fields.tag != address.fields.tag || tsram->fields.mesi == cache_mesi_invalid)
 		return false;
 
 	// execute block state machine
 	Cache_mesi_e next_state = gSnoopingSM[tsram->fields.mesi](data, packet);
 
-	if (address_offset == (BLOCK_SIZE - 1))
+	if (address_offset == (BLOCK_SIZE - 1) || tsram->fields.mesi != cache_mesi_modified)
 	{
 		tsram->fields.mesi = next_state;
 	}

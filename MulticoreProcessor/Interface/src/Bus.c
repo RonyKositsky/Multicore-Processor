@@ -45,6 +45,7 @@ typedef union
 typedef enum
 {
 	transaction_idle_state,
+	transaction_wait_state,
 	transaction_start_operation_state,
 	transaction_operation_state,
 	transaction_finally_state,
@@ -83,7 +84,7 @@ static queue_item_s* gQueueTail;
 /************************************
 *      static functions             *
 ************************************/
-static bool check_shared_line(Bus_packet_s* packet);
+static bool check_shared_line(Bus_packet_s* packet, bool* is_modified);
 static bool check_cache_snooping(Bus_packet_s* packet);
 static void print_bus_status(Bus_packet_s packet);
 
@@ -119,12 +120,18 @@ void Bus_AddTransaction(Bus_packet_s packet)
 {
 	// check if this a duplicate transaction
 	bus_fifo_Enqueue(packet);
+	gBusTransactionState[packet.bus_origid] = transaction_wait_state;
 }
 
 bool Bus_InTransaction(Bus_originator_e originator)
 {
-	return gBusTransactionState[gCurrentPacket.bus_origid] != transaction_idle_state &&
-		gBusTransactionState[gCurrentPacket.bus_origid] != transaction_start_operation_state;
+	return gBusTransactionState[originator] != transaction_idle_state &&
+		gBusTransactionState[originator] != transaction_start_operation_state;
+}
+
+bool Bus_WaitForTransaction(Bus_originator_e originator)
+{
+	return gBusTransactionState[originator] == transaction_wait_state;
 }
 
 void Bus_Iter(void)
@@ -150,7 +157,7 @@ void Bus_Iter(void)
 		is_first_shared = true;
 		int prev_origid = gCurrentPacket.bus_origid;
 		
-		if (!bus_fifo_Dequeue(&gCurrentPacket))
+		if (!bus_fifo_Dequeue(&gCurrentPacket) || gCurrentPacket.bus_origid == bus_invalid_originator)
 			return;
 
 		gBusInProgress = true;
@@ -169,17 +176,18 @@ void Bus_Iter(void)
 	address.fields.offset = gAddressOffset;
 	packet.bus_addr = address.address;
 
-	packet.bus_shared = check_shared_line(&gCurrentPacket);
-	if (packet.bus_shared && is_first_shared)
+	bool is_modified = false;
+	packet.bus_shared = check_shared_line(&gCurrentPacket, &is_modified);
+	if (is_modified && is_first_shared)
 	{
 		is_first_shared = false;
 		return;
 	}
 
 	bool cache_response  = check_cache_snooping(&packet);
-	bool memory_response = gMemoryCallback(&packet, cache_response);
+	bool memory_response = gMemoryCallback(&packet, is_modified);
 	
-	if (cache_response || memory_response)
+	if (memory_response)
 	{
 		// print response trace.
 		printf("bus trace - (#%d) response to sender\n", gIterCounter);
@@ -198,14 +206,14 @@ void Bus_Iter(void)
 /************************************
 * static implementation             *
 ************************************/
-static bool check_shared_line(Bus_packet_s* packet)
+static bool check_shared_line(Bus_packet_s* packet, bool* is_modified)
 {
+	bool shared = false;
+
 	for (int i = 0; i < NUMBER_OF_CORES; i++)
-	{
-		if (gSharedSignalCallback(gCacheInterface[i].cache_data, packet))
-			return true;
-	}
-	return false;
+		shared |= gSharedSignalCallback(gCacheInterface[i].cache_data, packet, is_modified);
+	
+	return shared;
 }
 
 static bool check_cache_snooping(Bus_packet_s* packet)
