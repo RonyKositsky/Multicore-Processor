@@ -160,9 +160,10 @@ void Bus_Iter(void)
 		if (!bus_fifo_Dequeue(&gCurrentPacket) || gCurrentPacket.bus_origid == bus_invalid_originator)
 			return;
 
+		gCurrentPacket.bus_original_sender = gCurrentPacket.bus_origid;
+
 		gBusInProgress = true;
-		gBusTransactionState[gCurrentPacket.bus_origid] = prev_origid == gCurrentPacket.bus_origid ? 
-			transaction_start_operation_state : transaction_operation_state;
+		gBusTransactionState[gCurrentPacket.bus_origid] = transaction_operation_state;
 		gAddressOffset = 0;
 		// print bus trace
 		printf("bus trace - (#%d) dequeue next cmd\n", gIterCounter);
@@ -218,9 +219,6 @@ static bool check_shared_line(Bus_packet_s* packet, bool* is_modified)
 
 static bool check_cache_snooping(Bus_packet_s* packet)
 {
-	if (!packet->bus_shared)
-		return false;
-
 	bool cache_response = false;
 	for (int i = 0; i < NUMBER_OF_CORES; i++)
 		cache_response |= gCacheSnoopingCallback(gCacheInterface[i].cache_data, packet, gAddressOffset);

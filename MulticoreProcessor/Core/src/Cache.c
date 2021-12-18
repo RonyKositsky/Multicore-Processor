@@ -33,9 +33,9 @@ typedef union
 
 	struct
 	{
-		uint16_t offset : 2;	// [0:1]
-		uint16_t index : 6;	// [2:7]
-		uint16_t tag : 12;	// [8:19]
+		uint32_t offset : 2;	// [0:1]
+		uint32_t index : 6;	// [2:7]
+		uint32_t tag : 12;	// [8:19]
 	} fields;
 } cache_addess_s;
 
@@ -209,9 +209,6 @@ void Cache_PrintData(CacheData_s* cache_data, FILE* dsram_file, FILE* tsram_file
 ************************************/
 static void dirty_block_handling(CacheData_s* data, cache_addess_s addr)
 {
-	Bus_packet_s packet;
-	packet.bus_origid = data->id;
-
 	if (data->tsram[addr.fields.index].fields.mesi == cache_mesi_modified)
 	{
 		// get stored block address
@@ -222,8 +219,8 @@ static void dirty_block_handling(CacheData_s* data, cache_addess_s addr)
 		};
 
 		// send bus flush
-		packet.bus_cmd = bus_flush;
-		packet.bus_addr = block_addr.address;
+		Bus_packet_s packet = {
+			.bus_origid = data->id, .bus_cmd = bus_flush, .bus_addr = block_addr.address, .bus_shared = 0 };
 
 		uint16_t index = addr.fields.index * BLOCK_SIZE + addr.fields.offset;
 		packet.bus_data = data->dsram[index];
@@ -250,7 +247,7 @@ static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet, bool* 
 static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t address_offset)
 {
 	// check if this is my packet
-	if (data->id == packet->bus_origid)
+	if (data->id == packet->bus_original_sender && packet->bus_cmd != bus_flush)
 		return false;
 
 	cache_addess_s address = { .address = packet->bus_addr };
@@ -274,14 +271,22 @@ static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8
 static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t* address_offset)
 {
 	// check if this is my packet
-	if (data->id == packet->bus_origid)
+	if (data->id == packet->bus_origid && packet->bus_cmd != bus_flush)
 		return false;
+	else if (data->id == packet->bus_origid && packet->bus_cmd == bus_flush)
+	{
+		if (*address_offset == (BLOCK_SIZE - 1))
+			return true;
+
+		*address_offset += 1;
+		return false;
+	}
 
 	cache_addess_s address = { .address = packet->bus_addr };
 	Tsram_s* tsram = &(data->tsram[address.fields.index]);
-	// check if the block is in the cache, if not, do nothing.
-	if (tsram->fields.tag != address.fields.tag)
-		return false;
+	
+	// update the new tag
+	tsram->fields.tag = address.fields.tag;
 
 	// execute block state machine
 	if (packet->bus_cmd == bus_flush)
@@ -343,7 +348,7 @@ static Cache_mesi_e mesi_snooping_modified_state(CacheData_s* data, Bus_packet_s
 		return cache_mesi_shared;
 	}
 
-	if (packet->bus_cmd == bus_busRdX)
+	else if (packet->bus_cmd == bus_busRdX)
 	{
 		// send back the modified data
 		packet->bus_cmd = bus_flush;
@@ -351,6 +356,16 @@ static Cache_mesi_e mesi_snooping_modified_state(CacheData_s* data, Bus_packet_s
 		packet->bus_origid = data->id;
 
 		return cache_mesi_invalid;
+	}
+
+	else if (packet->bus_cmd == bus_flush)
+	{
+		// send back the modified data
+		packet->bus_cmd = bus_flush;
+		packet->bus_data = data->dsram[index];
+		packet->bus_origid = data->id;
+
+		return cache_mesi_modified;
 	}
 
 	// todo: check the default return value

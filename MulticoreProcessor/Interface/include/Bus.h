@@ -49,6 +49,7 @@ typedef enum
 
 typedef struct
 {
+	Bus_originator_e bus_original_sender;
 	Bus_originator_e bus_origid;
 	Bus_command_s bus_cmd;
 	uint32_t bus_addr;
