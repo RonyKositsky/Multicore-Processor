@@ -2,7 +2,7 @@
 #R3 - local counter
 #R4 - modulu result
 #R10 - my core number
-add $r10, $imm, $zero, 3		#pc:0, R10 = 0 my core number is 3 
+add $r10, $imm, $zero, 3		#pc:0, R10 = 0 my core number is 1 
 add, $r3, $zero, $imm, 128		#pc:1, R3 = 128, local counter
 lw, $r2, $zero, $zero, 0		#pc:2, R2 = MEM[0]
 and $r4, $r2, $imm, 3			#pc:3, R4 = R2&3 (equivalent to MEM[0] modulu 4)

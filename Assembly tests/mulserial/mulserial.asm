@@ -2,7 +2,7 @@
 add $r2, $zero, $zero, 0			#pc:0,R2 = temp
 add $r3, $zero, $imm, 0x100			#pc:1,address of second mat
 add $r4, $zero, $imm, 0x200			#pc:2,address of result mat
-add $r5, $zero, $zero,16			#pc:3, R5 = 16, size of mat, N
+add $r5, $zero, $imm,16				#pc:3, R5 = 16, size of mat, N
 add $r6, $zero, $zero, 0			#pc:4, R6 = temp
 add $r7, $zero, $zero, 0			#pc:5, R7 = 0, i
 add $r8, $zero, $zero, 0			#pc:6, R8 = 0, j
@@ -26,15 +26,15 @@ add $r14, $r10, $imm, 8				#pc:23, temp = jj + B    j loop jumps here	this was 2
 blt $imm, $r14, $r5, 27				#pc:24, if temp < N, skip next instruction
 add $zero, $zero, $zero, 0			#pc:25, nop
 add $r14, $zero, $r5, 0				#pc:26, temp = N
-bge $imm, $r14, $r8, 58				#pc:27, if min(jj + B, N) >= j, exit j loop	this was 23
+bge $imm, $r8, $r14, 58				#pc:27, if min(jj + B, N) <= j, exit j loop	this was 23
 add $zero, $zero, $zero, 0			#pc:28, nop
 add $r13, $zero, $zero, $zero		#pc:29, r = 0
-add $r9, $r10, $zero, 0				#pc:30, k = kk
+add $r9, $r11, $zero, 0				#pc:30, k = kk
 add $r14, $r11, $imm, 8				#pc:31, temp = kk + B    k loop jumps here	this was 26
 blt $imm, $r14, $r5, 35				#pc:32, if temp < N, skip next instruction
 add $zero, $zero, $zero, 0			#pc:33, nop
 add $r14, $zero, $r5, 0				#pc:34, temp = N
-bge $imm, $r14, $r9, 49				#pc:35, if min(kk + B, N) >= k, exit k loop	this was 29
+bge $imm, $r9, $r14, 49				#pc:35, if min(kk + B, N) <= k, exit k loop	this was 29
 add $zero, $zero, $zero, 0			#pc:36, nop
 mul $r12, $r7, $r5, 0				#pc:37, address1 = i*N
 add $r12, $r12, $r9, 0				#pc:38, address1 = i*N + k = address1 in memory
@@ -66,4 +66,13 @@ add $zero, $zero, $zero, 0			#pc:63, nop
 add $r10, $r10, $imm, 8				#pc:64, jj =  jj + B	this was 53
 beq $imm, $zero, $zero, 14			#pc:65, jump to start of jj loop
 add $zero, $zero, $zero, 0			#pc:66, nop
-halt $zero, $zero, $zero, 0			#pc:67, HALT execution this was 55
+lw $r2, $imm, $zero, 15				#pc:67, create conflict for memory write
+lw $r2, $imm, $zero, 31				#pc:68, create conflict for memory write
+lw $r2, $imm, $zero, 47				#pc:69, create conflict for memory write
+lw $r2, $imm, $zero, 63				#pc:70, create conflict for memory write
+lw $r2, $imm, $zero, 79				#pc:71, create conflict for memory write
+lw $r2, $imm, $zero, 95				#pc:72, create conflict for memory write
+lw $r2, $imm, $zero, 111			#pc:73, create conflict for memory write
+lw $r2, $imm, $zero, 127			#pc:74, create conflict for memory write
+lw $r2, $imm, $zero, 511			#pc:75, create conflict for memory write
+halt $zero, $zero, $zero, 0			#pc:76, HALT execution this was 55
