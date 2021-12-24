@@ -8,7 +8,7 @@ add $r6, $zero, $imm, 0					#pc:, k = 0
 add $r7, $zero, $imm, 8					#pc:, B = 8
 add $r8, $zero, $imm, 0					#pc:, r = 0
 add $r9, $zero, $imm, 16				#pc:, N = 16
-#Perform A3 * B3, then A3 * B2
+#Perform A2 * B1, then A2 * B0
 iLoop1:
 	bge $imm, $r4, $r9, iLoop2					#pc:, if i >= N, exit iLoop1
 	add $zero, $zero, $zero, 0					#pc:, nop
@@ -16,10 +16,10 @@ iLoop1:
 	jLoop1:
 		bge $imm, $r5, $r9, jLoop1E				#pc:, if j >= N, exit jLoop1
 		add $zero, $zero, $zero, 0				#pc:, nop
-		add $r6, $r7, $zero, $zero, 0			#pc:, k = B
+		add $r6, $zero, $zero, $zero, 0			#pc:, k = 0
 		add $r8, $zero, $zero, $zero, 0			#pc:, r = 0
 		kLoop1:
-			bge $imm, $r6, $r9, kLoop1E			#pc:, if k >= N, exit kLoop1
+			bge $imm, $r6, $r7, kLoop1E			#pc:, if k >= B, exit kLoop1
 			add $zero, $zero, $zero, 0			#pc:, nop
 			mul $r11, $r9, $r4, 0				#pc:, temp1 = i*N
 			add $r11, $r11, $r6, 0				#pc:, temp1 = i*N +k = address1 in memory
@@ -29,7 +29,6 @@ iLoop1:
 			lw $r12, $r12, $r2, 0				#pc:, temp2 = MEM[k*N + j + 0x100] = Z[k][j]
 			mul $r13, $r11, $r12, 0				#pc:, temp3 = Y[i][k] * Z[k][j]
 			add $r8, $r8, $r13, 0				#pc:, r = r + Y[i][k] * Z[k][j]
-			add $r6 ,$r6, $imm, 1				#pc:, k++
 			beq $imm, $zero, $zero, kLoop1		#pc:, jump to start of kLoop1
 			add $zero, $zero, $zero, 0			#pc:, nop
 		kLoop1E:
@@ -38,16 +37,14 @@ iLoop1:
 		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = Z[i][j]
 		add $r12, $r12, $r8, 0					#pc:, temp2 = Z[i][j] + r
 		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = Z[i][j] = Z[i][j] + r
-		add $r5 ,$r5, $imm, 1					#pc:, j++
 		beq $imm, $zero, $zero, jLoop1			#pc:, jump to start of jLoop1 
 		add $zero, $zero, $zero, 0				#pc:, nop
 	jLoop1E:
-	add $r4 ,$r4, $imm, 1						#pc:, i++
 	beq $imm, $zero, $zero, iLoop1				#pc:, jump to start of iLoop1
 	add $zero, $zero, $zero, 0					#pc:, nop	
 #for i=B i<N i++:
 #	for j=B j<N j++:
-#		for k=B k<N k++:
+#		for k=0 k<B k++:
 #			r= r+ A[i][k]*B[k,j]
 #		Z[i][j]= Z[i][j] + r
 add $r4, $r7, $zero, 0							#pc:, i = B
@@ -58,10 +55,10 @@ iLoop2:
 	jLoop2:
 		bge $imm, $r5, $r7, jLoop2E				#pc:, if j >= B, exit jLoop2
 		add $zero, $zero, $zero, 0				#pc:, nop
-		add $r6, $r7, $zero, $zero, 0			#pc:, k = B
+		add $r6, $zero, $zero, $zero, 0			#pc:, k = 0
 		add $r8, $zero, $zero, $zero, 0			#pc:, r = 0
 		kLoop2:
-			bge $imm, $r6, $r9, kLoop2E			#pc:, if k >= N, exit kLoop1
+			bge $imm, $r6, $r7, kLoop2E			#pc:, if k >= B, exit kLoop1
 			add $zero, $zero, $zero, 0			#pc:, nop
 			mul $r11, $r9, $r4, 0				#pc:, temp1 = i*N
 			add $r11, $r11, $r6, 0				#pc:, temp1 = i*N +k = address1 in memory
@@ -71,7 +68,6 @@ iLoop2:
 			lw $r12, $r12, $r2, 0				#pc:, temp2 = MEM[k*N + j + 0x100] = Z[k][j]
 			mul $r13, $r11, $r12, 0				#pc:, temp3 = Y[i][k] * Z[k][j]
 			add $r8, $r8, $r13, 0				#pc:, r = r + Y[i][k] * Z[k][j]
-			add $r6 ,$r6, $imm, 1				#pc:, k++
 			beq $imm, $zero, $zero, kLoop2		#pc:, jump to start of kLoop2
 			add $zero, $zero, $zero, 0			#pc:, nop
 		kLoop2E:
@@ -80,17 +76,15 @@ iLoop2:
 		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = Z[i][j]
 		add $r12, $r12, $r8, 0					#pc:, temp2 = Z[i][j] + r
 		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = Z[i][j] = Z[i][j] + r
-		add $r5 ,$r5, $imm, 1					#pc:, j++
 		beq $imm, $zero, $zero, jLoop2			#pc:, jump to start of jLoop2
 		add $zero, $zero, $zero, 0				#pc:, nop
 	jLoop2E:
-	add $r4 ,$r4, $imm, 1						#pc:, i++
 	beq $imm, $zero, $zero, iLoop2				#pc:, jump to start of iLoop2
 	add $zero, $zero, $zero, 0					#pc:, nop
 iLoop2E:
 #for i=B i<N i++:
 #	for j=0 j<B j++:
-#		for k=B k<N k++:
+#		for k=0 k<B k++:
 #			r= r+ A[i][k]*B[k,j]
 #		Z[i][j]= Z[i][j] + r
 halt $zero, $zero, $zero, 0						#pc:, HALT execution
