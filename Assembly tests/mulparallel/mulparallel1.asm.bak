@@ -19,7 +19,7 @@ iLoop1:
 		add $r6, $r7, $zero, $zero, 0			#pc:, k = B
 		add $r8, $zero, $zero, $zero, 0			#pc:, r = 0
 		kLoop1:
-			bge $imm, $r6, $r9, kLoop1E			#pc:, if k >= B, exit kLoop1
+			bge $imm, $r6, $r9, kLoop1E			#pc:, if k >= N, exit kLoop1
 			add $zero, $zero, $zero, 0			#pc:, nop
 			mul $r11, $r9, $r4, 0				#pc:, temp1 = i*N
 			add $r11, $r11, $r6, 0				#pc:, temp1 = i*N +k = address1 in memory
@@ -29,17 +29,22 @@ iLoop1:
 			lw $r12, $r12, $r2, 0				#pc:, temp2 = MEM[k*N + j + 0x100] = Z[k][j]
 			mul $r13, $r11, $r12, 0				#pc:, temp3 = Y[i][k] * Z[k][j]
 			add $r8, $r8, $r13, 0				#pc:, r = r + Y[i][k] * Z[k][j]
+			add $r6 ,$r6, $imm, 1				#pc:, k++
 			beq $imm, $zero, $zero, kLoop1		#pc:, jump to start of kLoop1
 			add $zero, $zero, $zero, 0			#pc:, nop
 		kLoop1E:
 		mul $r11, $r4, $r9, 0					#pc:, temp1 = i*N
 		add $r11, $r11, $r5, 0					#pc:, temp1 = i*N + j
-		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = Z[i][j]
-		add $r12, $r12, $r8, 0					#pc:, temp2 = Z[i][j] + r
-		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = Z[i][j] = Z[i][j] + r
+		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = X[i][j]
+		add $r12, $r12, $r8, 0					#pc:, temp2 = X[i][j] + r
+		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = X[i][j] = X[i][j] + r
+		add $r14, $r11, $r3, 0					#pc:, temp = i*N + j + 0x200
+		lw $r14, $r14, $imm, -256				#pc:, temp = MEM[temp], create conflict miss on X[i][j]
+		add $r5 ,$r5, $imm, 1					#pc:, j++
 		beq $imm, $zero, $zero, jLoop1			#pc:, jump to start of jLoop1 
 		add $zero, $zero, $zero, 0				#pc:, nop
 	jLoop1E:
+	add $r4 ,$r4, $imm, 1						#pc:, i++
 	beq $imm, $zero, $zero, iLoop1				#pc:, jump to start of iLoop1
 	add $zero, $zero, $zero, 0					#pc:, nop	
 #for i=0 i<B i++:
@@ -47,16 +52,17 @@ iLoop1:
 #		for k=B k<N k++:
 #			r= r+ A[i][k]*B[k,j]
 #		Z[i][j]= Z[i][j] + r
+add $r4, $zero, $zero, 0						#pc:, i = 0
 iLoop2:
 	bge $imm, $r4, $r7, iLoop2E					#pc:, if i >= B, exit iLoop2
 	add $zero, $zero, $zero, 0					#pc:, nop
 	add $r5, $7, $zero, $zero, 0				#pc:, j = B
-	jLoop1:
+	jLoop2:
 		bge $imm, $r5, $r9, jLoop2E				#pc:, if j >= N, exit jLoop2
 		add $zero, $zero, $zero, 0				#pc:, nop
 		add $r6, $r7, $zero, $zero, 0			#pc:, k = B
 		add $r8, $zero, $zero, $zero, 0			#pc:, r = 0
-		kLoop1:
+		kLoop2:
 			bge $imm, $r6, $r9, kLoop2E			#pc:, if k >= N, exit kLoop1
 			add $zero, $zero, $zero, 0			#pc:, nop
 			mul $r11, $r9, $r4, 0				#pc:, temp1 = i*N
@@ -67,17 +73,22 @@ iLoop2:
 			lw $r12, $r12, $r2, 0				#pc:, temp2 = MEM[k*N + j + 0x100] = Z[k][j]
 			mul $r13, $r11, $r12, 0				#pc:, temp3 = Y[i][k] * Z[k][j]
 			add $r8, $r8, $r13, 0				#pc:, r = r + Y[i][k] * Z[k][j]
+			add $r6 ,$r6, $imm, 1				#pc:, k++
 			beq $imm, $zero, $zero, kLoop2		#pc:, jump to start of kLoop2
 			add $zero, $zero, $zero, 0			#pc:, nop
 		kLoop2E:
 		mul $r11, $r4, $r9, 0					#pc:, temp1 = i*N
 		add $r11, $r11, $r5, 0					#pc:, temp1 = i*N + j
-		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = Z[i][j]
-		add $r12, $r12, $r8, 0					#pc:, temp2 = Z[i][j] + r
-		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = Z[i][j] = Z[i][j] + r
+		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = X[i][j]
+		add $r12, $r12, $r8, 0					#pc:, temp2 = X[i][j] + r
+		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = X[i][j] = X[i][j] + r
+		add $r14, $r11, $r3, 0					#pc:, temp = i*N + j + 0x200
+		lw $r14, $r14, $imm, -256				#pc:, temp = MEM[temp], create conflict miss on X[i][j]
+		add $r5 ,$r5, $imm, 1					#pc:, j++
 		beq $imm, $zero, $zero, jLoop2			#pc:, jump to start of jLoop2
 		add $zero, $zero, $zero, 0				#pc:, nop
 	jLoop2E:
+	add $r4 ,$r4, $imm, 1						#pc:, i++
 	beq $imm, $zero, $zero, iLoop2				#pc:, jump to start of iLoop2
 	add $zero, $zero, $zero, 0					#pc:, nop
 iLoop2E:

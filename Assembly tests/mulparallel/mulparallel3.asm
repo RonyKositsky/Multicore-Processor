@@ -35,9 +35,11 @@ iLoop1:
 		kLoop1E:
 		mul $r11, $r4, $r9, 0					#pc:, temp1 = i*N
 		add $r11, $r11, $r5, 0					#pc:, temp1 = i*N + j
-		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = Z[i][j]
-		add $r12, $r12, $r8, 0					#pc:, temp2 = Z[i][j] + r
-		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = Z[i][j] = Z[i][j] + r
+		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = X[i][j]
+		add $r12, $r12, $r8, 0					#pc:, temp2 = X[i][j] + r
+		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = X[i][j] = X[i][j] + r
+		add $r14, $r11, $r3, 0					#pc:, temp = i*N + j + 0x200
+		lw $r14, $r14, $imm, 256				#pc:, temp = MEM[temp], create conflict miss on X[i][j]
 		add $r5 ,$r5, $imm, 1					#pc:, j++
 		beq $imm, $zero, $zero, jLoop1			#pc:, jump to start of jLoop1 
 		add $zero, $zero, $zero, 0				#pc:, nop
@@ -77,9 +79,11 @@ iLoop2:
 		kLoop2E:
 		mul $r11, $r4, $r9, 0					#pc:, temp1 = i*N
 		add $r11, $r11, $r5, 0					#pc:, temp1 = i*N + j
-		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = Z[i][j]
-		add $r12, $r12, $r8, 0					#pc:, temp2 = Z[i][j] + r
-		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = Z[i][j] = Z[i][j] + r
+		lw $r12, $r11, $r3, 0					#pc:, temp2 = MEM[i*N + j + 0x200] = X[i][j]
+		add $r12, $r12, $r8, 0					#pc:, temp2 = X[i][j] + r
+		sw $r12, $r11, $r3, 0					#pc:, MEM[i*N + j + 0x200] = X[i][j] = X[i][j] + r
+		add $r14, $r11, $r3, 0					#pc:, temp = i*N + j + 0x200
+		lw $r14, $r14, $imm, 256				#pc:, temp = MEM[temp], create conflict miss on X[i][j]
 		add $r5 ,$r5, $imm, 1					#pc:, j++
 		beq $imm, $zero, $zero, jLoop2			#pc:, jump to start of jLoop2
 		add $zero, $zero, $zero, 0				#pc:, nop

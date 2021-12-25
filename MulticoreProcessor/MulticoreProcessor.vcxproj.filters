@@ -5,9 +5,6 @@
     <ClCompile Include="Interface\src\Files.c">
       <Filter>Interface\src</Filter>
     </ClCompile>
-    <ClCompile Include="Interface\src\Helpers.c">
-      <Filter>Interface\src</Filter>
-    </ClCompile>
     <ClCompile Include="Core\src\Core.c">
       <Filter>Core\src</Filter>
     </ClCompile>
