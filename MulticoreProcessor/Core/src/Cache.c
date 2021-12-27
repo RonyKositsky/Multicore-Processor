@@ -39,18 +39,18 @@ typedef union
 	} fields;
 } cache_addess_s;
 
-typedef Cache_mesi_e(*response_state)(CacheData_s* data, Bus_packet_s* packet);
 typedef Cache_mesi_e(*snooping_state)(CacheData_s* data, Bus_packet_s* packet);
 
 /************************************
 *      static functions             *
 ************************************/
 static void dirty_block_handling(CacheData_s* data, cache_addess_s addr);
-//
+
+// handles
 static bool shared_signal_handle(CacheData_s* data, Bus_packet_s* packet, bool* is_modified);
 static bool cache_snooping_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t address_offset);
 static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8_t* address_offset);
-//
+
 // state machine for snooping
 static Cache_mesi_e mesi_snooping_invalid_state(CacheData_s* data, Bus_packet_s* packet);
 static Cache_mesi_e mesi_snooping_shared_state(CacheData_s* data, Bus_packet_s* packet);
@@ -141,9 +141,8 @@ bool Cache_WriteData(CacheData_s* cache_data, uint32_t address, uint32_t data)
 	
 	cache_addess_s addr;
 	addr.address = address;
-	//
 	Tsram_s* tsram = &(cache_data->tsram[addr.fields.index]);
-	//
+	
 	// check if addresss tag is locate on block_number
 	if (tsram->fields.tag == addr.fields.tag && tsram->fields.mesi != cache_mesi_invalid)
 	{
@@ -308,7 +307,6 @@ static bool cache_response_handle(CacheData_s* data, Bus_packet_s* packet, uint8
 // state machine for snooping
 static Cache_mesi_e mesi_snooping_invalid_state(CacheData_s* data, Bus_packet_s* packet)
 {
-	// todo: check the default return value
 	return cache_mesi_invalid;
 }
 
@@ -317,7 +315,6 @@ static Cache_mesi_e mesi_snooping_shared_state(CacheData_s* data, Bus_packet_s* 
 	if (packet->bus_cmd == bus_busRdX)
 		return cache_mesi_invalid;
 
-	// todo: check the default return value
 	return cache_mesi_shared;
 }
 
@@ -329,7 +326,6 @@ static Cache_mesi_e mesi_snooping_exlusive_state(CacheData_s* data, Bus_packet_s
 	if (packet->bus_cmd == bus_busRdX)
 		return cache_mesi_invalid;
 
-	// todo: check the default return value
 	return cache_mesi_exclusive;
 }
 
@@ -368,6 +364,5 @@ static Cache_mesi_e mesi_snooping_modified_state(CacheData_s* data, Bus_packet_s
 		return cache_mesi_modified;
 	}
 
-	// todo: check the default return value
 	return cache_mesi_modified;
 }

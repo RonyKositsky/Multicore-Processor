@@ -46,7 +46,6 @@ typedef enum
 {
 	transaction_idle_state,
 	transaction_wait_state,
-	transaction_start_operation_state,
 	transaction_operation_state,
 	transaction_finally_state,
 } transaction_state_e;
@@ -110,7 +109,6 @@ void Bus_RegisterCacheCallbacks(shared_signal_callback signal_callback,
 	gCacheResponseCallback = response_callback;
 }
 
-
 void Bus_RegisterMemoryCallback(memory_callback_t callback)
 {
 	gMemoryCallback = callback;
@@ -129,8 +127,7 @@ void Bus_AddTransaction(Bus_packet_s packet)
 
 bool Bus_InTransaction(Bus_originator_e originator)
 {
-	return gBusTransactionState[originator] != transaction_idle_state &&
-		gBusTransactionState[originator] != transaction_start_operation_state;
+	return gBusTransactionState[originator] != transaction_idle_state;
 }
 
 bool Bus_WaitForTransaction(Bus_originator_e originator)
@@ -145,16 +142,12 @@ void Bus_Iter(void)
 		
 	if (gBusTransactionState[gCurrentPacket.bus_origid] == transaction_finally_state)
 		gBusTransactionState[gCurrentPacket.bus_origid] = transaction_idle_state;
-	else if (gBusTransactionState[gCurrentPacket.bus_origid] == transaction_start_operation_state)
-		gBusTransactionState[gCurrentPacket.bus_origid] = transaction_operation_state;
-
 
 	if (bus_fifo_IsEmpty() && !gBusInProgress)
 	{
 		gCurrentPacket.bus_origid = bus_invalid_originator;
 		return;
 	}
-
 
 	if (!gBusInProgress)
 	{
