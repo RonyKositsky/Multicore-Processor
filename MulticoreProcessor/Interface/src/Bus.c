@@ -120,6 +120,10 @@ void Bus_AddTransaction(Bus_packet_s packet)
 {
 	// check if this a duplicate transaction
 	bus_fifo_Enqueue(packet);
+
+	if (packet.bus_origid == bus_invalid_originator)
+		return;
+
 	gBusTransactionState[packet.bus_origid] = transaction_wait_state;
 }
 
